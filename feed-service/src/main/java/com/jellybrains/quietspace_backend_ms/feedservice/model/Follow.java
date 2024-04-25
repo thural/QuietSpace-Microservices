@@ -29,7 +29,7 @@ public class Follow {
     private UUID followingId;
 
     @NonNull
-    private UUID follower;
+    private UUID followerId;
 
     @NonNull
     private OffsetDateTime createDate = OffsetDateTime.now();

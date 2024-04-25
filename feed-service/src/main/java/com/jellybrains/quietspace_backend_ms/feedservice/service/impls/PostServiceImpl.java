@@ -3,8 +3,10 @@ package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 import com.jellybrains.quietspace_backend_ms.feedservice.dto.request.PostRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.dto.response.PostLikeResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.dto.response.PostResponse;
+import com.jellybrains.quietspace_backend_ms.feedservice.mapper.PostLikeMapper;
 import com.jellybrains.quietspace_backend_ms.feedservice.mapper.PostMapper;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.Post;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.PostLike;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostLikeRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.PostService;
@@ -31,6 +33,12 @@ public class PostServiceImpl implements PostService {
 //    private final UserRepository userRepository;
 
     public final String AUTHOR_MISMATCH_MESSAGE = "post author mismatch with current user";
+    private final PostLikeMapper postLikeMapper;
+
+    private UUID getCurrentUserId(){
+        // TODO: get user using webflux
+        return null;
+    };
 
     @Override
     public Page<PostResponse> getAllPosts(Integer pageNumber, Integer pageSize) {
@@ -40,16 +48,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse addPost(PostRequest post) {
-        User loggedUser = getUserFromSecurityContext();
+        UUID loggedUser = getCurrentUserId();
         Post postEntity = postMapper.postRequestToEntity(post);
-        postEntity.setUser(loggedUser);
+        postEntity.setUserId(loggedUser);
         return postMapper.postEntityToResponse(postRepository.save(postEntity));
-    }
-
-    private User getUserFromSecurityContext() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findUserEntityByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("user not found"));
     }
 
     @Override
@@ -66,33 +68,33 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void updatePost(UUID postId, PostRequest post) {
-        User loggedUser = getUserFromSecurityContext();
+        UUID loggedUserId = getCurrentUserId();
         Post existingPost = findPostEntityById(postId);
-        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUser);
+        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUserId);
         if (postExistsByLoggedUser) {
             existingPost.setText(post.getTextContent());
             postRepository.save(existingPost);
-        } else throw new AccessDeniedException(AUTHOR_MISMATCH_MESSAGE);
+        } // else throw new AccessDeniedException(AUTHOR_MISMATCH_MESSAGE);
     }
 
     @Override
     public void patchPost(UUID postId, PostRequest post) {
-        User loggedUser = getUserFromSecurityContext();
+        UUID loggedUserId = getCurrentUserId();
         Post existingPost = findPostEntityById(postId);
-        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUser);
+        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUserId);
         if (postExistsByLoggedUser) {
             if (StringUtils.hasText(post.getTextContent())) existingPost.setText(post.getTextContent());
             postRepository.save(existingPost);
-        } else throw new AccessDeniedException(AUTHOR_MISMATCH_MESSAGE);
+        } // else throw new AccessDeniedException(AUTHOR_MISMATCH_MESSAGE);
     }
 
     @Override
     public void deletePost(UUID postId) {
-        User loggedUser = getUserFromSecurityContext();
+        UUID loggedUserId = getCurrentUserId();
         Post existingPost = findPostEntityById(postId);
-        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUser);
+        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUserId);
         if (postExistsByLoggedUser) postRepository.deleteById(postId);
-        else throw new AccessDeniedException(AUTHOR_MISMATCH_MESSAGE);
+//        else throw new AccessDeniedException(AUTHOR_MISMATCH_MESSAGE);
     }
 
     @Override
@@ -107,29 +109,33 @@ public class PostServiceImpl implements PostService {
         return postPage.map(postMapper::postEntityToResponse);
     }
 
-    private boolean isPostExistsByLoggedUser(Post existingPost, User loggedUser) {
-        return existingPost.getUser().equals(loggedUser);
+    private boolean isPostExistsByLoggedUser(Post existingPost, UUID loggedUserId) {
+        return existingPost.getUserId().equals(loggedUserId);
     }
 
     @Override
     public List<PostLikeResponse> getPostLikesByPostId(UUID postId) {
-        return postLikeRepository.findAllByPostId(postId);
+        return postLikeRepository.findAllByPostId(postId)
+                .stream().map(postLikeMapper::postLikeEntityToDto)
+                .toList();
     }
 
     @Override
     public List<PostLikeResponse> getPostLikesByUserId(UUID userId) {
-        return postLikeRepository.findAllByUserId(userId);
+        return postLikeRepository.findAllByUserId(userId)
+                .stream().map(postLikeMapper::postLikeEntityToDto)
+                .toList();
     }
 
     @Override
     public void togglePostLike(UUID postId) {
-        User user = getUserFromSecurityContext();
-        boolean isPostLikeExists = postLikeRepository.existsByPostIdAndUserId(postId, user.getId());
+        UUID loggedUserId = getCurrentUserId();
+        boolean isPostLikeExists = postLikeRepository.existsByPostIdAndUserId(postId, loggedUserId);
         if (isPostLikeExists) postLikeRepository.deleteById(postId);
         else {
             Post post = postRepository.findById(postId)
                     .orElseThrow(() -> new EntityNotFoundException("post not found"));
-            postLikeRepository.save(PostLike.builder().post(post).user(user).build());
+            postLikeRepository.save(PostLike.builder().post(post).userId(loggedUserId).build());
         }
     }
 
