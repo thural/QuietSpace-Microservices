@@ -1,0 +1,4 @@
+spring:
+  application.name: quietspace-backend-ms
+
+server.port: 8080

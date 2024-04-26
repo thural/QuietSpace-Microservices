@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: user-service
+  data:
+    mongodb:
+      database: user
+      uri: mongodb://${USER_DB_HOST:localhost}:27017/user?authSource=admin&retryWrites=false
+      replica-set-name: rs0
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery:8761/eureka/
+
+server:
+  port: 8081
