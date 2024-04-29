@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: dummy-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j.circuitbreaker:
+  instances:
+    dummy:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 20
+      waitDurationInOpenState: 30s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+      automatic-transition-from-open-to-half-open-enabled: true
+
+server:
+  port: 8888
