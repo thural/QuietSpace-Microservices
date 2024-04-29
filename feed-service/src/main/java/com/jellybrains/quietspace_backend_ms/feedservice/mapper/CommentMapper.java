@@ -12,7 +12,5 @@ public interface CommentMapper {
     Comment commentRequestToEntity(CommentRequest commentRequest);
 
     @Mapping(target = "postId", source = "post.id")
-    @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "username", source = "user.username")
     CommentResponse commentEntityToResponse(Comment comment);
 }

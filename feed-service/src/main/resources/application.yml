@@ -3,7 +3,7 @@ spring:
   datasource:
     username: root
     password: @dolphin888
-    url: jdbc:mysql://localhost:3306/quietspace
+    url: jdbc:mysql://localhost:3306/feed
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql

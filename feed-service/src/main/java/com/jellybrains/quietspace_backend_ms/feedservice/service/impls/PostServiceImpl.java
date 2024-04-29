@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,14 +31,18 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
-//    private final UserRepository userRepository;
+    private final WebClient.Builder webClientBuilder;
 
     public final String AUTHOR_MISMATCH_MESSAGE = "post author mismatch with current user";
     private final PostLikeMapper postLikeMapper;
 
     private UUID getCurrentUserId(){
-        // TODO: get user using webflux
-        return null;
+
+        return webClientBuilder.build().get()
+                .uri("http://user-service/api/users/current-user")
+                .retrieve()
+                .bodyToMono(UUID.class)
+                .block();
     };
 
     @Override

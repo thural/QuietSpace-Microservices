@@ -12,8 +12,6 @@ public interface MessageMapper {
     Message messageRequestToEntity(MessageRequest messageRequest);
 
     @Mapping(target = "chatId", source = "chat.id")
-    @Mapping(target = "senderId", source = "sender.id")
-    @Mapping(target = "username", source = "sender.username")
     MessageResponse messageEntityToResponse(Message messageEntity);
 
 }

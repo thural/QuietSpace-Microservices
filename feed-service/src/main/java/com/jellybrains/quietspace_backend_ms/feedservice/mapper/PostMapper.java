@@ -11,7 +11,5 @@ public interface PostMapper {
     @Mapping(target = "id", ignore = true)
     Post postRequestToEntity(PostRequest postRequest);
 
-    @Mapping(target = "username", source ="user.username")
-    @Mapping(target = "userId", source ="user.id")
     PostResponse postEntityToResponse(Post post);
 }

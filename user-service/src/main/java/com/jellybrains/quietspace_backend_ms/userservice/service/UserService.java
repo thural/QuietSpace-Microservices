@@ -1,6 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service;
 
 import com.jellybrains.quietspace_backend_ms.userservice.dto.requuest.UserRequest;
+import com.jellybrains.quietspace_backend_ms.userservice.dto.response.UserResponse;
+import com.jellybrains.quietspace_backend_ms.userservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.userservice.model.User;
 import com.jellybrains.quietspace_backend_ms.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,20 @@ public class UserService {
 
         userRepository.save(newUser);
         log.info("Created new user with email: {}", newUser.getEmail());
+    }
+
+    public UserResponse findUserByEmail(String email) {
+        User foundUser = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found"));
+
+        UserResponse userResponse = UserResponse.builder()
+                .username(foundUser.getUsername())
+                .email(foundUser.getEmail())
+                .role(foundUser.getRole())
+                .build();
+
+        log.info("Found user with email: {}", email);
+        return userResponse;
     }
 
 }

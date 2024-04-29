@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -21,9 +23,10 @@ import java.util.UUID;
 public class Chat {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private Long id;
+    private UUID id;
 
     @Version
     private Integer version;
