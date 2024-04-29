@@ -19,9 +19,13 @@ management:
     health:
       show-details: always
 
-resilience4j.circuitbreaker:
-  instances:
-    dummy:
+resilience4j:
+  timelimiter:
+    instances:
+      dummy:
+        timeout-duration: 3s
+  circuitbreaker:
+    instances:
       registerHealthIndicator: true
       slidingWindowSize: 10
       permittedNumberOfCallsInHalfOpenState: 3
@@ -31,6 +35,11 @@ resilience4j.circuitbreaker:
       failureRateThreshold: 50
       eventConsumerBufferSize: 10
       automatic-transition-from-open-to-half-open-enabled: true
+  retry:
+    instances:
+      dummy:
+        max-attempts: 3
+        wait-duration: 5s
 
 server:
   port: 8888
