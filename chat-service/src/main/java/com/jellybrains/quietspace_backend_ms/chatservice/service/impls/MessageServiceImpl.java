@@ -2,6 +2,7 @@ package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
 import com.jellybrains.quietspace_backend_ms.chatservice.dto.request.MessageRequest;
 import com.jellybrains.quietspace_backend_ms.chatservice.dto.response.MessageResponse;
+import com.jellybrains.quietspace_backend_ms.chatservice.event.MessageSentEvent;
 import com.jellybrains.quietspace_backend_ms.chatservice.mapper.MessageMapper;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.Message;
@@ -12,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,6 +26,7 @@ import static com.jellybrains.quietspace_backend_ms.chatservice.utils.PagingProv
 public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final ChatRepository chatRepository;
+    private final KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
     // TODO: implement webflux to get user data
     private final MessageMapper messageMapper;
 
@@ -43,6 +46,14 @@ public class MessageServiceImpl implements MessageService {
         Message newMessage = messageMapper.messageRequestToEntity(messageRequest);
         newMessage.setSenderId(loggedUserId);
         newMessage.setChat(parentChat);
+
+        MessageSentEvent messageSentEvent = MessageSentEvent.builder()
+                .message(newMessage.getText())
+                .chatId(newMessage.getChat().getId().toString())
+                .senderId(loggedUserId.toString())
+                .build();
+
+        kafkaTemplate.send("notificationTopic", messageSentEvent);
 
         return messageMapper.messageEntityToResponse(messageRepository.save(newMessage));
     }

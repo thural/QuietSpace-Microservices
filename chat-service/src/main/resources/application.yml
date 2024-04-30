@@ -1,8 +1,12 @@
 spring:
+
+  application.name: chat-service
+
   r2dbc:
-    url: r2dbc:postgresql://${FRIENDS_DB_HOST:localhost}:5432/quietspace
+    url: r2dbc:postgresql://${FRIENDS_DB_HOST:localhost}:5432/chat
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
+
   jpa:
     properties:
       hibernate:
@@ -11,12 +15,23 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  application.name: chat-service
-
-server:
-  port: 8083
+  kafka:
+    bootstrap-servers: localhost:9092
+    template:
+      default-topic: notificationTopic
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: message_sent_event:com.jellybrains.quietspace_backend_ms.chatservice.event.MessageSentEvent
 
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8083
