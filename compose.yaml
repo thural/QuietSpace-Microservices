@@ -1,125 +1,127 @@
-version: '3.7'
+version: '3.8'
 services:
 
-  mongo-user:
-    container_name: user-service-db
+  user-service-db:
+    container_name: ${USER_DB_HOST}
     image: mongo:5.0
     volumes:
-      - ./user-data:/data/db
-    restart: always
+      - user-data:/data/db
+    restart: on-failure
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_REPLICA_SET_NAME: ${MONGO_REPLICA_SET_NAME}
     ports:
-      - "27017:27017"
+      - ${USER_DB_PORT}:${USER_DB_PORT}
     expose:
-      - "27017"
+      - ${USER_DB_PORT}
 
-  postgres-chat:
-    container_name: postgres-chat
+  chat-service-db:
+    container_name: ${CHAT_DB_HOST}
     image: postgres
     volumes:
-      - ./postgres-chat:/data/postgres
+      - chat-data:/data/postgres
     environment:
-      POSTGRES_DB: chat-service-db
-      POSTGRES_USER: thural
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${CHAT_DB_HOST}
+      POSTGRES_USER: ${DB_USER_USERNAME}
+      POSTGRES_PASSWORD: ${DB_USER_PASSWORD}
       PGDATA: /data/postgres
     ports:
-      - "5432:5432"
+      - ${CHAT_DB_PORT}:${CHAT_DB_PORT}
     expose:
-      - "5432"
-    command: -p 5432
-    restart: always
+      - ${CHAT_DB_PORT}
+    command: -p ${CHAT_DB_PORT}
+    restart: on-failure
 
-  mysql-feed:
-    container_name: keycloak-db
+  feed-service-db:
+    container_name: ${FEED_DB_HOST}
     image: mysql:8.0
+    restart: on-failure
     volumes:
-      - ./feed-data:/var/lib/mysql
+      - feed-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: feed
-      MYSQL_USER: thural
-      MYSQL_PASSWORD: dolphin888
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER_USERNAME}
+      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
 
-  mysql-keycloak:
-    container_name: mysql-keycloak
-    image: mysql:5.7
-    volumes:
-      - ./mysql_keycloak_data:/var/lib/mysql
+  notification-service-db:
+    container_name: ${NOTIFICATION_DB_HOST}
+    image: mongo:5.0
+    restart: on-failure
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: keycloak
-      MYSQL_USER: keycloak
-      MYSQL_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_REPLICA_SET_NAME: ${MONGO_REPLICA_SET_NAME}
+    ports:
+      - ${EXP_NOTIFICATION_DB_PORT}:${NOTIFICATION_DB_PORT}
+    volumes:
+      - notification-data:/data/db
+
+  keycloak-db:
+    container_name: ${KEYCLOAK_DB_HOST}
+    image: mysql:5.7
+    restart: on-failure
+    volumes:
+      - keycloak-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${KEYCLOAK_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${KEYCLOAK_DB_NAME}
+      MYSQL_USER: ${KEYCLOAK_DB_USER}
+      MYSQL_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
 
   keycloak:
-    container_name: keycloak
+    container_name: ${KEYCLOAK_HOST}
     image: quay.io/keycloak/keycloak:24.0.3
+    restart: on-failure
     volumes:
-      - ./realms/:/opt/keycloak/data/import/
+      - realms-data/:/opt/keycloak/data/import/
     command: [ "start-dev", "--import-realm" ]
     environment:
       DB_VENDOR: MYSQL
       DB_ADDR: mysql
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: password
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      DB_DATABASE: ${KEYCLOAK_DB_NAME}
+      DB_USER: ${KEYCLOAK_DB_USER}
+      DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
-      - "8080:8080"
+      - ${KEYCLOAK_PORT}:${KEYCLOAK_PORT}
     depends_on:
-      - mysql-keycloak
+      - keycloak-db
 
   zookeeper:
-    container_name: zookeeper
+    container_name: ${ZOOKEEPER_HOST}
     image: confluentinc/cp-zookeeper:7.0.1
+    restart: on-failure
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "2181:2181"
+      - ${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}
 
   broker:
-    container_name: broker
+    container_name: ${KAFKA_BROKER_HOST}
     image: confluentinc/cp-kafka:7.0.1
+    restart: on-failure
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:${ZOOKEEPER_CLIENT_PORT}'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:${KAFKA_BROKER_PORT},PLAINTEXT_INTERNAL://broker:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     ports:
-      - "9092:9092"
+      - ${KAFKA_BROKER_PORT}:${KAFKA_BROKER_PORT}
     depends_on:
       - zookeeper
 
-  zipkin:
-    container_name: zipkin
-    image: openzipkin/zipkin
-    ports:
-      - "9411:9411"
-
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:v2.37.1
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    restart: always
-    ports:
-      - "9090:9090"
-
-  grafana:
-    container_name: grafana
-    image: grafana/grafana-oss:8.5.2
-    volumes:
-      - ./grafana:/var/lib/grafana
-    restart: always
-    ports:
-      - "3000:3000"
-    links:
-      - prometheus:prometheus
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=password
+volumes:
+  feed-data:
+  keycloak-data:
+  chat-data:
+  user_data:
+  notification-data:
