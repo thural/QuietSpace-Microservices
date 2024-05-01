@@ -3,14 +3,14 @@ spring:
     name: user-service
   data:
     mongodb:
-      database: user
-      uri: mongodb://${USER_DB_HOST:localhost}:27017/user?authSource=admin&retryWrites=false
-      replica-set-name: rs0
+      database: ${DB_NAME}
+      uri: mongodb://${DB_ROOT_USERNAME}:${DB_ROOT_PASSWORD}@${USER_DB_HOST:localhost}:${USER_DB_PORT}/${DB_NAME}?authSource=admin
+      replica-set-name: ${MONGO_REPLICA_SET_NAME}
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT}/eureka
 
 server:
-  port: 8081
+  port: ${USER_SERVER_PORT}

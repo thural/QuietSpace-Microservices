@@ -1,9 +1,9 @@
 spring:
   application.name: feed-service
   datasource:
-    username: root
-    password: @dolphin888
-    url: jdbc:mysql://localhost:3306/feed
+    username: ${DB_USER_USERNAME}
+    password: ${DB_USER_PASSWORD}
+    url: jdbc:mysql://${FEED_DB_HOST:localhost}:${FEED_DB_PORT}/${DB_NAME}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql
@@ -15,9 +15,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
-server.port: 8082
+server.port: ${FEED_SERVICE_PORT}
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT}/eureka

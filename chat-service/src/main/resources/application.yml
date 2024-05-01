@@ -3,9 +3,9 @@ spring:
   application.name: chat-service
 
   r2dbc:
-    url: r2dbc:postgresql://${FRIENDS_DB_HOST:localhost}:5432/chat
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: r2dbc:postgresql://${CHAT_DB_HOST:localhost}:${CHAT_DB_PORT}/chat
+    username: ${DB_USER_USERNAME}
+    password: ${DB_USER_PASSWORD}
 
   jpa:
     properties:
@@ -16,7 +16,7 @@ spring:
     show-sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:${KAFKA_BROKER_PORT}
     template:
       default-topic: notificationTopic
     producer:
@@ -31,7 +31,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT}/eureka
 
 server:
-  port: 8083
+  port: ${CHAT_SERVICE_PORT}

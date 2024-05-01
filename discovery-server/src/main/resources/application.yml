@@ -6,9 +6,9 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://localhost:${DISCOVERY_SERVER_PORT}/eureka
   instance:
     hostname: localhost
 
 server:
-  port: 8761
+  port: ${DISCOVERY_SERVER_PORT}
