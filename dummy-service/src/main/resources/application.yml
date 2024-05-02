@@ -4,7 +4,7 @@ spring:
     name: dummy-service
 
   config:
-    import: configserver:${CONFIG_URI:http://localhost:8899/config-server}
+    import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
   profiles:
     active:
       - ${CONFIG_ACTIVE_PROFILE}
