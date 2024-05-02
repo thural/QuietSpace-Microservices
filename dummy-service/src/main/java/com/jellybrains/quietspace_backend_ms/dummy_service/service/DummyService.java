@@ -12,7 +12,7 @@ public class DummyService {
     @SneakyThrows
     public String buildMessage(DummyRequest request){
         log.info("Wait started");
-        Thread.sleep(10*1000);
+        Thread.sleep(11*1000);
         log.info("Wait ended");
         return "Hello " + request.getName();
     }

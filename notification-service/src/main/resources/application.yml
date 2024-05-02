@@ -3,11 +3,17 @@ spring:
   application:
     name: notification-service
 
+  config:
+    import: configserver:${CONFIG_URI:http://localhost:8899/config-server}
+  profiles:
+    active:
+      - ${CONFIG_ACTIVE_PROFILE}
+
   data:
     mongodb:
       database: ${DB_NAME}
-      uri: mongodb://${DB_ROOT_USERNAME}:${DB_ROOT_PASSWORD}@${NOTIFICATION_DB_HOST:localhost}:${NOTIFICATION_DB_PORT}/${DB_NAME}?authSource=admin
-      replica-set-name: ${MONGO_REPLICA_SET_NAME}
+      uri: ${NOTIFICATION_DB_URI}
+      replica-set-name: ${MONGO_REPLICASET_NAME}
 
   kafka:
     bootstrap-servers: localhost:${KAFKA_BROKER_PORT}
@@ -26,7 +32,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT}/eureka
+      defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
 server:
   port: ${NOTIFICATION_SERVICE_PORT}

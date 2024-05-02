@@ -1,6 +1,9 @@
 spring:
+
   application.name: config-server
+
   cloud.config.server.prefix: /config-server
+
   cloud:
     config:
       server:
@@ -11,10 +14,13 @@ spring:
           clone-on-start: true
           timeout: 10
           skip-ssl-validation: true
+          search-paths:
+            - '{application}'
+        default-label: main
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT}/eureka
+      defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
-server.port: ${CONFIG_SERVER_PORT}
+server.port: ${CONFIG_SERVER_PORT:8899}

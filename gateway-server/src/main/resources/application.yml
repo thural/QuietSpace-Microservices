@@ -1,8 +1,14 @@
 spring:
+
   application.name: gateway-server
+
+  config:
+    import: configserver:${CONFIG_URI:http://localhost:8899/config-server}
+  profiles:
+    active:
+      - ${CONFIG_ACTIVE_PROFILE}
+
   cloud:
-    config:
-      uri: http://localhost:8899
     gateway:
       routes:
         - id: discovery-server
@@ -39,7 +45,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
 logging:
   level:
@@ -48,4 +54,4 @@ logging:
     org.springframework.cloud.gateway: TRACE
 
 server:
-  port: 8765
+  port: ${GATEWAY_SERVER_PORT}

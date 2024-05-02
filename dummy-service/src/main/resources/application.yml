@@ -1,48 +1,18 @@
 spring:
+
   application:
     name: dummy-service
-  cloud:
-    config:
-      uri: http://localhost:${CONFIG_SERVER_PORT}
+
+  config:
+    import: configserver:${CONFIG_URI:http://localhost:8899/config-server}
+  profiles:
+    active:
+      - ${CONFIG_ACTIVE_PROFILE}
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT}/eureka
-
-management:
-  health:
-    circuitbreakers:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
-resilience4j:
-  timelimiter:
-    instances:
-      dummy:
-        timeout-duration: 3s
-  circuitbreaker:
-    instances:
-      registerHealthIndicator: true
-      slidingWindowSize: 10
-      permittedNumberOfCallsInHalfOpenState: 3
-      slidingWindowType: TIME_BASED
-      minimumNumberOfCalls: 20
-      waitDurationInOpenState: 30s
-      failureRateThreshold: 50
-      eventConsumerBufferSize: 10
-      automatic-transition-from-open-to-half-open-enabled: true
-  retry:
-    instances:
-      dummy:
-        max-attempts: 3
-        wait-duration: 5s
+      defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
 server:
-  port: 8888
+  port: ${DUMMY_SERVICE_PORT}
