@@ -12,29 +12,29 @@ spring:
     gateway:
       routes:
         - id: discovery-server
-          uri: http://localhost:8761
+          uri: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}
           predicates:
             - Path=/eureka/web
           filters:
             - SetPath=/
         - id: discovery-server-static
-          uri: http://localhost:8761
+          uri: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}
           predicates:
             - Path=/eureka/**
         - id: user_service
-          uri: lb://user-service
+          uri: lb://${USER_SERVICE_HOST}
           predicates:
             - Path=/api/user/**
         - id: feed_service
-          uri: lb://feed-service
+          uri: lb://${FEED_SERVICE_HOST}
           predicates:
             - Path=/api/feed/**
         - id: chat_service
-          uri: lb://chat-service
+          uri: lb://${CHAT_SERVICE_HOST}
           predicates:
             - Path=/api/chat/**
         - id: dummy-service
-          uri: lb://dummy-service
+          uri: lb://${DUMMY_SERVICE_HOST}
           predicates:
             - Path=/api/dummy/**
       discovery:

@@ -24,9 +24,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
-server.port: ${FEED_SERVICE_PORT}
-
 eureka:
   client:
     serviceUrl:
       defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
+
+server.port: ${FEED_SERVICE_PORT}

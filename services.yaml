@@ -6,7 +6,7 @@ services:
       context: ./discovery-server
       dockerfile: ./Dockerfile
     image: thural/quietspace:discovery-server
-    container_name: quietspace-discovery-server
+    container_name: ${DISCOVERY_SERVER_HOST}
     env_file:
       - .env
     networks:
@@ -19,7 +19,7 @@ services:
       context: ./config-server
       dockerfile: ./Dockerfile
     image: thural/quietspace:config-server
-    container_name: quietspace-config-server
+    container_name: ${CONFIG_SERVER_HOST}
     env_file:
       - .env
     depends_on:
@@ -34,7 +34,7 @@ services:
       context: ./gateway-server
       dockerfile: ./Dockerfile
     image: thural/quietspace:gateway-server
-    container_name: quietspace-gateway-server
+    container_name: ${GATEWAY_SERVER_HOST}
     env_file:
       - .env
     depends_on:
@@ -50,7 +50,7 @@ services:
       context: ./feed-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:feed-service
-    container_name: quietspace-feed-service
+    container_name: ${FEED_SERVICE_HOST}
     env_file:
       - .env
     depends_on:
@@ -65,7 +65,7 @@ services:
       context: ./chat-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:chat-service
-    container_name: quietspace-chat-service
+    container_name: ${CHAT_SERVICE_HOST}
     env_file:
       - .env
     depends_on:
@@ -80,7 +80,7 @@ services:
       context: ./dummy-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:dummy-service
-    container_name: quietspace-dummy-service
+    container_name: ${DUMMY_SERVICE_HOST}
     env_file:
       - .env
     depends_on:
@@ -95,7 +95,7 @@ services:
       context: ./notification-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:notification-service
-    container_name: quietspace-notification-service
+    container_name: ${NOTIFICATION_SERVICE_HOST}
     env_file:
       - .env
     depends_on:
@@ -110,7 +110,7 @@ services:
       context: ./user-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:user-service
-    container_name: quietspace-user-service
+    container_name: ${USER_SERVICE_HOST}
     env_file:
       - .env
     depends_on:
@@ -118,7 +118,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${USER_SERVER_PORT}:${USER_SERVER_PORT}
+      - ${USER_SERVICE_PORT}:${USER_SERVICE_PORT}
 
 networks:
   microservices-net:
