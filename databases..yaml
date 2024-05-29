@@ -1,0 +1,86 @@
+version: '3.8'
+services:
+
+  user-service-db:
+    container_name: ${USER_DB_HOST}
+    hostname: ${USER_DB_HOST}
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER_USERNAME}
+      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
+    volumes:
+      - user-data:/data/db
+    restart: on-failure
+    networks:
+      - microservices-net
+    ports:
+      - ${EXP_USER_DB_PORT}:${USER_DB_PORT}
+    expose:
+      - ${USER_DB_PORT}
+
+  chat-service-db:
+    container_name: ${CHAT_DB_HOST}
+    hostname: ${CHAT_DB_HOST}
+    image: postgres
+    volumes:
+      - chat-data:/data/postgres
+    environment:
+      POSTGRES_DB: ${CHAT_DB_HOST}
+      POSTGRES_USER: ${DB_USER_USERNAME}
+      POSTGRES_PASSWORD: ${DB_USER_PASSWORD}
+      PGDATA: /data/postgres
+    networks:
+      - microservices-net
+    ports:
+      - ${EXP_CHAT_DB_PORT}:${CHAT_DB_PORT}
+    expose:
+      - ${CHAT_DB_PORT}
+    command: -p ${EXP_CHAT_DB_PORT}
+    restart: on-failure
+
+  feed-service-db:
+    container_name: ${FEED_DB_HOST}
+    hostname: ${FEED_DB_HOST}
+    image: mysql:8.0
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER_USERNAME}
+      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
+    volumes:
+      - feed-data:/var/lib/mysql
+    networks:
+      - microservices-net
+    ports:
+      - ${EXP_FEED_DB_PORT}:${FEED_DB_PORT}
+
+  notification-service-db:
+    container_name: ${NOTIFICATION_DB_HOST}
+    hostname: ${NOTIFICATION_DB_HOST}
+    image: mongo:5.0
+    restart: on-failure
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_REPLICASET_NAME: ${MONGO_REPLICASET_NAME}
+    networks:
+      - microservices-net
+    ports:
+      - ${EXP_NOTIFICATION_DB_PORT}:${NOTIFICATION_DB_PORT}
+    volumes:
+      - notification-data:/data/db
+
+networks:
+  microservices-net:
+    name: microservices-net
+    driver: bridge
+
+volumes:
+  feed-data:
+  chat-data:
+  user-data:
+  notification-data:
