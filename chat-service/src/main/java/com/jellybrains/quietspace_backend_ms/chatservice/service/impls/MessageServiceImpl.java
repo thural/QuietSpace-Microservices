@@ -1,15 +1,5 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
-import dev.thural.quietspace.entity.Chat;
-import dev.thural.quietspace.entity.Message;
-import dev.thural.quietspace.entity.User;
-import dev.thural.quietspace.mapper.MessageMapper;
-import dev.thural.quietspace.model.request.MessageRequest;
-import dev.thural.quietspace.model.response.MessageResponse;
-import dev.thural.quietspace.repository.ChatRepository;
-import dev.thural.quietspace.repository.MessageRepository;
-import dev.thural.quietspace.service.MessageService;
-import dev.thural.quietspace.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +18,6 @@ public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
-    private final UserService userService;
 
     @Override
     public MessageResponse addMessage(MessageRequest messageRequest) {

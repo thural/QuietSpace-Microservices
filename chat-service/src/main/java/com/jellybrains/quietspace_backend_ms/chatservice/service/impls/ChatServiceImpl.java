@@ -1,16 +1,9 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
-import dev.thural.quietspace.entity.Chat;
-import dev.thural.quietspace.entity.User;
-import dev.thural.quietspace.exception.CustomErrorException;
-import dev.thural.quietspace.exception.UnauthorizedException;
-import dev.thural.quietspace.exception.UserNotFoundException;
-import dev.thural.quietspace.mapper.custom.ChatMapper;
-import dev.thural.quietspace.model.request.ChatRequest;
-import dev.thural.quietspace.model.response.ChatResponse;
-import dev.thural.quietspace.repository.ChatRepository;
-import dev.thural.quietspace.service.ChatService;
-import dev.thural.quietspace.service.UserService;
+import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
+import com.jellybrains.quietspace_backend_ms.chatservice.exception.UnauthorizedException;
+import com.jellybrains.quietspace_backend_ms.chatservice.exception.UserNotFoundException;
+import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ChatResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +16,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
-    private final UserService userService;
     private final ChatRepository chatRepository;
     private final ChatMapper chatMapper;
 

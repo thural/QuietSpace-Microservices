@@ -1,14 +1,14 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.controller;
 
-import dev.thural.quietspace.model.response.ErrorResponse;
-import dev.thural.quietspace.exception.*;
+import com.jellybrains.quietspace_backend_ms.feedservice.exception.CustomErrorException;
+import com.jellybrains.quietspace_backend_ms.feedservice.exception.CustomParameterConstraintException;
+import com.jellybrains.quietspace_backend_ms.feedservice.exception.UnauthorizedException;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.response.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
