@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.mapper;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.request.MessageRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.response.MessageResponse;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.Message;
+import dev.thural.quietspace.entity.Message;
+import dev.thural.quietspace.model.request.MessageRequest;
+import dev.thural.quietspace.model.response.MessageResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -12,6 +12,8 @@ public interface MessageMapper {
     Message messageRequestToEntity(MessageRequest messageRequest);
 
     @Mapping(target = "chatId", source = "chat.id")
-    MessageResponse messageEntityToResponse(Message messageEntity);
+    @Mapping(target = "senderId", source = "sender.id")
+    @Mapping(target = "username", source = "sender.username")
+    MessageResponse messageEntityToDto(Message messageEntity);
 
 }

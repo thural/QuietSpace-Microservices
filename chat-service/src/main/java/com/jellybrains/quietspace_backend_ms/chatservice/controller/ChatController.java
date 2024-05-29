@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.controller;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.request.ChatRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.response.ChatResponse;
-import com.jellybrains.quietspace_backend_ms.chatservice.service.ChatService;
+import dev.thural.quietspace.model.request.ChatRequest;
+import dev.thural.quietspace.model.response.ChatResponse;
+import dev.thural.quietspace.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,51 +12,42 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
 public class ChatController {
 
-    public static final String CHAT_PATH = "/api/v1/chats";
-
     private final ChatService chatService;
 
-    @RequestMapping(value = CHAT_PATH + "/{chatId}", method = RequestMethod.GET)
-    ChatResponse getSingleChatById(@PathVariable("chatId") UUID chatId) {
-
+    @GetMapping("/{chatId}")
+    ChatResponse getSingleChatById(@PathVariable UUID chatId) {
         return chatService.getChatById(chatId);
     }
 
-    @RequestMapping(value = CHAT_PATH + "/member/{userId}", method = RequestMethod.GET)
-    List<ChatResponse> getChatsByMemberId(@PathVariable("userId") UUID userId) {
-
+    @GetMapping("/members/{userId}")
+    List<ChatResponse> getChatsByMemberId(@PathVariable UUID userId) {
         return chatService.getChatsByUserId(userId);
     }
 
-    @RequestMapping(value = CHAT_PATH, method = RequestMethod.POST)
-    ResponseEntity<?> createChat(@RequestBody ChatRequest chat) {
-
-        ChatResponse createdChatResponse = chatService.createChat(chat);
-        return new ResponseEntity<>(createdChatResponse, HttpStatus.CREATED);
+    @PostMapping()
+    ResponseEntity<ChatResponse> createChat(@RequestBody ChatRequest chat) {
+        ChatResponse createdChat = chatService.createChat(chat);
+        return new ResponseEntity<>(createdChat, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = CHAT_PATH + "/{chatId}/members/add/{userId}", method = RequestMethod.PATCH)
-    ResponseEntity<?> addMemberWithId(@PathVariable("chatId") UUID chatId,
-                                      @PathVariable("userId") UUID userId) {
-
-        chatService.addMemberWithId(userId, chatId);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @PatchMapping("/{chatId}/members/add/{userId}")
+    ResponseEntity<?> addMemberWithId(@PathVariable UUID chatId, @PathVariable UUID userId) {
+        ChatResponse patchedChat = chatService.addMemberWithId(userId, chatId);
+        return new ResponseEntity<>(patchedChat, HttpStatus.OK);
     }
 
-    @RequestMapping(value = CHAT_PATH + "/{chatId}/members/remove/{userId}", method = RequestMethod.PATCH)
-    ResponseEntity<?> removeMemberWithId(@PathVariable("chatId") UUID chatId,
-                                         @PathVariable("userId") UUID userId) {
-
+    @PatchMapping("/{chatId}/members/remove/{userId}")
+    ResponseEntity<?> removeMemberWithId(@PathVariable UUID chatId, @PathVariable UUID userId) {
         chatService.removeMemberWithId(userId, chatId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = CHAT_PATH + "/{chatId}", method = RequestMethod.DELETE)
+    @DeleteMapping("/{chatId}")
     ResponseEntity<?> deleteChatWithId(@PathVariable("chatId") UUID chatId) {
-
         chatService.deleteChatById(chatId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

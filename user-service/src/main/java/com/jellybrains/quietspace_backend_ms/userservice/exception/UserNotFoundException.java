@@ -1,10 +1,10 @@
 package com.jellybrains.quietspace_backend_ms.userservice.exception;
 
-import jakarta.ws.rs.NotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
-public class UserNotFoundException extends NotFoundException {
+public class UserNotFoundException extends EntityNotFoundException {
     public UserNotFoundException() {
-        super();
+        super("user not found");
     }
     public UserNotFoundException(String message) {
         super(message);

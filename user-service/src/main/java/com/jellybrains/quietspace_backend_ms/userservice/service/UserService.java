@@ -1,45 +1,32 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service;
 
-import com.jellybrains.quietspace_backend_ms.userservice.dto.requuest.UserRequest;
-import com.jellybrains.quietspace_backend_ms.userservice.dto.response.UserResponse;
-import com.jellybrains.quietspace_backend_ms.userservice.exception.UserNotFoundException;
-import com.jellybrains.quietspace_backend_ms.userservice.model.User;
-import com.jellybrains.quietspace_backend_ms.userservice.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import dev.thural.quietspace.entity.User;
+import dev.thural.quietspace.model.request.UserRequest;
+import dev.thural.quietspace.model.response.UserResponse;
+import org.springframework.data.domain.Page;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class UserService {
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-    private final UserRepository userRepository;
+public interface UserService {
 
-    public void createUser(UserRequest user) {
-        User newUser = User.builder()
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .role(user.getRole())
-                .build();
+    Page<UserResponse> listUsers(String username, Integer pageNumber, Integer pageSize);
 
-        userRepository.save(newUser);
-        log.info("Created new user with email: {}", newUser.getEmail());
-    }
+    Page<UserResponse> listUsersByQuery(String query, Integer pageNumber, Integer pageSize);
 
-    public UserResponse findUserByEmail(String email) {
-        User foundUser = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found"));
+    List<User> getUsersFromIdList(List<UUID> userIds);
 
-        UserResponse userResponse = UserResponse.builder()
-                .username(foundUser.getUsername())
-                .email(foundUser.getEmail())
-                .role(foundUser.getRole())
-                .build();
+    Optional<UserResponse> getUserResponseById(UUID id);
 
-        log.info("Found user with email: {}", email);
-        return userResponse;
-    }
+    Optional<User> getUserById(UUID userId);
+
+    void deleteUser(UUID userId, String authHeader);
+
+    UserResponse patchUser(UserRequest userRequest);
+
+    Optional<UserResponse> getLoggedUserResponse();
+
+    User getLoggedUser();
 
 }

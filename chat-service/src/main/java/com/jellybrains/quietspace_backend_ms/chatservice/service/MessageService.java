@@ -1,9 +1,11 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.request.MessageRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.response.MessageResponse;
+import dev.thural.quietspace.entity.Chat;
+import dev.thural.quietspace.model.request.MessageRequest;
+import dev.thural.quietspace.model.response.MessageResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface MessageService {
@@ -12,5 +14,8 @@ public interface MessageService {
 
     void deleteMessage(UUID id);
 
-    Page<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSiz, UUID chatId);
+    Page<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, UUID chatId);
+
+    Optional<MessageResponse> getLastMessageByChat(Chat chat);
+
 }

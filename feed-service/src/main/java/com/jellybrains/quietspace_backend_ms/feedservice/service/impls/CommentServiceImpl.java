@@ -1,62 +1,68 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.dto.request.CommentRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.dto.response.CommentLikeResponse;
-import com.jellybrains.quietspace_backend_ms.feedservice.dto.response.CommentResponse;
-import com.jellybrains.quietspace_backend_ms.feedservice.mapper.CommentLikeMapper;
-import com.jellybrains.quietspace_backend_ms.feedservice.mapper.CommentMapper;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.Comment;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.CommentLike;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.repository.CommentLikeRepository;
-import com.jellybrains.quietspace_backend_ms.feedservice.repository.CommentRepository;
-import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
-import com.jellybrains.quietspace_backend_ms.feedservice.service.CommentService;
+import dev.thural.quietspace.entity.Comment;
+import dev.thural.quietspace.entity.Post;
+import dev.thural.quietspace.entity.User;
+import dev.thural.quietspace.exception.UnauthorizedException;
+import dev.thural.quietspace.mapper.custom.CommentMapper;
+import dev.thural.quietspace.model.request.CommentRequest;
+import dev.thural.quietspace.model.response.CommentResponse;
+import dev.thural.quietspace.repository.CommentRepository;
+import dev.thural.quietspace.repository.PostRepository;
+import dev.thural.quietspace.service.CommentService;
+import dev.thural.quietspace.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.jellybrains.quietspace_backend_ms.feedservice.utils.PagingProvider.buildCustomPageRequest;
-
+import static dev.thural.quietspace.utils.PagingProvider.BY_CREATED_DATE_ASC;
+import static dev.thural.quietspace.utils.PagingProvider.buildPageRequest;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentMapper commentMapper;
+    private final UserService userService;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final CommentLikeRepository commentLikeRepository;
-    private final CommentLikeMapper commentLikeMapper;
-    // TODO: implement webflux to get users instead
 
     @Override
     public Page<CommentResponse> getCommentsByPost(UUID postId, Integer pageNumber, Integer pageSize) {
-        PageRequest pageRequest = buildCustomPageRequest(pageNumber, pageSize);
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
         return commentRepository.findAllByPostId(postId, pageRequest).map(commentMapper::commentEntityToResponse);
     }
 
     @Override
+    public Page<CommentResponse> getCommentsByUser(UUID userId, Integer pageNumber, Integer pageSize) {
+
+        if (!userService.getLoggedUser().getId().equals(userId))
+            throw new UnauthorizedException("user has no access to requested resource");
+
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
+        return commentRepository.findAllByUserId(userId, pageRequest).map(commentMapper::commentEntityToResponse);
+    }
+
+    @Override
     public CommentResponse createComment(CommentRequest comment) {
-        UUID loggedUserId = getLoggedUserId();
+        User loggedUser = userService.getLoggedUser();
 
         Optional<Post> foundPost = postRepository.findById(comment.getPostId());
 
-
-        // TODO: check if logged user id matches comment author else throw error
-
-        if (foundPost.isEmpty()) throw new EntityNotFoundException("post does not exist");
+        if (!loggedUser.getId().equals(comment.getUserId()))
+            throw new UnauthorizedException("resource does not belong to current user");
+        if (foundPost.isEmpty())
+            throw new EntityNotFoundException("post does not exist");
 
         Comment commentEntity = commentMapper.commentRequestToEntity(comment);
-        commentEntity.setUserId(loggedUserId);
-        commentEntity.setPost(foundPost.orElse(null));
         return commentMapper.commentEntityToResponse(commentRepository.save(commentEntity));
     }
 
@@ -70,80 +76,51 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void updateComment(UUID commentId, CommentRequest comment) {
-        UUID loggedUserId = getLoggedUserId();
-
+    public CommentResponse updateComment(UUID commentId, CommentRequest comment) {
+        User loggedUser = userService.getLoggedUser();
         Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (existingComment.getUserId().equals(loggedUserId)) {
+        if (existingComment.getUser().equals(loggedUser)) {
             existingComment.setText(comment.getText());
-            commentRepository.save(existingComment);
-        } // else throw new AccessDeniedException("comment author does not belong to current user");
-
-    }
-
-    private UUID getLoggedUserId() {
-        // TODO: get logged user using webflux
-        return null;
+            Comment patchedComment = commentRepository.save(existingComment);
+            return commentMapper.commentEntityToResponse(patchedComment);
+        } else throw new AccessDeniedException("comment author does not belong to current user");
     }
 
     @Override
+    @Transactional
     public void deleteComment(UUID commentId) {
-        UUID loggedUserId = getLoggedUserId();
+        User loggedUser = userService.getLoggedUser();
 
         Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (existingComment.getUserId().equals(loggedUserId)) {
+        if (existingComment.getUser().getId().equals(loggedUser.getId())) {
+            commentRepository.deleteAllByParentId(commentId);
+            System.out.println("DELETE COMMENT WAS CALLED");
             commentRepository.deleteById(commentId);
-        } // else throw new AccessDeniedException("comment author does not belong to current user");
+        } else throw new AccessDeniedException("comment author does not belong to current user");
     }
 
     @Override
-    public void patchComment(UUID commentId, CommentRequest comment) {
-        UUID loggedUserId = getLoggedUserId();
+    public Page<CommentResponse> getRepliesByParentId(UUID commentId, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
+        return commentRepository.findAllByParentId(commentId, pageRequest).map(commentMapper::commentEntityToResponse);
+    }
+
+    @Override
+    public CommentResponse patchComment(UUID commentId, CommentRequest comment) {
+        User loggedUser = userService.getLoggedUser();
 
         Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (existingComment.getUserId().equals(loggedUserId)) {
+        if (existingComment.getUser().equals(loggedUser)) {
             if (StringUtils.hasText(comment.getText())) existingComment.setText(comment.getText());
-            commentRepository.save(existingComment);
-        } // else throw new AccessDeniedException("comment author does not belong to current user");
-
-    }
-
-    @Override
-    public void toggleCommentLike(UUID commentId) {
-        UUID loggedUserId = getLoggedUserId();
-
-        boolean isLikeExists = commentLikeRepository
-                .existsByCommentIdAndUserId(commentId, loggedUserId);
-
-        if (isLikeExists) {
-            CommentLike foundLike = commentLikeRepository
-                    .findByCommentIdAndUserId(commentId, loggedUserId);
-            commentLikeRepository.deleteById(foundLike.getId());
-        } else {
-            Comment comment = commentRepository.findById(commentId)
-                    .orElseThrow(EntityNotFoundException::new);
-            commentLikeRepository.save(CommentLike.builder().comment(comment).userId(loggedUserId).build());
-        }
-    }
-
-    @Override
-    public List<CommentLikeResponse> getLikesByCommentId(UUID commentId) {
-        return commentLikeRepository.findAllByCommentId(commentId)
-                .stream().map( commentLikeMapper::commentLikeEntityToDto)
-                .toList();
-    }
-
-    @Override
-    public List<CommentLikeResponse> getAllByUserId(UUID userId) {
-        return commentLikeRepository.findAllByUserId(userId)
-                .stream().map(commentLikeMapper::commentLikeEntityToDto)
-                .toList();
+            Comment patchedComment = commentRepository.save(existingComment);
+            return commentMapper.commentEntityToResponse(patchedComment);
+        } else throw new AccessDeniedException("comment author does not belong to current user");
     }
 
 }

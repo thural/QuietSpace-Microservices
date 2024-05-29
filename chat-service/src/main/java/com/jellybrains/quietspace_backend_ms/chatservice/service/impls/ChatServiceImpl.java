@@ -1,17 +1,21 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.request.ChatRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.dto.response.ChatResponse;
-import com.jellybrains.quietspace_backend_ms.chatservice.mapper.ChatMapper;
-import com.jellybrains.quietspace_backend_ms.chatservice.mapper.MessageMapper;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.Chat;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.Message;
-import com.jellybrains.quietspace_backend_ms.chatservice.repository.ChatRepository;
-import com.jellybrains.quietspace_backend_ms.chatservice.service.ChatService;
+import dev.thural.quietspace.entity.Chat;
+import dev.thural.quietspace.entity.User;
+import dev.thural.quietspace.exception.CustomErrorException;
+import dev.thural.quietspace.exception.UnauthorizedException;
+import dev.thural.quietspace.exception.UserNotFoundException;
+import dev.thural.quietspace.mapper.custom.ChatMapper;
+import dev.thural.quietspace.model.request.ChatRequest;
+import dev.thural.quietspace.model.response.ChatResponse;
+import dev.thural.quietspace.repository.ChatRepository;
+import dev.thural.quietspace.service.ChatService;
+import dev.thural.quietspace.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,20 +23,24 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
+    private final UserService userService;
     private final ChatRepository chatRepository;
-    // TODO: implement webflux method to get users
-    private final MessageMapper messageMapper;
     private final ChatMapper chatMapper;
 
 
     @Override
     public List<ChatResponse> getChatsByUserId(UUID memberId) {
-        // TODO: throw an error for mismatching user request
+        User loggedUser = userService.getLoggedUser();
+
+        if (!loggedUser.getId().equals(memberId))
+            throw new UnauthorizedException("user mismatch with the chat member");
 
         return chatRepository.findAllByUsersId(memberId)
                 .stream()
-                .map(chatMapper::chatEntityToResponse).toList();
+                .map(chatMapper::chatEntityToResponse)
+                .toList();
     }
+
 
     @Override
     public void deleteChatById(UUID chatId) {
@@ -40,74 +48,80 @@ public class ChatServiceImpl implements ChatService {
         if (chatRepository.existsById(chatId)) chatRepository.deleteById(chatId);
     }
 
+
     @Override
-    public void addMemberWithId(UUID memberId, UUID chatId) {
+    public ChatResponse addMemberWithId(UUID memberId, UUID chatId) {
+
         Chat foundChat = findChatById(chatId);
+        User foundMember = userService.getUserById(memberId)
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
+        List<User> members = foundChat.getUsers();
 
-        checkUserValidity(memberId);
+        members.add(foundMember);
+        foundChat.setUsers(members);
+        Chat patchedChat = chatRepository.save(foundChat);
 
-        List<UUID> members = foundChat.getUserList();
-
-        members.add(memberId);
-        foundChat.setUserList(members);
-        chatRepository.save(foundChat);
+        return chatMapper.chatEntityToResponse(patchedChat);
     }
+
 
     @Override
     public void removeMemberWithId(UUID memberId, UUID chatId) {
+
         Chat foundChat = findChatById(chatId);
+        User foundMember = getUserById(memberId);
+        List<User> members = foundChat.getUsers();
 
-        checkUserValidity(memberId);
-        List<UUID> members = foundChat.getUserList();
-
-        members.remove(memberId);
-        foundChat.setUserList(members);
+        members.remove(foundMember);
+        foundChat.setUsers(members);
         chatRepository.save(foundChat);
+
     }
+
 
     @Override
     public ChatResponse createChat(ChatRequest chatRequest) {
-        checkUserValidity(chatRequest.getUserIds().get(1));
 
-        //TODO: check if chat is not duplicate or else throw error
+        List<User> userList = userService.getUsersFromIdList(chatRequest.getUserIds());
+        User loggedUser = userService.getLoggedUser();
 
-        Chat newChat = chatMapper.chatRequestToEntity(chatRequest);
-        newChat.setUserList(chatRequest.getUserIds());
-        Message message = messageMapper.messageRequestToEntity(chatRequest.getMessage());
-        newChat.setMessages(List.of(message));
+        if (!userList.contains(loggedUser))
+            throw new UnauthorizedException("requesting user is not member of requested chat");
 
-        return chatMapper.chatEntityToResponse(chatRepository.save(newChat));
+        boolean isChatDuplicate = chatRepository.findAllByUsersIn(userList).stream()
+                .anyMatch(chat -> new HashSet<>(chat.getUsers()).containsAll(userList));
+
+        if (isChatDuplicate) throw new CustomErrorException("a chat with same members already exists");
+
+        Chat createdChat = chatRepository.save(chatMapper.chatRequestToEntity(chatRequest));
+        return chatMapper.chatEntityToResponse(createdChat);
+
     }
+
 
     @Override
     public ChatResponse getChatById(UUID chatId) {
-        UUID loggedUserId = getLoggedUserId();
-
-        Chat foundChat = chatRepository.findById(chatId)
-                .orElseThrow(EntityNotFoundException::new);
-
-        // TODO: check if logged user id present in chat members or else throw
-
+        Chat foundChat = findChatById(chatId);
         return chatMapper.chatEntityToResponse(foundChat);
     }
 
+
+    private User getUserById(UUID memberId) {
+        return userService.getUserById(memberId)
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
+    }
+
+
     private Chat findChatById(UUID chatId) {
-        UUID loggedUserId = getLoggedUserId();
+        User loggedUser = userService.getLoggedUser();
 
         Chat foundChat = chatRepository.findById(chatId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        // TODO: check if logged user id present in chat members or else throw
+        if (!foundChat.getUsers().contains(loggedUser))
+            throw new UnauthorizedException("chat does not belong to logged user");
 
         return foundChat;
-    }
-
-    private UUID getLoggedUserId() {
-        return null; // TODO: get logged user id
-    }
-
-    private void checkUserValidity(UUID userId){
-        // TODO: check if user exists or else throw error
     }
 
 }
