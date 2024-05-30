@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.userservice.model.request;
 
-import dev.thural.quietspace.entity.User;
+import com.jellybrains.quietspace_backend_ms.userservice.entity.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.userservice.controller;
 
-import dev.thural.quietspace.model.response.FollowResponse;
-import dev.thural.quietspace.service.FollowService;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.FollowResponse;
+import com.jellybrains.quietspace_backend_ms.userservice.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.userservice.repository;
 
-import dev.thural.quietspace.entity.Follow;
+import com.jellybrains.quietspace_backend_ms.userservice.entity.Follow;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

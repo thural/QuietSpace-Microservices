@@ -1,21 +1,18 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service.impls;
 
-import dev.thural.quietspace.entity.Token;
-import dev.thural.quietspace.exception.UnauthorizedException;
-import dev.thural.quietspace.exception.UserNotFoundException;
-import dev.thural.quietspace.model.request.UserRequest;
-import dev.thural.quietspace.model.response.UserResponse;
-import dev.thural.quietspace.repository.TokenRepository;
-import dev.thural.quietspace.utils.PagingProvider;
-import dev.thural.quietspace.entity.User;
-import dev.thural.quietspace.mapper.UserMapper;
-import dev.thural.quietspace.repository.UserRepository;
-import dev.thural.quietspace.service.UserService;
+import com.jellybrains.quietspace_backend_ms.userservice.entity.User;
+import com.jellybrains.quietspace_backend_ms.userservice.exception.UnauthorizedException;
+import com.jellybrains.quietspace_backend_ms.userservice.exception.UserNotFoundException;
+import com.jellybrains.quietspace_backend_ms.userservice.mapper.UserMapper;
+import com.jellybrains.quietspace_backend_ms.userservice.model.request.UserRequest;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.UserResponse;
+import com.jellybrains.quietspace_backend_ms.userservice.repository.UserRepository;
+import com.jellybrains.quietspace_backend_ms.userservice.service.UserService;
+import com.jellybrains.quietspace_backend_ms.userservice.utils.PagingProvider;
+import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -27,10 +24,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
 
     @Override
     public Page<UserResponse> listUsers(String username, Integer pageNumber, Integer pageSize) {
@@ -70,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getLoggedUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = null; // TODO: get email of authorized user
         return userRepository.findUserEntityByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
@@ -99,7 +94,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(UUID userId, String authHeader) {
-        String token = authHeader.substring(7);
         User loggedUser = getLoggedUser();
 
         if (!loggedUser.getRole().equals("admin") && !loggedUser.getId().equals(userId))
@@ -107,29 +101,22 @@ public class UserServiceImpl implements UserService {
 
         userRepository.deleteById(userId);
 
-        tokenRepository.save(Token.builder()
-                .jwtToken(token)
-                .email(loggedUser.getEmail())
-                .build()
-        );
+        // TODO: send event to authentication service
     }
 
     @Override
     public UserResponse patchUser(UserRequest userRequest) {
 
-        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains("ADMIN");
-        // TODO: use enum types fot authorities
         User loggedUser = getLoggedUser();
+        boolean isAdmin = loggedUser.getRole().equals("ADMIN");
 
         if (!isAdmin && !userRequest.getEmail().equals(loggedUser.getEmail()))
-            throw new UnauthorizedException("logged user has no access to requested resource");
+            throw new BadRequestException("logged user has no access to requested resource");
 
         if (StringUtils.hasText(userRequest.getUsername()))
             loggedUser.setUsername(userRequest.getUsername());
         if (StringUtils.hasText(userRequest.getEmail()))
             loggedUser.setEmail(userRequest.getEmail());
-        if (StringUtils.hasText(userRequest.getPassword()))
-            loggedUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
         return userMapper.userEntityToResponse(userRepository.save(loggedUser));
     }

@@ -1,14 +1,14 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service.impls;
 
-import dev.thural.quietspace.entity.Follow;
-import dev.thural.quietspace.entity.User;
-import dev.thural.quietspace.exception.UserNotFoundException;
-import dev.thural.quietspace.mapper.FollowMapper;
-import dev.thural.quietspace.model.response.FollowResponse;
-import dev.thural.quietspace.repository.FollowRepository;
-import dev.thural.quietspace.repository.UserRepository;
-import dev.thural.quietspace.service.FollowService;
-import dev.thural.quietspace.service.UserService;
+import com.jellybrains.quietspace_backend_ms.userservice.entity.Follow;
+import com.jellybrains.quietspace_backend_ms.userservice.entity.User;
+import com.jellybrains.quietspace_backend_ms.userservice.exception.UserNotFoundException;
+import com.jellybrains.quietspace_backend_ms.userservice.mapper.FollowMapper;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.FollowResponse;
+import com.jellybrains.quietspace_backend_ms.userservice.repository.FollowRepository;
+import com.jellybrains.quietspace_backend_ms.userservice.repository.UserRepository;
+import com.jellybrains.quietspace_backend_ms.userservice.service.FollowService;
+import com.jellybrains.quietspace_backend_ms.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static dev.thural.quietspace.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace_backend_ms.userservice.utils.PagingProvider.buildPageRequest;
 
 @Service
 @RequiredArgsConstructor

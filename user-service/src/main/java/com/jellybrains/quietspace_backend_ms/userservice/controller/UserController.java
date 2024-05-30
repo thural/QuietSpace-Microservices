@@ -1,11 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.userservice.controller;
 
-import dev.thural.quietspace.model.request.UserRequest;
-import dev.thural.quietspace.model.response.PostResponse;
-import dev.thural.quietspace.model.response.ReactionResponse;
-import dev.thural.quietspace.model.response.UserResponse;
-import dev.thural.quietspace.service.*;
-import dev.thural.quietspace.utils.enums.ContentType;
+import com.jellybrains.quietspace_backend_ms.userservice.model.request.UserRequest;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.UserResponse;
+import com.jellybrains.quietspace_backend_ms.userservice.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,8 +21,6 @@ public class UserController {
     public static final String USER_PATH_ID = "/{userId}";
 
     private final UserService userService;
-    private final PostService postService;
-    private final ReactionService reactionService;
 
     @GetMapping
     Page<UserResponse> listUsers(@RequestParam(name = "username", required = false) String username,
@@ -68,23 +62,6 @@ public class UserController {
     @GetMapping("/profile")
     public UserResponse getUserFromToken() {
         return userService.getLoggedUserResponse().orElse(null);
-    }
-
-    @GetMapping(USER_PATH_ID + "/posts")
-    public Page<PostResponse> listUserPosts(@PathVariable UUID userId,
-                                            @RequestParam(name = "page-number", required = false) Integer pageNumber,
-                                            @RequestParam(name = "page-size", required = false) Integer pageSize) {
-        return postService.getPostsByUserId(userId, pageNumber, pageSize);
-    }
-
-    @GetMapping(USER_PATH_ID + "/post-likes")
-    List<ReactionResponse> getPostLikesByUserId(@PathVariable UUID userId) {
-        return reactionService.getReactionsByUserId(userId, ContentType.POST);
-    }
-
-    @GetMapping(USER_PATH_ID + "/comment-likes")
-    List<ReactionResponse> getCommentLikesByUserId(@PathVariable UUID userId) {
-        return reactionService.getReactionsByUserId(userId, ContentType.COMMENT);
     }
 
 }

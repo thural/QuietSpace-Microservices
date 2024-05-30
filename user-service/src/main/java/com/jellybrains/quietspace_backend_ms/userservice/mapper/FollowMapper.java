@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.userservice.mapper;
 
-import dev.thural.quietspace.entity.Follow;
-import dev.thural.quietspace.model.response.FollowResponse;
+import com.jellybrains.quietspace_backend_ms.userservice.entity.Follow;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.FollowResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

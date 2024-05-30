@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service;
 
-import dev.thural.quietspace.model.response.FollowResponse;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.FollowResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.UUID;
