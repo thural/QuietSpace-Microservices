@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.controller;
 
-import dev.thural.quietspace.model.request.ChatRequest;
-import dev.thural.quietspace.model.response.ChatResponse;
-import dev.thural.quietspace.service.ChatService;
+import com.jellybrains.quietspace_backend_ms.chatservice.model.request.ChatRequest;
+import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ChatResponse;
+import com.jellybrains.quietspace_backend_ms.chatservice.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

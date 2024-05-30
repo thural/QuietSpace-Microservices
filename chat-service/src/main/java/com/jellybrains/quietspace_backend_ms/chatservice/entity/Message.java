@@ -31,8 +31,7 @@ public class Message {
     private Chat chat;
 
     @NotNull
-    @ManyToOne
-    private User sender;
+    private UUID senderId;
 
     @NotNull
     @NotBlank

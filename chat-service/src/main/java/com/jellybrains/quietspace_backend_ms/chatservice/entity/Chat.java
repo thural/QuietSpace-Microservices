@@ -8,7 +8,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -31,12 +33,9 @@ public class Chat {
     @Version
     private Integer version;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_chat",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "chat_id",
-                    referencedColumnName = "id"))
-    private List<User> users;
+    @NotNull
+    @ElementCollection
+    private Set<UUID> userIds = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)

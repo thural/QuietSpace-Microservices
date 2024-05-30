@@ -1,19 +1,18 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.controller;
 
-import dev.thural.quietspace.model.response.ErrorResponse;
-import dev.thural.quietspace.exception.*;
+import com.jellybrains.quietspace_backend_ms.chatservice.exception.*;
+import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +69,7 @@ public class CustomExceptionHandler {
                 .build(), status);
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(RuntimeException e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 

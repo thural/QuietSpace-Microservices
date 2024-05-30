@@ -1,7 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service;
 
-import dev.thural.quietspace.model.request.ChatRequest;
-import dev.thural.quietspace.model.response.ChatResponse;
+
+import com.jellybrains.quietspace_backend_ms.chatservice.model.request.ChatRequest;
+import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ChatResponse;
 
 import java.util.List;
 import java.util.UUID;

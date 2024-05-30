@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.model.response;
 
-import dev.thural.quietspace.utils.enums.LikeType;
+import com.jellybrains.quietspace_backend_ms.chatservice.utils.enums.LikeType;
 import lombok.*;
 
 import java.time.OffsetDateTime;
