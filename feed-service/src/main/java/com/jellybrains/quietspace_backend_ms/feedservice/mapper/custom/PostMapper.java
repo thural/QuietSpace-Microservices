@@ -1,11 +1,13 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom;
 
+import com.jellybrains.quietspace_backend_ms.feedservice.client.ReactionClient;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PollRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.*;
+import com.jellybrains.quietspace_backend_ms.feedservice.client.UserClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,9 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class PostMapper {
+
+    private final UserClient userClient;
+    private final ReactionClient reactionClient;
 
     public Post postRequestToEntity(PostRequest postRequest) {
         Post post = Post.builder()
@@ -51,8 +56,7 @@ public class PostMapper {
         Integer commentCount = post.getComments().size();
         Integer postLikeCount = getLikeCountByContentId(post.getId());
         Integer dislikeCount = getDislikeCountByContentId(post.getId());
-        ReactionResponse userReaction = getUserReactionByContentId(post.getId())
-                .orElse(null);
+        ReactionResponse userReaction = getUserReactionByContentId(post.getId());
 
         PostResponse postResponse = PostResponse.builder()
                 .id(post.getId())
@@ -61,8 +65,11 @@ public class PostMapper {
                 .commentCount(commentCount)
                 .likeCount(postLikeCount)
                 .dislikeCount(dislikeCount)
-                .userId(post.getUserId().getId())
-                .username(post.getUserId().getUsername())
+                .userId(post.getUserId())
+                .username(userClient
+                        .getUserById(post.getUserId())
+                        .getUsername()
+                )
                 .userReaction(userReaction)
                 .createDate(post.getCreateDate())
                 .updateDate(post.getUpdateDate())
@@ -81,7 +88,9 @@ public class PostMapper {
         PollResponse pollResponse = PollResponse.builder()
                 .id(post.getPoll().getId())
                 .options(options)
-                .votedOption(getVotedPollOptionLabel(post.getPoll(), post.getUserId().getId()))
+                .votedOption(
+                        getVotedPollOptionLabel(post.getPoll(), post.getUserId())
+                )
                 .voteCount(getVoteCount(post.getPoll()))
                 .build();
 
@@ -111,20 +120,19 @@ public class PostMapper {
     }
 
     private UserResponse getLoggedUser(){
-        return null; // TODO: get logged user using webclient
+        return userClient.getLoggedUser();
     }
 
     private Integer getLikeCountByContentId(UUID contentId){
-        return null; // TODO: get like count using webclient
+        return reactionClient.getLikeCountByContentId(contentId);
     }
 
     private Integer getDislikeCountByContentId(UUID contentId){
-        return null; // TODO: get dislike count using webclient
+        return reactionClient.getLikeCountByContentId(contentId);
     }
 
     ReactionResponse getUserReactionByContentId(UUID contentId){
-        return null; // TODO: get user reaction using webclient
+        return reactionClient.getUserReactionByContentId(contentId);
     }
-
 
 }

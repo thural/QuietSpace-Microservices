@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.controller;
 
+import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -73,11 +74,6 @@ public class CommentController {
                                    @RequestBody CommentRequest comment) {
         CommentResponse patchedComment = commentService.patchComment(commentId, comment);
         return new ResponseEntity<>(patchedComment, HttpStatus.OK);
-    }
-
-    @GetMapping(value = COMMENT_PATH_ID + "/likes")
-    List<ReactionResponse> getCommentLikesById(@PathVariable UUID commentId) {
-        return reactionService.getReactionsByContentId(commentId, ContentType.COMMENT);
     }
 
 }

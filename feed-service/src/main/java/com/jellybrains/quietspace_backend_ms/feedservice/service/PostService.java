@@ -1,9 +1,9 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service;
 
-import dev.thural.quietspace.entity.Poll;
-import dev.thural.quietspace.model.request.PostRequest;
-import dev.thural.quietspace.model.request.VoteRequest;
-import dev.thural.quietspace.model.response.PostResponse;
+import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
@@ -23,7 +23,7 @@ public interface PostService {
 
     PostResponse patchPost(UUID id, PostRequest post);
 
-    void votetPoll(VoteRequest voteRequest);
+    void votePoll(VoteRequest voteRequest);
 
     String getVotedPollOptionLabel(Poll poll);
 

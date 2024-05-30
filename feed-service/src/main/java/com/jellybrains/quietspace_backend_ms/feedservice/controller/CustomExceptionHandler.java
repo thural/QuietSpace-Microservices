@@ -1,8 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.controller;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.exception.CustomErrorException;
-import com.jellybrains.quietspace_backend_ms.feedservice.exception.CustomParameterConstraintException;
-import com.jellybrains.quietspace_backend_ms.feedservice.exception.UnauthorizedException;
+import com.jellybrains.quietspace_backend_ms.feedservice.exception.*;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +69,7 @@ public class CustomExceptionHandler {
                 .build(), status);
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(RuntimeException e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 

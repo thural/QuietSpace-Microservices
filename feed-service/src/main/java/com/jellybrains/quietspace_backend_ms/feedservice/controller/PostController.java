@@ -1,5 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.controller;
 
+import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    Page<PostResponse> getPostsByQuery(@RequestParam(name = "query", required = true) String query,
+    Page<PostResponse> getPostsByQuery(@RequestParam(name = "query") String query,
                                        @RequestParam(name = "page-number", required = false) Integer pageNumber,
                                        @RequestParam(name = "page-size", required = false) Integer pageSize) {
         return postService.getAllByQuery(query, pageNumber, pageSize);
@@ -67,14 +68,9 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(POST_PATH_ID + "/likes")
-    List<ReactionResponse> getAllLikesByPostId(@PathVariable UUID postId) {
-        return reactionService.getReactionsByContentId(postId, ContentType.POST);
-    }
-
     @PostMapping("/vote-poll")
     ResponseEntity<?> votePoll(@RequestBody VoteRequest voteRequest) {
-        postService.votetPoll(voteRequest);
+        postService.votePoll(voteRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
