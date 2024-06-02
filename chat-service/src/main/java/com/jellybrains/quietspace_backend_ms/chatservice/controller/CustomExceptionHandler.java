@@ -48,14 +48,14 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<?> handleBindErrors(MethodArgumentNotValidException exception) {
-        List<Map<String, String>> errorList = exception.getFieldErrors().stream()
-                .map(fieldError -> {
-                    Map<String, String> errorMap = new HashMap<>();
-                    errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
-                    return errorMap;
-                }).collect(Collectors.toList());
-        return ResponseEntity.badRequest().body(errorList);
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        ResponseEntity.BodyBuilder responseEntity = ResponseEntity.badRequest();
+
+        Map<String, String> errors = new HashMap<>();
+        exception.getBindingResult().getAllErrors()
+                .forEach(objectError -> errors.put(objectError.getDefaultMessage(), objectError.getDefaultMessage()));
+
+        return responseEntity.body(errors);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -63,7 +63,7 @@ public class CustomExceptionHandler {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         return new ResponseEntity<>(ErrorResponse.builder()
-                .code(400)
+                .code(status.value())
                 .status(status.name())
                 .message(e.getMessage())
                 .build(), status);
@@ -71,10 +71,10 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(RuntimeException e) {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        HttpStatus status = HttpStatus.NOT_FOUND;
 
         return new ResponseEntity<>(ErrorResponse.builder()
-                .code(401)
+                .code(status.value())
                 .status(status.name())
                 .message(e.getMessage())
                 .build(), status);
@@ -85,7 +85,7 @@ public class CustomExceptionHandler {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         return new ResponseEntity<>(ErrorResponse.builder()
-                .code(401)
+                .code(status.value())
                 .status(status.name())
                 .message(e.getMessage())
                 .build(), status);
@@ -96,7 +96,7 @@ public class CustomExceptionHandler {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         return new ResponseEntity<>(ErrorResponse.builder()
-                .code(403)
+                .code(status.value())
                 .status(status.name())
                 .message(e.getMessage())
                 .build(), status);
@@ -108,7 +108,7 @@ public class CustomExceptionHandler {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
         return new ResponseEntity<>(ErrorResponse.builder()
-                .code(404)
+                .code(status.value())
                 .status(status.name())
                 .message(e.getMessage())
                 .build(), status);
@@ -122,7 +122,7 @@ public class CustomExceptionHandler {
                 ErrorResponse.builder()
                         .status(status.name())
                         .message("the requested resource not found: " + e.getMessage())
-                        .code(404)
+                        .code(status.value())
                         .timestamp(new Date())
                         .build(), status);
     }
@@ -133,7 +133,7 @@ public class CustomExceptionHandler {
 
         return new ResponseEntity<>(
                 ErrorResponse.builder()
-                        .code(400)
+                        .code(status.value())
                         .message("A parameter constraint error occurred: " + e.getMessage())
                         .status(status.name())
                         .build(),
@@ -148,7 +148,7 @@ public class CustomExceptionHandler {
 
         return ResponseEntity.internalServerError()
                 .body(ErrorResponse.builder()
-                        .code(500)
+                        .code(status.value())
                         .status(status.name())
                         .message("An unexpected error occurred: " + e.getMessage())
                         .timestamp(new Date())
