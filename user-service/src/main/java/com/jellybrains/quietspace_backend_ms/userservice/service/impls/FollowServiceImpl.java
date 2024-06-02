@@ -3,7 +3,7 @@ package com.jellybrains.quietspace_backend_ms.userservice.service.impls;
 import com.jellybrains.quietspace_backend_ms.userservice.entity.Follow;
 import com.jellybrains.quietspace_backend_ms.userservice.entity.User;
 import com.jellybrains.quietspace_backend_ms.userservice.exception.UserNotFoundException;
-import com.jellybrains.quietspace_backend_ms.userservice.mapper.FollowMapper;
+import com.jellybrains.quietspace_backend_ms.userservice.mapper.custom.FollowMapper;
 import com.jellybrains.quietspace_backend_ms.userservice.model.response.FollowResponse;
 import com.jellybrains.quietspace_backend_ms.userservice.repository.FollowRepository;
 import com.jellybrains.quietspace_backend_ms.userservice.repository.UserRepository;

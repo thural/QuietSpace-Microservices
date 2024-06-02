@@ -69,17 +69,6 @@ public class CustomHandler {
                 .build(), status);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentialsException(RuntimeException e) {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
-
-        return new ResponseEntity<>(ErrorResponse.builder()
-                .code(401)
-                .status(status.name())
-                .message(e.getMessage())
-                .build(), status);
-    }
-
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(RuntimeException e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;

@@ -4,6 +4,8 @@ import com.jellybrains.quietspace_backend_ms.userservice.entity.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,9 +14,9 @@ import lombok.*;
 public class FollowRequest {
 
     @NotNull
-    private User followingId;
+    private UUID followingId;
 
     @NotNull
-    private User followerId;
+    private UUID followerId;
 
 }

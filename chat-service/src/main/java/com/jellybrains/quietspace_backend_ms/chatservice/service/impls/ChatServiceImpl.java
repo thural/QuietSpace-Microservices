@@ -34,7 +34,7 @@ public class ChatServiceImpl implements ChatService {
         if (!userClient.validateUserId(memberId))
             throw new BadRequestException("user mismatch with requested chat member");
 
-        return chatRepository.findAllByUserId(memberId)
+        return chatRepository.findAllByUserIdsContaining(memberId)
                 .stream()
                 .map(chatMapper::chatEntityToResponse)
                 .toList();

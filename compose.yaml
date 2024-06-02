@@ -35,7 +35,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${KEYCLOAK_PORT}:${KEYCLOAK_PORT}
+      - ${KEYCLOAK_PORT}:8080
     depends_on:
       - keycloak-db
 
@@ -76,6 +76,7 @@ networks:
   microservices-net:
     name: microservices-net
     driver: bridge
+    external: true
 
 volumes:
   keycloak-data:
