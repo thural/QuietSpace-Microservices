@@ -14,25 +14,25 @@ import lombok.*;
 @Builder
 public class UserRequest {
 
-    @NotNull
-    @NotBlank
-    @Size(min = 1, max = 16)
+    @NotNull(message = "user role can not be null")
+    @NotBlank(message = "user role can not be blank")
+    @Size(min = 1, max = 16, message = "1 to 16 characters are expected for user role")
     private String role;
 
-    @NotNull
-    @NotBlank
-    @Size(min = 1, max = 32)
+    @NotNull(message = "username can not be null")
+    @NotBlank(message = "username can not be blank")
+    @Size(min = 1, max = 32, message = "at least 1 and max 32 characters expected")
     private String username;
 
-    @Email
-    @NotNull
-    @NotBlank
-    @Size(min = 1, max = 32)
+    @Email(message = "email is not in valid format")
+    @NotNull(message = "email can not be null")
+    @NotBlank(message = "email can not be blank")
+    @Size(max = 32, message = "max 32 characters expected for email")
     private String email;
 
-    @NotNull
-    @NotBlank
-    @Size(min = 8, max = 32)
+    @NotNull(message = "password can not be null")
+    @NotBlank(message = "password can nto be blank")
+    @Size(min = 8, max = 32, message = "at least 8 and max 32 characters expected for password")
     private String password;
 
 }

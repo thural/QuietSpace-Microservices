@@ -63,7 +63,7 @@ public class PostController {
 
     @PatchMapping(POST_PATH_ID)
     ResponseEntity<?> patchPost(@PathVariable UUID postId,
-                                @RequestBody PostRequest post) {
+                                @RequestBody @Validated PostRequest post) {
         postService.patchPost(postId, post);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -15,16 +15,16 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ReactionRequest {
 
-    @NotNull
+    @NotNull(message = "user id can not be null")
     private UUID userId;
 
-    @NotNull
+    @NotNull(message = "content id can not be null")
     private UUID contentId;
 
-    @NotNull
+    @NotNull(message = "content type can not be null")
     private ContentType contentType;
 
-    @NotNull
+    @NotNull(message = "like type can not be null")
     private LikeType likeType;
 
 }
