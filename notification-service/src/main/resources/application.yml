@@ -16,16 +16,15 @@ spring:
       replica-set-name: ${MONGO_REPLICASET_NAME}
 
   kafka:
-    bootstrap-servers: http://${KAFKA_BROKER_HOST:localhost}:${KAFKA_BROKER_PORT:9092}
+    bootstrap-servers: ${KAFKA_BROKER_HOST:localhost}:${KAFKA_BROKER_PORT:9092}
     template:
       default-topic: notificationTopic
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring:
-          json:
-            type:
+        spring.json.trusted.packages: "*"
+        spring.json.type:
               mapping: new_message_event:com.jellybrains.quietspace_backend_ms.notification_service.event.NewMessageEvent
       group-id: notificationId
 

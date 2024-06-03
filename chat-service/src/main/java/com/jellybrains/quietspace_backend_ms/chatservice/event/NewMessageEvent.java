@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NewMessageEvent {
     private String senderId;
+    private String receiverId;
     private String message;
     private String chatId;
 }
