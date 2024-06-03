@@ -26,7 +26,7 @@ spring:
         spring:
           json:
             type:
-              mapping: message_sent_event:com.jellybrains.quietspace_backend_ms.notification_service.event.MessageSentEvent
+              mapping: new_message_event:com.jellybrains.quietspace_backend_ms.notification_service.event.NewMessageEvent
       group-id: notificationId
 
 eureka:

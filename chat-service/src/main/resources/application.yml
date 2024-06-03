@@ -30,9 +30,7 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring:
-          json:
-            type:
-              mapping: message_sent_event:com.jellybrains.quietspace_backend_ms.chatservice.event.MessageSentEvent
+          json.type.mapping: new_message_event:com.jellybrains.quietspace_backend_ms.chatservice.event.NewMessageEvent
 
 eureka:
   client:

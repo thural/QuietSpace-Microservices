@@ -3,7 +3,9 @@ package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 import com.jellybrains.quietspace_backend_ms.chatservice.client.UserClient;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Message;
+import com.jellybrains.quietspace_backend_ms.chatservice.event.NewMessageEvent;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.UserNotFoundException;
+import com.jellybrains.quietspace_backend_ms.chatservice.kafka.NotificationProducer;
 import com.jellybrains.quietspace_backend_ms.chatservice.mapper.custom.MessageMapper;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.request.MessageRequest;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.response.MessageResponse;
@@ -29,6 +31,7 @@ import static com.jellybrains.quietspace_backend_ms.chatservice.utils.PagingProv
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
+    private final NotificationProducer notificationProducer;
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
     private final UserClient userClient;
@@ -45,7 +48,15 @@ public class MessageServiceImpl implements MessageService {
         Message newMessage = messageMapper.messageRequestToEntity(messageRequest);
         newMessage.setChat(parentChat);
 
-        return messageMapper.messageEntityToDto(messageRepository.save(newMessage));
+        Message savedMessage = messageRepository.saveAndFlush(newMessage);
+
+        notificationProducer.sendNewMessageNotification(NewMessageEvent.builder()
+                        .message(newMessage.getText())
+                        .senderId(String.valueOf(newMessage.getSenderId()))
+                        .chatId(String.valueOf(newMessage.getChat().getId()))
+                .build());
+
+        return messageMapper.messageEntityToDto(savedMessage);
     }
 
     @Override
