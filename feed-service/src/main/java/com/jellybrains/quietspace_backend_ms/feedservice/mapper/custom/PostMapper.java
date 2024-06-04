@@ -4,6 +4,7 @@ import com.jellybrains.quietspace_backend_ms.feedservice.client.ReactionClient;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
+import com.jellybrains.quietspace_backend_ms.feedservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PollRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.*;
@@ -66,8 +67,7 @@ public class PostMapper {
                 .likeCount(postLikeCount)
                 .dislikeCount(dislikeCount)
                 .userId(post.getUserId())
-                .username(userClient
-                        .getUserById(post.getUserId())
+                .username(getUserById(post.getUserId())
                         .getUsername()
                 )
                 .userReaction(userReaction)
@@ -120,7 +120,8 @@ public class PostMapper {
     }
 
     private UserResponse getLoggedUser(){
-        return userClient.getLoggedUser();
+        return userClient.getLoggedUser()
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private Integer getLikeCountByContentId(UUID contentId){
@@ -128,11 +129,16 @@ public class PostMapper {
     }
 
     private Integer getDislikeCountByContentId(UUID contentId){
-        return reactionClient.getLikeCountByContentId(contentId);
+        return reactionClient.getDislikeCountByContentId(contentId);
     }
 
-    ReactionResponse getUserReactionByContentId(UUID contentId){
-        return reactionClient.getUserReactionByContentId(contentId);
+    private ReactionResponse getUserReactionByContentId(UUID contentId){
+        return reactionClient.getUserReactionByContentId(contentId).orElse(null);
+    }
+
+    private UserResponse getUserById(UUID userId){
+        return userClient.getUserById(userId)
+                .orElseThrow(UserNotFoundException::new);
     }
 
 }

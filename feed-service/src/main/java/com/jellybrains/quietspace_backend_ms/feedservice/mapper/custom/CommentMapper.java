@@ -67,7 +67,7 @@ public class CommentMapper {
     }
 
     private ReactionResponse getUserReaction(UUID commentId){
-        return reactionClient.getUserReactionByContentId(commentId); // TODO: get reaction from webclient
+        return reactionClient.getUserReactionByContentId(commentId).orElse(null);
     }
 
 }

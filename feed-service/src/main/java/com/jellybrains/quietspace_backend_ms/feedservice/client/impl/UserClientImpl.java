@@ -7,8 +7,8 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UserClientImpl implements UserClient {
 
     private final WebClient webClient;
-    private final String USER_API_URI = "/api/user/";
+    private final String USER_API_URI = "/api/v1/users/";
 
     @Override
     public Boolean validateUserId(UUID userId){
@@ -25,17 +25,18 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public UserResponse getLoggedUser(){
+    public Optional<UserResponse> getLoggedUser(){
         return null; // TODO: use webclient
     }
 
 
     @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2))
-    public Mono<UserResponse> getUserById(UUID id) {
+    public Optional<UserResponse> getUserById(UUID id) {
         return webClient.get()
                 .uri(USER_API_URI + id)
                 .retrieve()
-                .bodyToMono(UserResponse.class);
+                .bodyToMono(UserResponse.class)
+                .blockOptional();
     }
 
 }
