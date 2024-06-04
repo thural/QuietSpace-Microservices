@@ -15,17 +15,25 @@ import java.util.Optional;
 public class UserClientImpl implements UserClient {
 
     private final WebClient webClient;
-    private final String USER_API_URI = "/api/user/";
+    private final String USER_API_URI = "/api/v1/users/";
 
     @Override
     public Boolean validateUserId(String userId){
-        return Boolean.TRUE; // TODO: use webclient
+        return webClient.get()
+                .uri(USER_API_URI + "validate/" + userId)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
         // TODO: use AOP logic if you can
     }
 
     @Override
     public Optional<UserResponse> getLoggedUser(){
-        return Optional.empty(); // TODO: use webclient
+        return webClient.get()
+                .uri(USER_API_URI + "/user")
+                .retrieve()
+                .bodyToMono(UserResponse.class)
+                .blockOptional();
     }
 
 

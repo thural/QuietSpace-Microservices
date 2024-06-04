@@ -2,6 +2,7 @@ package com.jellybrains.quietspace_backend_ms.chatservice.client;
 
 import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ReactionResponse;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReactionClient {
@@ -10,6 +11,6 @@ public interface ReactionClient {
 
     Integer getDislikeCountByContentId(UUID contentId);
 
-    ReactionResponse getUserReactionByContentId(UUID contentId);
+    Optional<ReactionResponse> getUserReactionByContentId(UUID contentId);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -17,7 +18,6 @@ import java.util.UUID;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    public static final String USER_PATH = "/api/v1/users";
     public static final String USER_PATH_ID = "/{userId}";
 
     private final UserService userService;
@@ -62,6 +62,23 @@ public class UserController {
     @GetMapping("/profile")
     public UserResponse getUserFromToken() {
         return userService.getLoggedUserResponse().orElse(null);
+    }
+
+    @GetMapping("/validate/{userId}")
+    public ResponseEntity<Boolean> validateUserInRequest(@PathVariable UUID userId) {
+        return ResponseEntity.ok(userService.validateUserInRequest(userId));
+    }
+
+    @GetMapping("/validate/list")
+    public ResponseEntity<Boolean> validateUserList(@RequestParam List<UUID> userIds) {
+        return ResponseEntity.ok(userService.validateUsersByIdList(userIds));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<UserResponse> getAuthenticatedUser() {
+        return userService.getLoggedUserResponse()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }

@@ -7,10 +7,10 @@ import java.util.Optional;
 
 public interface UserClient {
 
-    public Boolean validateUserId(String userId);
+    Boolean validateUserId(String userId);
 
-    public Optional<UserResponse> getLoggedUser();
+    Optional<UserResponse> getLoggedUser();
 
-    public Optional<UserResponse> getUserById(String userId);
+    Optional<UserResponse> getUserById(String userId);
 
 }

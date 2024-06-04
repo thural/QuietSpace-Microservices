@@ -20,17 +20,25 @@ public class UserClientImpl implements UserClient {
 
     @Override
     public Boolean validateUserId(UUID userId){
-        return true; // TODO: use webclient
+        return webClient.get()
+                .uri(USER_API_URI + "validate/" + userId)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
         // TODO: use AOP logic if you can
     }
 
     @Override
     public Optional<UserResponse> getLoggedUser(){
-        return null; // TODO: use webclient
+        return webClient.get()
+                .uri(USER_API_URI + "/user")
+                .retrieve()
+                .bodyToMono(UserResponse.class)
+                .blockOptional();
     }
 
 
-    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2))
+    @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 1000, multiplier = 2))
     public Optional<UserResponse> getUserById(UUID id) {
         return webClient.get()
                 .uri(USER_API_URI + id)

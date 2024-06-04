@@ -3,10 +3,12 @@ package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
+import com.jellybrains.quietspace_backend_ms.feedservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom.PostMapper;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.client.UserClient;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.PostService;
@@ -48,7 +50,9 @@ public class PostServiceImpl implements PostService {
     }
 
     public String getVotedPollOptionLabel(Poll poll){
-        UUID userId = userClient.getLoggedUser().getId();
+        UUID userId = userClient.getLoggedUser()
+                .map(UserResponse::getId)
+                .orElseThrow(UserNotFoundException::new);
 
         return poll.getOptions().stream()
                .filter(option -> option.getVotes().contains(userId))
@@ -129,7 +133,9 @@ public class PostServiceImpl implements PostService {
     }
 
     private boolean isPostExistsByLoggedUser(Post existingPost) {
-        return existingPost.getUserId().equals(userClient.getLoggedUser().getId());
+        return existingPost.getUserId().equals(userClient.getLoggedUser()
+                .map(UserResponse::getId)
+                .orElseThrow(UserNotFoundException::new));
     }
 
     private Post findPostEntityById(UUID postId) {

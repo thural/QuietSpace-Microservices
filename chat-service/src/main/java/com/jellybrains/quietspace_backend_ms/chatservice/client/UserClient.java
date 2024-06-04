@@ -15,5 +15,5 @@ public interface UserClient {
 
     Optional<UserResponse> getUserById(UUID userId);
 
-    boolean validateUserIdList(List<UUID> userIds);
+    Boolean validateUserIdList(List<UUID> userIds);
 }

@@ -4,9 +4,11 @@ import com.jellybrains.quietspace_backend_ms.feedservice.client.ReactionClient;
 import com.jellybrains.quietspace_backend_ms.feedservice.client.UserClient;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Comment;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
+import com.jellybrains.quietspace_backend_ms.feedservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.ReactionResponse;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.CommentRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +57,8 @@ public class CommentMapper {
 
     private String getUserNameById(UUID userId){
         return userClient.getUserById(userId)
-                .getUsername(); // TODO: get user from webclient
+                .map(UserResponse::getUsername)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private Integer getReplyCount(UUID parentId, Post post){

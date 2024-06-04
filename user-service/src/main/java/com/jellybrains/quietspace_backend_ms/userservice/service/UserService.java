@@ -29,4 +29,7 @@ public interface UserService {
 
     User getLoggedUser();
 
+    Boolean validateUserInRequest(UUID userId);
+
+    Boolean validateUsersByIdList(List<UUID> userIds);
 }

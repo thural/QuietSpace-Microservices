@@ -1,7 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service.impls;
 
 import com.jellybrains.quietspace_backend_ms.userservice.entity.User;
-import com.jellybrains.quietspace_backend_ms.userservice.exception.UnauthorizedException;
 import com.jellybrains.quietspace_backend_ms.userservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.userservice.mapper.custom.UserMapper;
 import com.jellybrains.quietspace_backend_ms.userservice.model.request.UserRequest;
@@ -66,7 +65,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getLoggedUser() {
         String email = null; // TODO: get email of authorized user
-        return userRepository.findUserEntityByEmail(email).orElseThrow(UserNotFoundException::new);
+        return userRepository.findUserEntityByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public Boolean validateUserInRequest(UUID userId) {
+        return getLoggedUser().getId().equals(userId);
     }
 
     @Override
@@ -75,6 +80,11 @@ public class UserServiceImpl implements UserService {
                 .map(userId -> userRepository.findById(userId)
                         .orElseThrow(() -> new UserNotFoundException("user not found")))
                 .toList();
+    }
+
+    @Override
+    public Boolean validateUsersByIdList(List<UUID> userIds) {
+        return userIds.stream().allMatch(userRepository::existsById);
     }
 
     @Override
@@ -97,7 +107,7 @@ public class UserServiceImpl implements UserService {
         User loggedUser = getLoggedUser();
 
         if (!loggedUser.getRole().equals("admin") && !loggedUser.getId().equals(userId))
-            throw new UnauthorizedException("user denied access to delete the resource");
+            throw new BadRequestException("user denied access to delete the resource");
 
         userRepository.deleteById(userId);
 
