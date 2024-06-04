@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${GATEWAY_URL}")
+    @Value("${values.gateway.url}")
     private String gatewayUrl;
 
     @Bean
@@ -17,4 +17,5 @@ public class WebClientConfig {
     public WebClient webClient() {
         return WebClient.create(gatewayUrl);
     }
+
 }

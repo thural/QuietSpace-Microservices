@@ -74,6 +74,23 @@ services:
     volumes:
       - notification-data:/data/db
 
+  reaction-service-db:
+    container_name: ${REACTION_DB_HOST}
+    hostname: ${REACTION_DB_HOST}
+    image: mongo:5.0
+    restart: on-failure
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_REPLICASET_NAME: ${MONGO_REPLICASET_NAME}
+    networks:
+      - microservices-net
+    ports:
+      - ${EXP_REACTION_DB_PORT}:${REACTION_DB_PORT}
+    volumes:
+      - reaction-data:/data/db
+
 networks:
   microservices-net:
     name: microservices-net
@@ -85,3 +102,4 @@ volumes:
   chat-data:
   user-data:
   notification-data:
+  reaction-data:

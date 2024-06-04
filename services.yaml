@@ -1,6 +1,19 @@
 version: '3.8'
 services:
 
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: ./Dockerfile
+    image: thural/quietspace:config-server
+    container_name: ${CONFIG_SERVER_HOST}
+    env_file:
+      - .env
+    networks:
+      - microservices-net
+    ports:
+      - ${CONFIG_SERVER_PORT}:${CONFIG_SERVER_PORT}
+
   discovery-server:
     build:
       context: ./discovery-server
@@ -11,23 +24,10 @@ services:
       - .env
     networks:
       - microservices-net
+    depends_on:
+      - config-server
     ports:
       - ${DISCOVERY_SERVER_PORT}:${DISCOVERY_SERVER_PORT}
-
-  config-server:
-    build:
-      context: ./config-server
-      dockerfile: ./Dockerfile
-    image: thural/quietspace:config-server
-    container_name: ${CONFIG_SERVER_HOST}
-    env_file:
-      - .env
-    depends_on:
-      - discovery-server
-    networks:
-      - microservices-net
-    ports:
-      - ${CONFIG_SERVER_PORT}:${CONFIG_SERVER_PORT}
 
   gateway-server:
     build:
