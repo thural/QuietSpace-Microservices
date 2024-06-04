@@ -3,27 +3,27 @@ package com.jellybrains.quietspace_backend_ms.reaction_service.service;
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.request.ReactionRequest;
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.response.ReactionResponse;
 import com.jellybrains.quietspace_backend_ms.reaction_service.utils.enums.ContentType;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface ReactionService {
 
     void handleReaction(ReactionRequest reaction);
 
-    Optional<ReactionResponse> getUserReactionByContentId(UUID contentId);
+    Optional<ReactionResponse> getUserReactionByContentId(String contentId);
 
-    List<ReactionResponse> getLikesByContentId(UUID contentId);
+    Page<ReactionResponse> getLikesByContentId(String contentId, Integer pageNumber, Integer pageSize);
 
-    List<ReactionResponse> getDislikesByContentId(UUID contentId);
+    Page<ReactionResponse> getDislikesByContentId(String contentId, Integer pageNumber, Integer pageSize);
 
-    Integer getLikeCountByContentId(UUID contentId);
+    Integer getLikeCountByContentId(String contentId);
 
-    Integer getDislikeCountByContentId(UUID contentId);
+    Integer getDislikeCountByContentId(String contentId);
 
-    List<ReactionResponse> getReactionsByContentId(UUID contentId, ContentType type);
+    Page<ReactionResponse> getReactionsByContentId(String contentId, ContentType type, Integer pageNumber, Integer pageSize);
 
-    List<ReactionResponse> getReactionsByUserId(UUID userId, ContentType contentType);
+    Page<ReactionResponse> getReactionsByUserId(String userId, ContentType contentType, Integer pageNumber, Integer pageSize);
 
+    Page<ReactionResponse> getAllReactionsByUserId(String userId, ContentType contentType, Integer pageNumber, Integer pageSize);
 }

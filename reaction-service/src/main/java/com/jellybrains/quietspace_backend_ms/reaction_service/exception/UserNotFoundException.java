@@ -1,8 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.reaction_service.exception;
 
-import jakarta.persistence.EntityNotFoundException;
-
-public class UserNotFoundException extends EntityNotFoundException {
+public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException() {
         super("user not found");
     }

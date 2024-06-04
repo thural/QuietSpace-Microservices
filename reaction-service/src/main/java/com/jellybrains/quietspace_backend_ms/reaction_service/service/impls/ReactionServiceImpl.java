@@ -8,14 +8,19 @@ import com.jellybrains.quietspace_backend_ms.reaction_service.model.request.Reac
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.response.ReactionResponse;
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.reaction_service.repository.ReactionRepository;
+import com.jellybrains.quietspace_backend_ms.reaction_service.service.ReactionService;
 import com.jellybrains.quietspace_backend_ms.reaction_service.utils.enums.ContentType;
 import com.jellybrains.quietspace_backend_ms.reaction_service.utils.enums.LikeType;
+import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
+import static com.jellybrains.quietspace_backend_ms.reaction_service.utils.PagingProvider.BY_CREATED_DATE_ASC;
+import static com.jellybrains.quietspace_backend_ms.reaction_service.utils.PagingProvider.buildPageRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -43,58 +48,69 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
-    public Optional<ReactionResponse> getUserReactionByContentId(UUID contentId) {
-        validateUserId(reaction.getUserId());
+    public Optional<ReactionResponse> getUserReactionByContentId(String contentId) {
+        UserResponse user = getLoggedUser();
         Optional<Reaction> userReaction = reactionRepository.findByContentIdAndUserId(contentId, user.getId());
         return userReaction.map(reactionMapper::reactionEntityToResponse);
     }
 
     @Override
-    public List<ReactionResponse> getLikesByContentId(UUID contentId) {
-        return reactionRepository.findAllByContentIdAndLikeType(contentId, LikeType.LIKE)
-                .stream().map(reactionMapper::reactionEntityToResponse)
-                .toList();
+    public Page<ReactionResponse> getLikesByContentId(String contentId,Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
+        return reactionRepository.findAllByContentIdAndLikeType(contentId, LikeType.LIKE, pageRequest )
+                .map(reactionMapper::reactionEntityToResponse);
     }
 
     @Override
-    public List<ReactionResponse> getDislikesByContentId(UUID contentId) {
-        return reactionRepository.findAllByContentIdAndLikeType(contentId, LikeType.DISLIKE)
-                .stream().map(reactionMapper::reactionEntityToResponse)
-                .toList();
+    public Page<ReactionResponse> getDislikesByContentId(String contentId, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
+        return reactionRepository.findAllByContentIdAndLikeType(contentId, LikeType.DISLIKE, pageRequest)
+                .map(reactionMapper::reactionEntityToResponse);
     }
 
     @Override
-    public Integer getLikeCountByContentId(UUID contentId) {
+    public Integer getLikeCountByContentId(String contentId) {
         return reactionRepository.countByContentIdAndLikeType(contentId, LikeType.LIKE);
     }
 
     @Override
-    public Integer getDislikeCountByContentId(UUID contentId) {
+    public Integer getDislikeCountByContentId(String contentId) {
         return reactionRepository.countByContentIdAndLikeType(contentId, LikeType.DISLIKE);
     }
 
     @Override
-    public List<ReactionResponse> getReactionsByContentId(UUID contentId, ContentType type) {
-        return reactionRepository.findAllByContentIdAndContentType(contentId, type)
-                .stream().map(reactionMapper::reactionEntityToResponse)
-                .toList();
+    public Page<ReactionResponse> getReactionsByContentId(String contentId, ContentType type, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
+        return reactionRepository.findAllByContentIdAndContentType(contentId, type, pageRequest)
+                .map(reactionMapper::reactionEntityToResponse);
     }
 
     @Override
-    public List<ReactionResponse> getReactionsByUserId(UUID userId, ContentType contentType) {
-        return reactionRepository.findAllByUserIdAndContentType(userId, contentType)
-                .stream().map(reactionMapper::reactionEntityToResponse)
-                .toList();
+    public Page<ReactionResponse> getReactionsByUserId(String userId, ContentType contentType, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
+        return reactionRepository.findAllByUserIdAndContentType(userId, contentType, pageRequest)
+                .map(reactionMapper::reactionEntityToResponse);
     }
 
-    private UserResponse getUserById(UUID memberId) {
+    @Override
+    public Page<ReactionResponse> getAllReactionsByUserId(String userId, ContentType contentType, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
+        return reactionRepository.findAllByUserId(userId, pageRequest).map(reactionMapper::reactionEntityToResponse);
+    }
+
+    private UserResponse getUserById(String memberId) {
         return userClient.getUserById(memberId)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
     }
 
-
     private UserResponse getLoggedUser(){
-        return userClient.getLoggedUser().orElseThrow(UserNotFoundException::new);
+        return userClient.getLoggedUser()
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
+    }
+
+    private void validateUserId(String userId) {
+        if (!userClient.validateUserId(userId))
+            throw new BadRequestException("user mismatch with requested chat member");
     }
 
 }
