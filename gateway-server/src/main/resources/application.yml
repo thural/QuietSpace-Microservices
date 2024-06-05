@@ -4,7 +4,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:${KEYCLOAK_PORT}/realms/QS-MS
+          issuer-uri: http://localhost:9191/realms/quietspace
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
 
   application.name: gateway-server
 
@@ -58,6 +60,12 @@ logging:
     root: INFO
     org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
     org.springframework.cloud.gateway: TRACE
+
+jwt:
+  auth:
+    converter:
+      resource-id: quietspace-ms
+      principal-attribute: preferred_username
 
 server:
   port: ${GATEWAY_SERVER_PORT}

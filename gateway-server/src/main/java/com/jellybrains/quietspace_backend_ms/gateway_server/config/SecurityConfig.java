@@ -1,24 +1,35 @@
 package com.jellybrains.quietspace_backend_ms.gateway_server.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableWebFluxSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity httpSecurity) {
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity httpSecurity,
+                                                            Converter<Jwt, ? extends Mono<? extends AbstractAuthenticationToken>> jwtAuthConverter) {
         httpSecurity
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/eureka/**").permitAll()
+                                .pathMatchers("/api/dummy/admin/**").hasRole("ADMIN")
                                 .anyExchange().authenticated()
                         )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+//                .oauth2Login(Customizer.withDefaults())
+                .oauth2ResourceServer(it -> it.jwt(j -> j.jwtAuthenticationConverter(jwtAuthConverter))
+                );
         return httpSecurity.build();
     }
 }
