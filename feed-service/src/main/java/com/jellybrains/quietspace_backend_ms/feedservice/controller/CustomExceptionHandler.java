@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +70,7 @@ public class CustomExceptionHandler {
                 .build(), status);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(RuntimeException e) {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
