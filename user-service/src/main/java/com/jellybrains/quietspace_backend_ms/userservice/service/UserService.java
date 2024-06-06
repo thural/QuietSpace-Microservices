@@ -2,6 +2,7 @@ package com.jellybrains.quietspace_backend_ms.userservice.service;
 
 import com.jellybrains.quietspace_backend_ms.userservice.entity.User;
 import com.jellybrains.quietspace_backend_ms.userservice.model.request.UserRequest;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.UserRepresentation;
 import com.jellybrains.quietspace_backend_ms.userservice.model.response.UserResponse;
 import org.springframework.data.domain.Page;
 
@@ -21,15 +22,21 @@ public interface UserService {
 
     Optional<User> getUserById(UUID userId);
 
+    Optional<UserResponse> createUser(UserRequest userRequest);
+
+    Optional<UserResponse> getUserByEmail(String email);
+
     void deleteUser(UUID userId, String authHeader);
 
     UserResponse patchUser(UserRequest userRequest);
 
     Optional<UserResponse> getLoggedUserResponse();
 
-    User getLoggedUser();
+    User getAuthorizedUser();
 
     Boolean validateUserInRequest(UUID userId);
 
     Boolean validateUsersByIdList(List<UUID> userIds);
+
+    Optional<UserRepresentation> getUserRepresentationByEmail(String email);
 }

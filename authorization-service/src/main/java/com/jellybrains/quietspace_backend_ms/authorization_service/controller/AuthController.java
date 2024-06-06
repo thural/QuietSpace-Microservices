@@ -36,4 +36,9 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/hello")
+    ResponseEntity<String> hello() {
+        return ResponseEntity.ok("Hello Auth!");
+    }
+
 }
