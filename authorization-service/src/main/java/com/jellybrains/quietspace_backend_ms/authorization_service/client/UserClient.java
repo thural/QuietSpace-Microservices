@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.client;
 
+import com.jellybrains.quietspace_backend_ms.authorization_service.entity.UserRepresentation;
 import com.jellybrains.quietspace_backend_ms.authorization_service.model.request.UserRequest;
 import com.jellybrains.quietspace_backend_ms.authorization_service.model.response.UserResponse;
 
@@ -18,4 +19,5 @@ public interface UserClient {
 
     Optional <UserResponse> createUser(UserRequest userRequest);
 
+    Optional<UserRepresentation> getUserRepresentationByEmail(String username);
 }

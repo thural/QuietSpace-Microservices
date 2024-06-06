@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.config;
 
+import com.jellybrains.quietspace_backend_ms.authorization_service.client.UserClient;
 import com.jellybrains.quietspace_backend_ms.authorization_service.entity.UserRepresentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
@@ -21,26 +23,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
 
+    private final UserClient userClient;
+
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
-        return (jwt) -> {
-//            UserRepresentation user = getUserRepresentationFromJwt(); // TODO: implement method
-
-            UserRepresentation user = UserRepresentation.builder()
-                    .role("USER")
-                    .username("guest")
-                    .password("guest")
-                    .id(UUID.randomUUID())
-                    .email("guest@guest.com")
-                    .build();
+        return username -> {
+            UserRepresentation user = userClient.getUserRepresentationByEmail(username).orElseThrow(
+                    () -> new UsernameNotFoundException("user not found with the email"));
 
             List<GrantedAuthority> authorityList = Arrays.stream(user.getRole().split(","))
                     .map(role -> new SimpleGrantedAuthority(role.toUpperCase()))

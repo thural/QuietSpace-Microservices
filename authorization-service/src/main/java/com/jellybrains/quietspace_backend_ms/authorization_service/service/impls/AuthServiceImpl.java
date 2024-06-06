@@ -11,6 +11,7 @@ import com.jellybrains.quietspace_backend_ms.authorization_service.repository.To
 import com.jellybrains.quietspace_backend_ms.authorization_service.service.AuthService;
 import com.jellybrains.quietspace_backend_ms.authorization_service.utils.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class AuthServiceImpl implements AuthService {
@@ -41,10 +43,18 @@ public class AuthServiceImpl implements AuthService {
         String userPassword = userRequest.getPassword();
         userRequest.setPassword(passwordEncoder.encode(userPassword));
 
+        log.info("Registering user {}", userRequest.getUsername());
+
         UserResponse savedUser = userClient.createUser(userRequest)
                 .orElseThrow(UserCreationFailed::new);
 
+        log.info("encrypted password {}", userRequest.getPassword());
+
+        log.info("Registered user {}", savedUser.getUsername());
+
         Authentication authentication = generateAuthentication(userRequest.getEmail(), userPassword);
+
+        log.info("Registered user principal {}", authentication.getPrincipal());
 
         String token = JwtProvider.generateToken(authentication);
         String userId = savedUser.getId().toString();

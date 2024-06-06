@@ -32,19 +32,23 @@ spring:
         - id: user_service
           uri: lb://${USER_SERVICE_HOST}
           predicates:
-            - Path=/api/user/**
+            - Path=/api/v1/user/**
         - id: feed_service
           uri: lb://${FEED_SERVICE_HOST}
           predicates:
-            - Path=/api/feed/**
+            - Path=/api/v1/feed/**
         - id: chat_service
           uri: lb://${CHAT_SERVICE_HOST}
           predicates:
-            - Path=/api/chat/**
+            - Path=/api/v1/chat/**
         - id: dummy-service
           uri: lb://${DUMMY_SERVICE_HOST}
           predicates:
-            - Path=/api/dummy/**
+            - Path=/api/v1/dummy/**
+        - id: authorization-service
+          uri: lb://${AUTH_SERVICE_HOST}
+          predicates:
+            - Path=/auth/**
       discovery:
         locator:
           enabled: true

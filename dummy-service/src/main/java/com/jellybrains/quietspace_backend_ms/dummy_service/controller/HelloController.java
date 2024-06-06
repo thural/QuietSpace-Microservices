@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/dummy")
+@RequestMapping("/api/v1/dummy")
 public class HelloController {
 
     private final DummyService dummyService;

@@ -1,6 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.userservice.controller;
 
 import com.jellybrains.quietspace_backend_ms.userservice.model.request.UserRequest;
+import com.jellybrains.quietspace_backend_ms.userservice.model.response.UserRepresentation;
 import com.jellybrains.quietspace_backend_ms.userservice.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.userservice.service.UserService;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/user")
 public class UserController {
 
     public static final String USER_PATH_ID = "/{userId}";
@@ -79,6 +80,32 @@ public class UserController {
         return userService.getLoggedUserResponse()
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
+        return userService.createUser(userRequest)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.internalServerError().build());
+    }
+
+    @GetMapping("/by-email/{email}")
+    ResponseEntity<UserResponse> getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/representation/by-email/{email}")
+    ResponseEntity<UserRepresentation> getUserRepresentationByEmail(@PathVariable String email) {
+        return userService.getUserRepresentationByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/hello")
+    ResponseEntity<String> hello() {
+        return ResponseEntity.ok("Hello from User service!");
     }
 
 }

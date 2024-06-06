@@ -23,8 +23,9 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/eureka/**").permitAll()
-                                .pathMatchers("/api/dummy/admin/**").hasRole("ADMIN")
+                        .pathMatchers("/eureka/**", "/auth/**", "/api/v1/user/**").permitAll()
+                                .pathMatchers("/api/v1/dummy/admin/**").hasRole("ADMIN")
+                                .pathMatchers("/api/v1/dummy/**").permitAll()
                                 .anyExchange().authenticated()
                         )
 //                .oauth2Login(Customizer.withDefaults())
