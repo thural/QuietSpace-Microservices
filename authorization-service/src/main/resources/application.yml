@@ -1,0 +1,32 @@
+spring:
+  application.name: authorization-service
+
+  config:
+    import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
+  profiles:
+    active:
+      - ${CONFIG_ACTIVE_PROFILE}
+
+  datasource:
+    username: ${DB_USER_USERNAME}
+    password: ${DB_USER_PASSWORD}
+    url: ${USER_DB_URI}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
+
+server:
+  port: ${AUTH_SERVICE_PORT}
