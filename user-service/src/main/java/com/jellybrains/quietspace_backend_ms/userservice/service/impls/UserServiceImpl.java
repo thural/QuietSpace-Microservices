@@ -128,13 +128,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(UUID userId, String authHeader) {
+    public Boolean deleteUser(UUID userId, String authHeader) {
         User loggedUser = getAuthorizedUser();
 
         if (!loggedUser.getRole().equals("admin") && !loggedUser.getId().equals(userId))
             throw new BadRequestException("user denied access to delete the resource");
 
         userRepository.deleteById(userId);
+
+        return userRepository.existsById(userId);
 
         // TODO: send event to authentication service
     }

@@ -19,12 +19,12 @@ import java.util.UUID;
 public class UserClientImpl implements UserClient {
 
     private final WebClient webClient;
-    private final String USER_API_URI = "/api/v1/user/";
+    private final String USER_API_URI = "/api/v1/user";
 
     @Override
     public Boolean validateUserId(UUID userId){
         return webClient.get()
-                .uri(USER_API_URI + "validate/" + userId)
+                .uri(USER_API_URI + "/validate/" + userId)
                 .retrieve()
                 .bodyToMono(Boolean.class)
                 .block();
@@ -77,6 +77,17 @@ public class UserClientImpl implements UserClient {
                 .retrieve()
                 .bodyToMono(UserRepresentation.class)
                 .blockOptional();
+    }
+
+
+    @Override
+    @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 1000, multiplier = 4))
+    public Boolean deleteById(UUID userId) {
+        return webClient.delete()
+                .uri(USER_API_URI)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
     }
 
 }

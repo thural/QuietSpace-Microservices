@@ -1,10 +1,12 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.config;
 
+import com.jellybrains.quietspace_backend_ms.authorization_service.utils.KeycloakJwtAuthenticationConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,14 +29,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors()
-                .and()
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/admin-page/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,  "/hello").permitAll()
                         .anyRequest().authenticated()
                 )
+                .oauth2ResourceServer(auth ->
+                        auth.jwt(token -> token.jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter())))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .exceptionHandling((exception) -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
