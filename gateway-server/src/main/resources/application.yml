@@ -1,13 +1,5 @@
 spring:
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:9191/realms/quietspace
-          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
-
-
   application.name: gateway-server
 
   config:
@@ -18,6 +10,12 @@ spring:
 
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5000"
+            allowedHeaders: "*"
+            allowedMethods: "*"
       routes:
         - id: discovery-server
           uri: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}
@@ -64,12 +62,6 @@ logging:
     root: INFO
     org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
     org.springframework.cloud.gateway: TRACE
-
-jwt:
-  auth:
-    converter:
-      resource-id: quietspace-ms
-      principal-attribute: preferred_username
 
 server:
   port: ${GATEWAY_SERVER_PORT}

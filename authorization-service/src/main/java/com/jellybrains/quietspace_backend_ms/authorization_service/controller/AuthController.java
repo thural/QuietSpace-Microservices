@@ -17,13 +17,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    ResponseEntity<?> signupUser(@Validated @RequestBody UserRequest user) {
+    ResponseEntity<?> register(@Validated @RequestBody UserRequest user) {
         AuthResponse authResponse = authService.register(user);
         return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+    ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
         AuthResponse authResponse = authService.login(loginRequest);
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
@@ -31,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String authHeader) {
+    ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
         authService.logout(authHeader);
         return new ResponseEntity<>(HttpStatus.OK);
     }

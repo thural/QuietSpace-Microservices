@@ -79,4 +79,9 @@ public class UserClientImpl implements UserClient {
                 .blockOptional();
     }
 
+    @Override
+    public Boolean deleteById(UUID userId) {
+        return null; //TODO: implement the webclient method
+    }
+
 }

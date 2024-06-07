@@ -20,4 +20,6 @@ public interface UserClient {
     Optional <UserResponse> createUser(UserRequest userRequest);
 
     Optional<UserRepresentation> getUserRepresentationByEmail(String username);
+
+    Boolean deleteById(UUID userId);
 }

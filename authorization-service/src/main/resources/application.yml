@@ -1,6 +1,12 @@
 spring:
   application.name: authorization-service
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/certs
+
   config:
     import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
   profiles:
