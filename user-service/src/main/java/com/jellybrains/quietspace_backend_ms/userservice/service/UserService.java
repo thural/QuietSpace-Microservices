@@ -26,7 +26,7 @@ public interface UserService {
 
     Optional<UserResponse> getUserByEmail(String email);
 
-    void deleteUser(UUID userId, String authHeader);
+    Boolean deleteUser(UUID userId, String authHeader);
 
     UserResponse patchUser(UserRequest userRequest);
 

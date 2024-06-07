@@ -50,8 +50,8 @@ public class UserController {
     @DeleteMapping(USER_PATH_ID)
     ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String authHeader,
                                  @PathVariable UUID userId) {
-        userService.deleteUser(userId, authHeader);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Boolean isDeleteSuccess = userService.deleteUser(userId, authHeader);
+        return new ResponseEntity<>(isDeleteSuccess, HttpStatus.OK);
     }
 
     @PatchMapping

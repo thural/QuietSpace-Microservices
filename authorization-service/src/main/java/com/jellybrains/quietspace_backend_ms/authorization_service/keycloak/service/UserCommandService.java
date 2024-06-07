@@ -52,7 +52,8 @@ public class UserCommandService {
         try (Response delete = keycloakService.getUsersResource().delete(userId.toString())) {
 
             if (delete.getStatus() == 204) {
-                userClient.deleteById(userId);
+                Boolean deleteStatus = userClient.deleteById(userId);
+                log.info("User was deleted {}", deleteStatus);
                 log.info("User deletion successful for userId: {}", userId);
             } else {
                 throw new InternalServerErrorException("Deletion failed. Response Status is " + delete.getStatus());
