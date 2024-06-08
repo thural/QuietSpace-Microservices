@@ -29,6 +29,36 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  kafka:
+    consumer:
+      bootstrap-servers: ${KAFKA_HOST:localhost}:9092,${KAFKA_HOST:localhost}:9094,${KAFKA_HOST:localhost}:9096
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: saga-user-group-id
+      auto-offset-reset: latest
+      properties:
+        spring.json.trusted.packages: '*'
+
+    producer:
+      bootstrap-servers: ${KAFKA_HOST:localhost}:9092,${KAFKA_HOST:localhost}:9094,${KAFKA_HOST:localhost}:9096
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: false
+
+kafka:
+  topics:
+    user-profile-deleted: user-profile-deleted-topic
+    user-profile-deletion-failed: user-profile-deletion-failed-topic
+    delete-user-profile-request: delete-user-profile-request-topic
+
+    user-profile-creation-failed: user-profile-creation-failed-topic
+    user-creation-failed: user-creation-failed-topic
+
+    friend-request-accepted: friend-request-accepted-topic
+
+    send-notification: send-notification-topic
+
 eureka:
   client:
     serviceUrl:

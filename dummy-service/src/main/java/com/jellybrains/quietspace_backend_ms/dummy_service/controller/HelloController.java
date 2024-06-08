@@ -2,10 +2,13 @@ package com.jellybrains.quietspace_backend_ms.dummy_service.controller;
 
 import com.jellybrains.quietspace_backend_ms.dummy_service.dto.request.DummyRequest;
 import com.jellybrains.quietspace_backend_ms.dummy_service.service.DummyService;
+import com.jellybrains.quietspace_backend_ms.dummy_service.util.JwtUtil;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +33,10 @@ public class HelloController {
 
     public CompletableFuture<String> fallbackMethod(DummyRequest dummyRequest, RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> "Something went wrong, please try later");
+    }
+
+    @GetMapping("hello/user-email")
+    public String helloSecured(@AuthenticationPrincipal Jwt jwt) {
+        return JwtUtil.getUserFromToken(jwt).getEmail();
     }
 }

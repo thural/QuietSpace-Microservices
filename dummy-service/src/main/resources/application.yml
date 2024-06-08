@@ -3,6 +3,12 @@ spring:
   application:
     name: dummy-service
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}
+
   config:
     import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
   profiles:
