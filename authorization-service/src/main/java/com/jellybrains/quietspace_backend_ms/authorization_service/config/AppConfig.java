@@ -1,48 +1,46 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.config;
 
-import com.jellybrains.quietspace_backend_ms.authorization_service.client.UserClient;
-import com.jellybrains.quietspace_backend_ms.authorization_service.entity.UserRepresentation;
+import com.jellybrains.quietspace_backend_ms.authorization_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.stream.Stream;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class AppConfig {
+    private final UserRepository userRepository;
 
-    private final UserClient userClient;
+    @Value("${spring.application.mailing.frontend.activation-url}")
+    private String FRONTEND_URL;
 
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
         return username -> {
-            UserRepresentation user = userClient.getUserRepresentationByEmail(username).orElseThrow(
+            log.info("username in user details method: {}", username);
+            return userRepository.findUserByUsername(username).orElseThrow(
                     () -> new UsernameNotFoundException("user not found with the email"));
-
-            List<GrantedAuthority> authorityList = Arrays.stream(user.getRole().split(","))
-                    .map(role -> new SimpleGrantedAuthority(role.toUpperCase()))
-                    .collect(Collectors.toList());
-
-            return new User(user.getEmail(),user.getPassword(),authorityList);
         };
     }
 
@@ -60,16 +58,28 @@ public class AppConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));  //set access from all domains
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Access-Control-Allow-Headers"));
-        configuration.setAllowCredentials(true);
-
+    public CorsFilter corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        final CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOriginPatterns(Collections.singletonList("*"));
+        config.setAllowedHeaders(Arrays.asList(
+                HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+                HttpHeaders.CACHE_CONTROL,
+                HttpHeaders.ORIGIN,
+                HttpHeaders.CONTENT_TYPE,
+                HttpHeaders.ACCEPT,
+                HttpHeaders.AUTHORIZATION
+        ));
+        config.setAllowedMethods(Stream.of(
+                HttpMethod.GET,
+                HttpMethod.POST,
+                HttpMethod.DELETE,
+                HttpMethod.PUT,
+                HttpMethod.PATCH
+        ).map(HttpMethod::toString).toList());
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean

@@ -1,22 +1,44 @@
 spring:
-  application.name: authorization-service
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/certs
+  application:
+    name: authorization-service
+    mailing:
+      frontend:
+        activation-url: ${ACTIVATION_URL}
+    security:
+      jwt:
+        secret-key: ${JWT_SECRET_KEY}
+        expiration: 86400000 # a day
+        refresh-token:
+          expiration: 604800000 # 7 days
 
-  config:
-    import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
   profiles:
     active:
       - ${CONFIG_ACTIVE_PROFILE}
 
+  config:
+    import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
+
+  mail:
+    host: ${MAILDEV_HOST}
+    port: ${MAILDEV_PORT}
+    username: thural
+    password: thural
+    properties:
+      mail:
+        smtp:
+          trust: "*"
+        auth: true
+        starttls:
+          enabled: true
+        connectiontimeout: 5000
+        timeout: 3000
+        writetimeout: 5000
+
   datasource:
     username: ${DB_USER_USERNAME}
     password: ${DB_USER_PASSWORD}
-    url: ${USER_DB_URI}
+    url: jdbc:mysql://localhost:${AUTH_DB_PORT}/quietspace
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -26,7 +48,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
 
 eureka:

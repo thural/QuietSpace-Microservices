@@ -27,15 +27,15 @@ spring:
           uri: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}
           predicates:
             - Path=/eureka/**
-        - id: user_service
+        - id: user-service
           uri: lb://${USER_SERVICE_HOST}
           predicates:
             - Path=/api/v1/user/**
-        - id: feed_service
+        - id: feed-service
           uri: lb://${FEED_SERVICE_HOST}
           predicates:
             - Path=/api/v1/feed/**
-        - id: chat_service
+        - id: chat-service
           uri: lb://${CHAT_SERVICE_HOST}
           predicates:
             - Path=/api/v1/chat/**
@@ -47,6 +47,7 @@ spring:
           uri: lb://${AUTH_SERVICE_HOST}
           predicates:
             - Path=/auth/**
+
       discovery:
         locator:
           enabled: true

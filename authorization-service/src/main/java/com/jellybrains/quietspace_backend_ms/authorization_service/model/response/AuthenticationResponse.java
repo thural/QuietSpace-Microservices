@@ -1,15 +1,15 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.model.response;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AuthResponse {
+public class AuthenticationResponse {
 
     private UUID id;
     private String token;

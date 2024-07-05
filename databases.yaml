@@ -1,9 +1,9 @@
 version: '3.8'
 services:
 
-  user-service-db:
-    container_name: ${USER_DB_HOST}
-    hostname: ${USER_DB_HOST}
+  auth-service-db:
+    container_name: auth-service-db
+    hostname: auth-service-db
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -16,13 +16,32 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_USER_DB_PORT}:${USER_DB_PORT}
+      - ${AUTH_DB_PORT}:3306
     expose:
-      - ${USER_DB_PORT}
+      - 3306
+
+  user-service-db:
+    container_name: user-service-db
+    hostname: user-service-db
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER_USERNAME}
+      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
+    volumes:
+      - user-data:/data/db
+    restart: on-failure
+    networks:
+      - microservices-net
+    ports:
+      - ${EXP_USER_DB_PORT}:3306
+    expose:
+      - 3306
 
   chat-service-db:
-    container_name: ${CHAT_DB_HOST}
-    hostname: ${CHAT_DB_HOST}
+    container_name: chat-service-db
+    hostname: chat-service-db
     image: postgres
     volumes:
       - chat-data:/data/postgres
@@ -34,15 +53,15 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_CHAT_DB_PORT}:${CHAT_DB_PORT}
+      - ${EXP_CHAT_DB_PORT}:5432
     expose:
-      - ${CHAT_DB_PORT}
+      - 5432
     command: -p ${EXP_CHAT_DB_PORT}
     restart: on-failure
 
   feed-service-db:
-    container_name: ${FEED_DB_HOST}
-    hostname: ${FEED_DB_HOST}
+    container_name: feed-service-db
+    hostname: feed-service-db
     image: mysql:8.0
     restart: on-failure
     environment:
@@ -55,11 +74,11 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_FEED_DB_PORT}:${FEED_DB_PORT}
+      - ${EXP_FEED_DB_PORT}:3306
 
   notification-service-db:
-    container_name: ${NOTIFICATION_DB_HOST}
-    hostname: ${NOTIFICATION_DB_HOST}
+    container_name: notification-service-db
+    hostname: notification-service-db
     image: mongo:5.0
     restart: on-failure
     environment:
@@ -70,13 +89,13 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_NOTIFICATION_DB_PORT}:${NOTIFICATION_DB_PORT}
+      - ${EXP_NOTIFICATION_DB_PORT}:27017
     volumes:
       - notification-data:/data/db
 
   reaction-service-db:
-    container_name: ${REACTION_DB_HOST}
-    hostname: ${REACTION_DB_HOST}
+    container_name: reaction-service-db
+    hostname: reaction-service-db
     image: mongo:5.0
     restart: on-failure
     environment:
@@ -87,7 +106,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_REACTION_DB_PORT}:${REACTION_DB_PORT}
+      - ${EXP_REACTION_DB_PORT}:27017
     volumes:
       - reaction-data:/data/db
 

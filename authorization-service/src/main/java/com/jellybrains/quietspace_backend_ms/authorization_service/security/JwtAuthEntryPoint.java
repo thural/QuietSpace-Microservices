@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace_backend_ms.authorization_service.config;
+package com.jellybrains.quietspace_backend_ms.authorization_service.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
