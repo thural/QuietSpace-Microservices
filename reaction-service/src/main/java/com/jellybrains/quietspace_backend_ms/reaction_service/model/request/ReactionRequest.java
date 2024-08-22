@@ -22,7 +22,7 @@ public class ReactionRequest {
     @NotNull(message = "reaction content type can not be null")
     private ContentType contentType;
 
-    @NotNull(message = "reaction like type can not be null")
+    @NotNull(message = "reaction type can not be null")
     private LikeType likeType;
 
 }
