@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.exception;
 
-import dev.thural.quietspace.model.response.ErrorResponse;
+import com.jellybrains.quietspace_backend_ms.authorization_service.model.response.ErrorResponse;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;

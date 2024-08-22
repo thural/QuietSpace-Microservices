@@ -24,6 +24,9 @@ public class JwtService {
     @Value("${spring.application.security.jwt.expiration}")
     private long jwtExpiration;
 
+    @Value("${spring.application.security.jwt.refresh-token.expiration}")
+    private long jwtRefreshExpiration;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -37,24 +40,21 @@ public class JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
-    ) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration
-    ) {
-        log.info("username during token generation: {}", userDetails.getUsername());
+    public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return buildToken(extraClaims, userDetails, jwtRefreshExpiration);
+    }
 
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
         var authorities = userDetails.getAuthorities()
-                .stream().
-                map(GrantedAuthority::getAuthority)
+                .stream()
+                .map(GrantedAuthority::getAuthority)
                 .toList();
+
+        log.info("username during token generation: {}", userDetails.getUsername());
 
         return Jwts
                 .builder()
@@ -72,11 +72,11 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 

@@ -1,24 +1,24 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.jellybrains.quietspace_backend_ms.authorization_service.utils.enums.StatusType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Principal;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static jakarta.persistence.FetchType.EAGER;
@@ -26,27 +26,10 @@ import static jakarta.persistence.FetchType.EAGER;
 @Entity
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
+@SuperBuilder
 @AllArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
-public class User implements UserDetails, Principal {
-
-    @Id
-    @JdbcTypeCode(SqlTypes.CHAR)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
-
-    @Version
-    private Integer version;
-
-    @NotNull
-    @NotBlank
-    @Column(length = 16)
-    private String role;
+@NoArgsConstructor
+public class User extends BaseEntity implements UserDetails, Principal {
 
     @NotNull
     @NotBlank
@@ -63,30 +46,33 @@ public class User implements UserDetails, Principal {
     @JsonIgnore
     private String password;
 
-    @NotNull
-    @Column(updatable = false)
-    private OffsetDateTime createDate;
 
-    @NotNull
-    private OffsetDateTime updateDate;
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "user_followings",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "followings_id")
+    )
+    private List<User> followings = new ArrayList<>();
 
-    @PrePersist
-    private void onCreate() {
-        createDate = OffsetDateTime.now();
-        updateDate = OffsetDateTime.now();
-    }
-
-    @PreUpdate
-    private void onUpdate() {
-        updateDate = OffsetDateTime.now();
-    }
+    @JsonIgnore
+    @ManyToMany(mappedBy = "followings")
+    private List<User> followers = new ArrayList<>();
 
 
+    @JsonIgnore
     private String firstname;
+    @JsonIgnore
     private String lastname;
-    private LocalDate dateOfBirth;
+    @JsonIgnore
+    private OffsetDateTime dateOfBirth;
+    @JsonIgnore
     private boolean accountLocked;
+    @JsonIgnore
     private boolean enabled;
+    @JsonIgnore
+    private StatusType statusType;
 
     @ManyToMany(fetch = EAGER)
     private List<Role> roles;
@@ -135,11 +121,18 @@ public class User implements UserDetails, Principal {
 
     @Override
     public String getName() {
-        return email;
+        return username;
     }
 
     public String getFullName() {
         return firstname + " " + lastname;
+    }
+
+    @PrePersist
+    void initAccount() {
+        setEnabled(false);
+        setAccountLocked(false);
+        setStatusType(StatusType.OFFLINE);
     }
 
 }
