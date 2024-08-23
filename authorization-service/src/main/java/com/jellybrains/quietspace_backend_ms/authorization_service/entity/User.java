@@ -54,11 +54,11 @@ public class User extends BaseEntity implements UserDetails, Principal {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "followings_id")
     )
-    private List<User> followings = new ArrayList<>();
+    private final List<User> followings = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "followings")
-    private List<User> followers = new ArrayList<>();
+    private final List<User> followers = new ArrayList<>();
 
 
     @JsonIgnore

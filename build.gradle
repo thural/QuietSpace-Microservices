@@ -7,44 +7,52 @@ plugins {
 group = 'com.jellybrains'
 version = '0.0.1-SNAPSHOT'
 
-java {
-    sourceCompatibility = '21'
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
 }
 
-ext {
-    set('springCloudVersion', "2023.0.1")
-}
-
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
-
-tasks.named('test') {
+test {
     useJUnitPlatform()
+}
+
+bootJar {
+    enabled = false
+}
+
+bootBuildImage {
+    enabled = false
+}
+
+subprojects {
+
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
+    }
+
+    task pushImage {
+        doLast {
+            if (bootBuildImage.getEnabled()) {
+                exec {
+                    commandLine 'docker', 'tag', "${project.name}:0.0.1-SNAPSHOT", "${System.getenv('DOCKER_USERNAME')}/${project.name}"
+                }
+                exec {
+                    commandLine 'docker', 'push', "${System.getenv('DOCKER_USERNAME')}/${project.name}"
+                }
+            }
+        }
+    }
+
+    bootBuildImage {
+        imageName = "${System.getenv('DOCKER_USERNAME')}/${project.name}"
+    }
 }

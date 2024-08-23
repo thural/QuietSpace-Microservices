@@ -5,6 +5,21 @@ spring:
     mailing:
       frontend:
         activation-url: ${ACTIVATION_URL}
+    mail:
+      host: ${MAILDEV_HOST}
+      port: ${MAILDEV_PORT}
+      username: thural
+      password: thural
+      properties:
+        mail:
+          smtp:
+            trust: "*"
+            auth: true
+          starttls:
+            enabled: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
     security:
       jwt:
         secret-key: ${JWT_SECRET_KEY}

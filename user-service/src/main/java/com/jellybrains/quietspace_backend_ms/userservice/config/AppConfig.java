@@ -15,11 +15,6 @@ import java.util.List;
 public class AppConfig {
 
     @Bean
-    public AuditorAware<String> auditorAware() {
-        return new ApplicationAuditAware();
-    }
-
-    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));  //set access from all domains
