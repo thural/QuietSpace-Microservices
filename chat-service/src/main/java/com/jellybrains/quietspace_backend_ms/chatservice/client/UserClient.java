@@ -5,15 +5,16 @@ import com.jellybrains.quietspace_backend_ms.chatservice.model.response.UserResp
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface UserClient {
 
-    Boolean validateUserId(UUID userId);
+    Boolean validateUserId(String userId);
 
     Optional<UserResponse> getLoggedUser();
 
-    Optional<UserResponse> getUserById(UUID userId);
+    Optional<UserResponse> getUserById(String userId);
 
-    Boolean validateUserIdList(List<UUID> userIds);
+    Boolean validateUserIdList(List<String> userIds);
+
+    List<UserResponse> getUsersFromIdList(List<String> userIds);
 }

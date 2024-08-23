@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class MessageController {
     }
 
     @DeleteMapping(MESSAGE_PATH_ID)
-    ResponseEntity<?> deleteMessage(@PathVariable UUID messageId) {
+    ResponseEntity<?> deleteMessage(@PathVariable String messageId) {
         messageService.deleteMessage(messageId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -38,7 +37,7 @@ public class MessageController {
     Page<MessageResponse> getMessagesByChatId(
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize,
-            @PathVariable UUID chatId) {
+            @PathVariable String chatId) {
         return messageService.getMessagesByChatId(pageNumber, pageSize, chatId);
     }
 

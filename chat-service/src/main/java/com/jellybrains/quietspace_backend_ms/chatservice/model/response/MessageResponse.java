@@ -3,7 +3,6 @@ package com.jellybrains.quietspace_backend_ms.chatservice.model.response;
 import lombok.*;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,11 +11,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class MessageResponse {
 
-    private UUID id;
-    private UUID chatId;
+    private String id;
+    private String chatId;
     private String text;
-    private UUID senderId;
-    private String username;
+    private Boolean isSeen;
+    private String senderId;
+    private String recipientId;
+    private String senderName;
     private OffsetDateTime createDate;
     private OffsetDateTime updateDate;
 

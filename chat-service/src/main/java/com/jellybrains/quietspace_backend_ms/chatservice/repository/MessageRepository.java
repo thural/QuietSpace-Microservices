@@ -7,12 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public interface MessageRepository extends JpaRepository<Message, UUID> {
+public interface MessageRepository extends JpaRepository<Message, String> {
 
-    Page<Message> findAllByChatId(UUID chatId, Pageable pageable);
-
+    Page<Message> findAllByChatId(String chatId, Pageable pageable);
     Optional<Message> findFirstByChatOrderByCreateDateDesc(Chat chat);
-
 }

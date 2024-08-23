@@ -6,16 +6,16 @@ import com.jellybrains.quietspace_backend_ms.chatservice.model.response.MessageR
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface MessageService {
 
     MessageResponse addMessage(MessageRequest messageRequest);
 
-    void deleteMessage(UUID id);
+    Optional<MessageResponse> deleteMessage(String id);
 
-    Page<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, UUID chatId);
+    Page<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, String chatId);
 
     Optional<MessageResponse> getLastMessageByChat(Chat chat);
 
+    Optional<MessageResponse> setMessageSeen(String messageId);
 }

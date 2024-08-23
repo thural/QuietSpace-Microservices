@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,6 +13,6 @@ import java.util.UUID;
 public class ChatRequest {
 
     @NotNull(message = "at least two members required to create the chat")
-    private List<UUID> userIds;
+    private List<String> userIds;
 
 }

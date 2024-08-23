@@ -1,46 +1,45 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.mapper.custom;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.client.UserClient;
+import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Message;
-import com.jellybrains.quietspace_backend_ms.chatservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.request.MessageRequest;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.response.MessageResponse;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.UserResponse;
+import com.jellybrains.quietspace_backend_ms.chatservice.repository.ChatRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class MessageMapper {
 
-    private final UserClient userClient;
+    private final ChatRepository chatRepository;
 
-    public Message messageRequestToEntity(MessageRequest messageRequest){
+    public Message toEntity(MessageRequest message) {
         return Message.builder()
-                .text(messageRequest.getText())
-                .senderId(messageRequest.getSenderId())
-                .chat(null)
+                .text(message.getText())
+                .chat(findChatById(message.getChatId()))
+                .senderId(message.getSenderId())
+                .recipientId(message.getRecipientId())
                 .build();
     }
 
-    public MessageResponse messageEntityToDto(Message messageEntity){
-        return MessageResponse.builder()
-                .id(messageEntity.getId())
-                .chatId(messageEntity.getChat().getId())
-                .text(messageEntity.getText())
-                .senderId(messageEntity.getSenderId())
-                .createDate(messageEntity.getCreateDate())
-                .updateDate(messageEntity.getUpdateDate())
-                .username(getUsernameById(messageEntity.getId()))
+    public MessageResponse toResponse(Message message) {
+        return MessageResponse
+                .builder()
+                .text(message.getText())
+                .id(message.getId())
+                .isSeen(message.getIsSeen())
+                .chatId(message.getChat().getId())
+                .senderId(message.getSenderId())
+                .recipientId(message.getRecipientId())
+                .senderName(message.getSenderId())
                 .build();
     }
 
-    private String getUsernameById(UUID userId){
-        return userClient.getUserById(userId)
-                .map(UserResponse::getUsername)
-                .orElseThrow(UserNotFoundException::new);
+    private Chat findChatById(String chatId) {
+        return chatRepository.findById(chatId)
+                .orElseThrow(EntityNotFoundException::new);
     }
-
 }

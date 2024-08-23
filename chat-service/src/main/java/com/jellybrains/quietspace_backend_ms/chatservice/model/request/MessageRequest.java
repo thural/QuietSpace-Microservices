@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,10 +13,13 @@ import java.util.UUID;
 public class MessageRequest {
 
     @NotNull(message = "chat id can not be null")
-    private UUID chatId;
+    private String chatId;
 
     @NotNull(message = "sender id can not be null")
-    private UUID senderId;
+    private String senderId;
+
+    @NotNull
+    private String recipientId;
 
     @NotNull(message = "text content can not be null")
     @NotBlank(message = "text content can not be blank")

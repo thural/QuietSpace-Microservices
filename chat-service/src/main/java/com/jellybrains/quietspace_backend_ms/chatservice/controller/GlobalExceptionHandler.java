@@ -20,14 +20,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class CustomExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> handleNotFoundException() {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<?> handleNotFoundException(RuntimeException e) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status)
+                .body(ErrorResponse.builder()
+                        .status(status.name())
+                        .message(e.getMessage())
+                        .timestamp(new Date())
+                        .build());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(TransactionSystemException.class)
     ResponseEntity<?> handleJPAViolations(TransactionSystemException exception) {
         ResponseEntity.BodyBuilder responseEntity = ResponseEntity.badRequest();
 
@@ -48,33 +54,20 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        ResponseEntity.BodyBuilder responseEntity = ResponseEntity.badRequest();
-
-        Map<String, String> errors = new HashMap<>();
-        exception.getBindingResult().getAllErrors()
-                .forEach(objectError -> errors.put(objectError.getDefaultMessage(), objectError.getDefaultMessage()));
-
-        return responseEntity.body(errors);
+    ResponseEntity<?> handleBindErrors(MethodArgumentNotValidException exception) {
+        List<Map<String, String>> errorList = exception.getFieldErrors().stream()
+                .map(fieldError -> {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
+                    return errorMap;
+                }).collect(Collectors.toList());
+        return ResponseEntity.badRequest().body(errorList);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(RuntimeException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-
         return new ResponseEntity<>(ErrorResponse.builder()
-                .code(status.value())
-                .status(status.name())
-                .message(e.getMessage())
-                .build(), status);
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentialsException(RuntimeException e) {
-        HttpStatus status = HttpStatus.NOT_FOUND;
-
-        return new ResponseEntity<>(ErrorResponse.builder()
-                .code(status.value())
                 .status(status.name())
                 .message(e.getMessage())
                 .build(), status);
@@ -83,77 +76,67 @@ public class CustomExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(RuntimeException e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-
-        return new ResponseEntity<>(ErrorResponse.builder()
-                .code(status.value())
-                .status(status.name())
-                .message(e.getMessage())
-                .build(), status);
+        return ResponseEntity.status(status)
+                .body(ErrorResponse.builder()
+                        .status(status.name())
+                        .message(e.getMessage())
+                        .build());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(RuntimeException e) {
         HttpStatus status = HttpStatus.FORBIDDEN;
-
-        return new ResponseEntity<>(ErrorResponse.builder()
-                .code(status.value())
-                .status(status.name())
-                .message(e.getMessage())
-                .build(), status);
+        return ResponseEntity.status(status)
+                .body(ErrorResponse.builder()
+                        .status(status.name())
+                        .message(e.getMessage())
+                        .timestamp(new Date())
+                        .build());
     }
 
 
     @ExceptionHandler(CustomDataNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCustomDataNotFoundExceptions(RuntimeException e) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-
-        return new ResponseEntity<>(ErrorResponse.builder()
-                .code(status.value())
-                .status(status.name())
-                .message(e.getMessage())
-                .build(), status);
+        return ResponseEntity.status(status)
+                .body(ErrorResponse.builder()
+                        .status(status.name())
+                        .message(e.getMessage())
+                        .timestamp(new Date())
+                        .build());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundExceptions(RuntimeException e) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-
-        return new ResponseEntity<>(
-                ErrorResponse.builder()
+        return ResponseEntity.status(status)
+                .body(ErrorResponse.builder()
                         .status(status.name())
-                        .message("the requested resource not found: " + e.getMessage())
-                        .code(status.value())
+                        .message(e.getMessage())
                         .timestamp(new Date())
-                        .build(), status);
+                        .build());
     }
 
     @ExceptionHandler(CustomParameterConstraintException.class)
     public ResponseEntity<ErrorResponse> handleCustomParameterConstraintExceptions(RuntimeException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        return new ResponseEntity<>(
-                ErrorResponse.builder()
-                        .code(status.value())
-                        .message("A parameter constraint error occurred: " + e.getMessage())
+        return ResponseEntity.status(status)
+                .body(ErrorResponse.builder()
                         .status(status.name())
-                        .build(),
-                status);
+                        .message(e.getMessage())
+                        .timestamp(new Date())
+                        .build());
     }
 
     @ExceptionHandler(CustomErrorException.class)
-    public ResponseEntity<ErrorResponse> handleCustomErrorExceptions(RuntimeException e) {
-        CustomErrorException customErrorException = (CustomErrorException) e;
-
-        HttpStatus status = customErrorException.getStatus();
-
-        return ResponseEntity.internalServerError()
+    public ResponseEntity<ErrorResponse> handleCustomErrorExceptions(CustomErrorException e) {
+        HttpStatus status = e.getStatus();
+        return ResponseEntity.status(status)
                 .body(ErrorResponse.builder()
-                        .code(status.value())
                         .status(status.name())
-                        .message("An unexpected error occurred: " + e.getMessage())
+                        .message(e.getMessage())
                         .timestamp(new Date())
-                        .build()
-                );
+                        .build());
     }
 
 }

@@ -5,20 +5,19 @@ import com.jellybrains.quietspace_backend_ms.chatservice.model.request.ChatReque
 import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ChatResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ChatService {
 
-    List<ChatResponse> getChatsByUserId(UUID userId);
+    List<ChatResponse> getChatsByUserId(String userId);
 
-    void deleteChatById(UUID chatId);
+    void deleteChatById(String chatId);
 
-    ChatResponse addMemberWithId(UUID memberId, UUID chatId);
+    void addMemberWithId(String memberId, String chatId);
 
-    void removeMemberWithId(UUID memberId, UUID chatId);
+    List<String> removeMemberWithId(String memberId, String chatId);
 
     ChatResponse createChat(ChatRequest chatRequest);
 
-    ChatResponse getChatById(UUID chatId);
+    ChatResponse getChatById(String chatId);
 
 }

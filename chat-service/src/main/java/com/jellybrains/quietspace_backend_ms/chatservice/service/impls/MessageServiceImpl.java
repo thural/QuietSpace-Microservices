@@ -1,91 +1,90 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.client.UserClient;
+import com.jellybrains.quietspace_backend_ms.chatservice.common.UserService;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Message;
-import com.jellybrains.quietspace_backend_ms.chatservice.event.NewMessageEvent;
-import com.jellybrains.quietspace_backend_ms.chatservice.exception.UserNotFoundException;
-import com.jellybrains.quietspace_backend_ms.chatservice.kafka.NotificationProducer;
+import com.jellybrains.quietspace_backend_ms.chatservice.exception.CustomErrorException;
 import com.jellybrains.quietspace_backend_ms.chatservice.mapper.custom.MessageMapper;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.request.MessageRequest;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.response.MessageResponse;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.chatservice.repository.ChatRepository;
 import com.jellybrains.quietspace_backend_ms.chatservice.repository.MessageRepository;
 import com.jellybrains.quietspace_backend_ms.chatservice.service.MessageService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.jellybrains.quietspace_backend_ms.chatservice.utils.PagingProvider.buildPageRequest;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
-
     private final MessageRepository messageRepository;
-    private final NotificationProducer notificationProducer;
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
-    private final UserClient userClient;
+    private final UserService userService;
 
     @Override
     public MessageResponse addMessage(MessageRequest messageRequest) {
-
-        if(!userClient.validateUserId(messageRequest.getSenderId()))
-            throw new BadRequestException("requesting user mismatch with message body");
+        log.info("message at addMessage method: {}", messageRequest.getText());
+        String loggedUser = userService.getAuthorizedUserId();
 
         Chat parentChat = chatRepository.findById(messageRequest.getChatId())
-                .orElseThrow(() -> new BadRequestException("chat on request is not found"));
-
-        Message newMessage = messageMapper.messageRequestToEntity(messageRequest);
-        newMessage.setChat(parentChat);
-
-        Message savedMessage = messageRepository.saveAndFlush(newMessage);
-
-        notificationProducer.sendNewMessageNotification(NewMessageEvent.builder()
-                        .message(newMessage.getText())
-                        .senderId(String.valueOf(newMessage.getSenderId()))
-                        .chatId(String.valueOf(newMessage.getChat().getId()))
-                .build());
-
-        return messageMapper.messageEntityToDto(savedMessage);
-    }
-
-    @Override
-    public void deleteMessage(UUID messageId) {
-        Message existingMessage = messageRepository.findById(messageId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (existingMessage.getSenderId().equals(getLoggedUser().getId())) {
-            messageRepository.deleteById(messageId);
-        } else throw new BadRequestException("user mismatch with resource owner");
+        Message newMessage = messageMapper.toEntity(messageRequest);
+        newMessage.setSenderId(loggedUser);
+        newMessage.setChat(parentChat);
+
+        return messageMapper.toResponse(messageRepository.save(newMessage));
     }
 
     @Override
-    public Page<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, UUID chatId) {
+    public Optional<MessageResponse> deleteMessage(String messageId) {
+        Message existingMessage = findMessageOrElseThrow(messageId);
+        checkResourceAccess(existingMessage.getSenderId());
 
-        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize,null);
+        messageRepository.deleteById(messageId);
+        return Optional.of(messageMapper.toResponse(existingMessage));
+    }
+
+    private Message findMessageOrElseThrow(String messageId) {
+        return messageRepository.findById(messageId)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    private void checkResourceAccess(String userId) {
+        String loggedUserId = userService.getAuthorizedUserId();
+        if (!userId.equals(loggedUserId))
+            throw new CustomErrorException("message does not belong to current user");
+    }
+
+    @Override
+    public Page<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, String chatId) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         Page<Message> messagePage = messageRepository.findAllByChatId(chatId, pageRequest);
-        return messagePage.map(messageMapper::messageEntityToDto);
-
+        return messagePage.map(messageMapper::toResponse);
     }
 
     @Override
     public Optional<MessageResponse> getLastMessageByChat(Chat chat) {
         return messageRepository.findFirstByChatOrderByCreateDateDesc(chat)
-                .map(messageMapper::messageEntityToDto);
+                .map(messageMapper::toResponse);
     }
 
-    private UserResponse getLoggedUser(){
-        return userClient.getLoggedUser().orElseThrow(UserNotFoundException::new);
+    @Override
+    public Optional<MessageResponse> setMessageSeen(String messageId) {
+        Message existingMessage = findMessageOrElseThrow(messageId);
+        existingMessage.setIsSeen(true);
+
+        Message savedMessage = messageRepository.save(existingMessage);
+        return Optional.ofNullable(messageMapper.toResponse(savedMessage));
     }
 
 }
