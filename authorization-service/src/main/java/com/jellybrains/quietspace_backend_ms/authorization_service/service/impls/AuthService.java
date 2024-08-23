@@ -82,6 +82,7 @@ public class AuthService {
         var claims = new HashMap<String, Object>();
         User user = ((User) auth.getPrincipal());
         claims.put("fullName", user.getFullName());
+        claims.put("userId", user.getId());
 
         String jwtAccessToken = jwtService.generateToken(claims, user);
         String jwtRefreshToken = jwtService.generateRefreshToken(claims, user);
@@ -207,6 +208,7 @@ public class AuthService {
 
         var claims = new HashMap<String, Object>();
         claims.put("fullName", user.getFullName());
+        claims.put("userId", user.getId());
         String newAccessToken = jwtService.generateToken(claims, user);
 
         return AuthResponse.builder()

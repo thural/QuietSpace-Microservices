@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
@@ -23,20 +26,30 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
+            ServerHttpRequest request = null;
             if (validator.isSecured.test(exchange.getRequest())) {
 
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION))
                     throw new RuntimeException("missing authorization header");
 
-                String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+                String authHeader = Objects.requireNonNull(exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION)).get(0);
                 if (authHeader == null || !authHeader.startsWith("Bearer "))
                     throw new RuntimeException("no bearer token is present");
 
-                if(!jwtUtil.isTokenValid(authHeader.substring(7)))
+                String jwtToken = authHeader.substring(7);
+
+                if(!jwtUtil.isTokenValid(jwtToken))
                     throw new RuntimeException("unauthorized access to application");
 
+                request = exchange.getRequest()
+                        .mutate()
+                        .header("username", jwtUtil.extractUsername(jwtToken))
+                        .header("userId", jwtUtil.extractUserId(jwtToken))
+                        .header("fullName", jwtUtil.extractFullName(jwtToken))
+                        .build();
             }
-            return chain.filter(exchange);
+            assert request != null;
+            return chain.filter(exchange.mutate().request(request).build());
         });
     }
 
