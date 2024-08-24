@@ -1,29 +1,24 @@
 package com.jellybrains.quietspace_backend_ms.reaction_service.service;
 
-import com.jellybrains.quietspace_backend_ms.reaction_service.model.request.ReactionRequest;
-import com.jellybrains.quietspace_backend_ms.reaction_service.model.response.ReactionResponse;
-import com.jellybrains.quietspace_backend_ms.reaction_service.utils.enums.ContentType;
+import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ContentType;
+import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ReactionType;
+import com.jellybrains.quietspace_backend_ms.reaction_service.model.Reaction;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
 
 public interface ReactionService {
 
-    void handleReaction(ReactionRequest reaction);
+    void handleReaction(Reaction reaction);
 
-    Optional<ReactionResponse> getUserReactionByContentId(String contentId);
+    Optional<Reaction> getUserReactionByContentId(String contentId);
 
-    Page<ReactionResponse> getLikesByContentId(String contentId, Integer pageNumber, Integer pageSize);
+    Page<Reaction> getReactionsByContentIdAndReactionType(String contentId, ReactionType reactionType, Integer pageNumber, Integer pageSize);
 
-    Page<ReactionResponse> getDislikesByContentId(String contentId, Integer pageNumber, Integer pageSize);
+    Integer countByContentIdAndReactionType(String contentId, ReactionType reactionType);
 
-    Integer getLikeCountByContentId(String contentId);
+    Page<Reaction> getReactionsByContentIdAndContentType(String contentId, ContentType type, Integer pageNumber, Integer pageSize);
 
-    Integer getDislikeCountByContentId(String contentId);
+    Page<Reaction> getReactionsByUserIdAndContentType(String userId, ContentType contentType, Integer pageNumber, Integer pageSize);
 
-    Page<ReactionResponse> getReactionsByContentId(String contentId, ContentType type, Integer pageNumber, Integer pageSize);
-
-    Page<ReactionResponse> getReactionsByUserId(String userId, ContentType contentType, Integer pageNumber, Integer pageSize);
-
-    Page<ReactionResponse> getAllReactionsByUserId(String userId, ContentType contentType, Integer pageNumber, Integer pageSize);
 }

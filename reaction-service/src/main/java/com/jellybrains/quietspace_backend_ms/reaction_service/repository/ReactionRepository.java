@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.reaction_service.repository;
 
+import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ContentType;
+import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ReactionType;
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.Reaction;
-import com.jellybrains.quietspace_backend_ms.reaction_service.utils.enums.ContentType;
-import com.jellybrains.quietspace_backend_ms.reaction_service.utils.enums.LikeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -15,11 +15,9 @@ public interface ReactionRepository extends MongoRepository<Reaction, String> {
 
     Page<Reaction> findAllByUserId(String userId, PageRequest pageRequest);
 
-    Page<Reaction> findAllByContentIdAndUserId(String contentId, String userId, PageRequest pageRequest);
-
     boolean existsByContentIdAndUserId(String contentId, String userId);
 
-    Optional<Reaction> findByContentIdAndUserId(String commentId, String userId);
+    Optional<Reaction> findByContentIdAndUserId(String commentId, String id);
 
     Page<Reaction> findAllByContentTypeAndUserId(ContentType contentType, String userId, PageRequest pageRequest);
 
@@ -27,10 +25,8 @@ public interface ReactionRepository extends MongoRepository<Reaction, String> {
 
     Page<Reaction> findAllByUserIdAndContentType(String userId, ContentType contentType, PageRequest pageRequest);
 
-    Page<Reaction> findAllByContentIdAndContentTypeAndLikeType(String contentId, ContentType type, LikeType likeType, PageRequest pageRequest);
+    Integer countByContentIdAndReactionType(String contentId, ReactionType reactionType);
 
-    Integer countByContentIdAndLikeType(String contentId, LikeType likeType);
-
-    Page<Reaction> findAllByContentIdAndLikeType(String contentId, LikeType likeType, PageRequest pageRequest);
+    Page<Reaction> findAllByContentIdAndReactionType(String contentId, ReactionType reactionType, PageRequest pageRequest);
 
 }
