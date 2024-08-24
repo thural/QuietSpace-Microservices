@@ -7,16 +7,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
 
-public interface CommentRepository extends JpaRepository<Comment, UUID> {
-    Page<Comment> findAllByPostId(UUID postId, Pageable pageable);
+public interface CommentRepository extends JpaRepository<Comment, String> {
+    Page<Comment> findAllByPostId(String postId, Pageable pageable);
 
-    Integer countByParentIdAndPost(UUID parentId, Post post);
+    Integer countByParentIdAndPost(String parentId, Post post);
 
-    void deleteAllByParentId(UUID parentId);
+    void deleteAllByParentId(String parentId);
 
-    Page<Comment> findAllByParentId(UUID commentId, Pageable pageable);
+    Page<Comment> findAllByParentId(String commentId, Pageable pageable);
 
-    Page<Comment> findAllByUserId(UUID userId, PageRequest pageRequest);
+    Page<Comment> findAllByUserId(String userId, PageRequest pageRequest);
 }

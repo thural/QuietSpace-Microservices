@@ -1,36 +1,37 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.client.ReactionClient;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.service.ReactionService;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PollRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.*;
-import com.jellybrains.quietspace_backend_ms.feedservice.client.UserClient;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.response.OptionResponse;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PollResponse;
+import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.model.response.ReactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class PostMapper {
 
-    private final UserClient userClient;
-    private final ReactionClient reactionClient;
+    private final ReactionService reactionService;
+    private final UserService userService;
 
     public Post postRequestToEntity(PostRequest postRequest) {
         Post post = Post.builder()
-                .userId(getLoggedUser().getId())
+                .userId(getLoggedUserId())
                 .title(postRequest.getTitle())
                 .text(postRequest.getText())
                 .build();
 
-        if(postRequest.getPoll() == null) return post;
+        if (postRequest.getPoll() == null) return post;
 
         PollRequest pollRequest = postRequest.getPoll();
 
@@ -40,7 +41,7 @@ public class PostMapper {
                 .build();
 
         List<PollOption> options = pollRequest.getOptions().stream()
-                .map(option -> PollOption.builder()
+                .<PollOption>map(option -> PollOption.builder()
                         .label(option)
                         .poll(newPoll)
                         .votes(new HashSet<>())
@@ -53,11 +54,12 @@ public class PostMapper {
         return post;
     }
 
-   public PostResponse postEntityToResponse(Post post) {
-        Integer commentCount = post.getComments().size();
-        Integer postLikeCount = getLikeCountByContentId(post.getId());
-        Integer dislikeCount = getDislikeCountByContentId(post.getId());
-        ReactionResponse userReaction = getUserReactionByContentId(post.getId());
+    public PostResponse postEntityToResponse(Post post) {
+        Integer commentCount = post.getComments() != null ? post.getComments().size() : 0;
+        Integer postLikeCount = reactionService.getLikeCount(post.getId());
+        Integer dislikeCount = reactionService.getDislikeCount(post.getId());
+        String username = userService.getUsernameById(post.getUserId());
+        ReactionResponse userReaction = reactionService.getUserReactionByContentId(post.getId());
 
         PostResponse postResponse = PostResponse.builder()
                 .id(post.getId())
@@ -67,9 +69,7 @@ public class PostMapper {
                 .likeCount(postLikeCount)
                 .dislikeCount(dislikeCount)
                 .userId(post.getUserId())
-                .username(getUserById(post.getUserId())
-                        .getUsername()
-                )
+                .username(username)
                 .userReaction(userReaction)
                 .createDate(post.getCreateDate())
                 .updateDate(post.getUpdateDate())
@@ -88,9 +88,7 @@ public class PostMapper {
         PollResponse pollResponse = PollResponse.builder()
                 .id(post.getPoll().getId())
                 .options(options)
-                .votedOption(
-                        getVotedPollOptionLabel(post.getPoll(), post.getUserId())
-                )
+                .votedOption(getVotedPollOptionLabel(post.getPoll(), post.getUserId()))
                 .voteCount(getVoteCount(post.getPoll()))
                 .build();
 
@@ -98,20 +96,20 @@ public class PostMapper {
         return postResponse;
     }
 
-    private Integer getVoteCount(Poll poll){
+    private Integer getVoteCount(Poll poll) {
         return poll.getOptions().stream()
                 .map(option -> option.getVotes().size())
                 .reduce(0, Integer::sum);
     }
 
-    private String getVoteShare(PollOption option){
+    private String getVoteShare(PollOption option) {
         Integer totalVoteCount = getVoteCount(option.getPoll());
-        int optionVoteNum = option.getVotes().size();
+        int optionVoteNum = option.getVotes() != null ? option.getVotes().size() : 0;
         if (totalVoteCount < 1) return "0%";
-        return (optionVoteNum * 100/totalVoteCount) +  "%";
+        return (optionVoteNum * 100 / totalVoteCount) + "%";
     }
 
-    private String getVotedPollOptionLabel(Poll poll, UUID userId){
+    private String getVotedPollOptionLabel(Poll poll, String userId) {
         return poll.getOptions().stream()
                 .filter(option -> option.getVotes().contains(userId))
                 .findFirst()
@@ -119,26 +117,8 @@ public class PostMapper {
                 .orElse("not voted");
     }
 
-    private UserResponse getLoggedUser(){
-        return userClient.getLoggedUser()
-                .orElseThrow(UserNotFoundException::new);
-    }
-
-    private Integer getLikeCountByContentId(UUID contentId){
-        return reactionClient.getLikeCountByContentId(contentId);
-    }
-
-    private Integer getDislikeCountByContentId(UUID contentId){
-        return reactionClient.getDislikeCountByContentId(contentId);
-    }
-
-    private ReactionResponse getUserReactionByContentId(UUID contentId){
-        return reactionClient.getUserReactionByContentId(contentId).orElse(null);
-    }
-
-    private UserResponse getUserById(UUID userId){
-        return userClient.getUserById(userId)
-                .orElseThrow(UserNotFoundException::new);
+    private String getLoggedUserId() {
+        return userService.getAuthorizedUserId();
     }
 
 }

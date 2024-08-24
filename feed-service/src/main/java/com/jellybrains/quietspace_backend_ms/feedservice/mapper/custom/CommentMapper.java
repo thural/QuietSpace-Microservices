@@ -1,20 +1,18 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.client.ReactionClient;
-import com.jellybrains.quietspace_backend_ms.feedservice.client.UserClient;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.client.ReactionClient;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.service.ReactionService;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Comment;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.exception.UserNotFoundException;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.ReactionResponse;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.CommentRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -22,11 +20,12 @@ public class CommentMapper {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final UserService userService;
     private final ReactionClient reactionClient;
-    private final UserClient userClient;
+    private final ReactionService reactionService;
 
 
-    public Comment commentRequestToEntity(CommentRequest comment){
+    public Comment commentRequestToEntity(CommentRequest comment) {
         return Comment.builder()
                 .parentId(comment.getParentId())
                 .text(comment.getText())
@@ -35,42 +34,29 @@ public class CommentMapper {
                 .build();
     }
 
-    public CommentResponse commentEntityToResponse(Comment comment){
+    public CommentResponse commentEntityToResponse(Comment comment) {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .parentId(comment.getParentId())
                 .postId(comment.getPost().getId())
                 .userId(comment.getUserId())
-                .username(getUserNameById(comment.getUserId()))
+                .username(userService.getUsernameById(comment.getUserId()))
                 .text(comment.getText())
-                .userReaction(getUserReaction(comment.getId()))
+                .userReaction(reactionService.getUserReactionByContentId(comment.getId()))
                 .createDate(comment.getCreateDate())
                 .updateDate(comment.getUpdateDate())
-                .likeCount(getLikeCount(comment.getId()))
+                .likeCount(reactionService.getLikeCount(comment.getId()))
                 .replyCount(getReplyCount(comment.getId(), comment.getPost()))
                 .build();
     }
 
-    private Post getPostById(UUID postId){
-        return postRepository.findById(postId).orElse(null);
+    private Post getPostById(String postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
-    private String getUserNameById(UUID userId){
-        return userClient.getUserById(userId)
-                .map(UserResponse::getUsername)
-                .orElseThrow(UserNotFoundException::new);
-    }
-
-    private Integer getReplyCount(UUID parentId, Post post){
+    private Integer getReplyCount(String parentId, Post post) {
         return commentRepository.countByParentIdAndPost(parentId, post);
-    }
-
-    private Integer getLikeCount(UUID commentId){
-        return reactionClient.getLikeCountByContentId(commentId); // TODO: get reaction from webclient, add likeType to request
-    }
-
-    private ReactionResponse getUserReaction(UUID commentId){
-        return reactionClient.getUserReactionByContentId(commentId).orElse(null);
     }
 
 }

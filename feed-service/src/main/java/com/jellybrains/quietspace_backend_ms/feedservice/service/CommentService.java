@@ -5,23 +5,22 @@ import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentR
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface CommentService {
 
-    Page<CommentResponse> getCommentsByPost(UUID postId, Integer pageNumber, Integer pageSize);
+    Page<CommentResponse> getCommentsByPostId(String postId, Integer pageNumber, Integer pageSize);
 
     CommentResponse createComment(CommentRequest comment);
 
-    Optional<CommentResponse> getCommentById(UUID id);
+    Optional<CommentResponse> getCommentById(String id);
 
-    CommentResponse updateComment(UUID commentId, CommentRequest comment);
+    CommentResponse updateComment(String commentId, CommentRequest comment);
 
-    void deleteComment(UUID id);
+    void deleteComment(String id);
 
-    Page<CommentResponse> getRepliesByParentId(UUID commentId, Integer pageNumber, Integer pageSize);
+    Page<CommentResponse> getRepliesByParentId(String commentId, Integer pageNumber, Integer pageSize);
 
-    CommentResponse patchComment(UUID id, CommentRequest comment);
+    CommentResponse patchComment(String id, CommentRequest comment);
 
-    Page<CommentResponse> getCommentsByUser(UUID userId, Integer pageNumber, Integer pageSize);
+    Page<CommentResponse> getCommentsByUserId(String userId, Integer pageNumber, Integer pageSize);
 }

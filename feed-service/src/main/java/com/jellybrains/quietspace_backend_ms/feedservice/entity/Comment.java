@@ -1,35 +1,27 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.entity.BaseEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
+@SuperBuilder
 @AllArgsConstructor
-public class Comment {
+@NoArgsConstructor
+public class Comment extends BaseEntity {
 
-    @Id
-    @JdbcTypeCode(SqlTypes.CHAR)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
-
-    @Version
-    private Integer version;
-
-    private UUID parentId;
+    private String parentId;
 
     @NotNull
     @NotBlank
@@ -37,28 +29,11 @@ public class Comment {
 
     @NotNull
     @JsonIgnore
-    private UUID userId;
+    private String userId;
 
     @NotNull
     @ManyToOne
     @JsonIgnore
     private Post post;
-
-    @NotNull
-    private OffsetDateTime createDate = OffsetDateTime.now();
-
-    @NotNull
-    private OffsetDateTime updateDate = OffsetDateTime.now();
-
-    @PrePersist
-    private void onCreate() {
-        createDate = OffsetDateTime.now();
-        updateDate = OffsetDateTime.now();
-    }
-
-    @PreUpdate
-    private void onUpdate() {
-        updateDate = OffsetDateTime.now();
-    }
 
 }

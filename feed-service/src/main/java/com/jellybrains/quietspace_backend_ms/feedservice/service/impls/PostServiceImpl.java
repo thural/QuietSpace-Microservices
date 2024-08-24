@@ -1,19 +1,17 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 
+import com.jellybrains.quietspace_backend_ms.feedservice.common.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.exception.UserNotFoundException;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.exception.CustomErrorException;
 import com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom.PostMapper;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
-import com.jellybrains.quietspace_backend_ms.feedservice.client.UserClient;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.PostService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,16 +20,16 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
-import static com.jellybrains.quietspace_backend_ms.feedservice.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace_backend_ms.feedservice.common.utils.PagingProvider.buildPageRequest;
+
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserClient userClient;
+    private final UserService userService;
     private final PostMapper postMapper;
 
     public final String AUTHOR_MISMATCH_MESSAGE = "post author mismatch with current user";
@@ -44,46 +42,49 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse addPost(PostRequest post) {
+        String loggedUserId = userService.getAuthorizedUserId();
+        if (!loggedUserId.equals(post.getUserId()))
+            throw new CustomErrorException(AUTHOR_MISMATCH_MESSAGE);
         return postMapper.postEntityToResponse(
                 postRepository.save(postMapper.postRequestToEntity(post))
         );
     }
 
-    public String getVotedPollOptionLabel(Poll poll){
-        UUID userId = userClient.getLoggedUser()
-                .map(UserResponse::getId)
-                .orElseThrow(UserNotFoundException::new);
+    public String getVotedPollOptionLabel(Poll poll) {
+        String userId = userService.getAuthorizedUserId();
 
         return poll.getOptions().stream()
-               .filter(option -> option.getVotes().contains(userId))
-               .findAny()
+                .filter(option -> option.getVotes().contains(userId))
+                .findAny()
                 .map(PollOption::getLabel).orElse("not voted");
     }
 
     @Override
-    public Optional<PostResponse> getPostById(UUID postId) {
+    public Optional<PostResponse> getPostById(String postId) {
         Post post = findPostEntityById(postId);
         return Optional.of(postMapper.postEntityToResponse(post));
     }
 
     @Override
-    public PostResponse updatePost(UUID postId, PostRequest post) {
+    public PostResponse updatePost(String postId, PostRequest post) {
+        String loggedUserId = userService.getAuthorizedUserId();
         Post existingPost = findPostEntityById(postId);
-        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost);
+        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUserId);
         if (postExistsByLoggedUser) {
             existingPost.setText(post.getText());
             return postMapper.postEntityToResponse(postRepository.save(existingPost));
-        } else throw new BadRequestException(AUTHOR_MISMATCH_MESSAGE);
+        } else throw new CustomErrorException(AUTHOR_MISMATCH_MESSAGE);
     }
 
     @Override
-    public PostResponse patchPost(UUID postId, PostRequest post) {
+    public PostResponse patchPost(String postId, PostRequest post) {
+        String loggedUserId = userService.getAuthorizedUserId();
         Post existingPost = findPostEntityById(postId);
-        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost);
+        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUserId);
         if (postExistsByLoggedUser) {
             if (StringUtils.hasText(post.getText())) existingPost.setText(post.getText());
             return postMapper.postEntityToResponse(postRepository.save(existingPost));
-        } else throw new BadRequestException(AUTHOR_MISMATCH_MESSAGE);
+        } else throw new CustomErrorException(AUTHOR_MISMATCH_MESSAGE);
     }
 
     @Override
@@ -91,14 +92,14 @@ public class PostServiceImpl implements PostService {
         Post foundPost = postRepository.findById(voteRequest.getPostId())
                 .orElseThrow(EntityNotFoundException::new);
 
-        if(foundPost.getPoll().getOptions().stream()
+        if (foundPost.getPoll().getOptions().stream()
                 .anyMatch(option -> option.getVotes().contains(voteRequest.getUserId()))) return;
 
         foundPost.getPoll().getOptions().stream()
                 .filter(option -> option.getLabel().equals(voteRequest.getOption()))
                 .findFirst()
                 .ifPresent(option -> {
-                    Set<UUID> votes = option.getVotes();
+                    Set<String> votes = option.getVotes();
                     votes.add(voteRequest.getUserId());
                     option.setVotes(votes);
                 });
@@ -107,15 +108,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(UUID postId) {
+    public void deletePost(String postId) {
+        String loggedUserId = userService.getAuthorizedUserId();
         Post existingPost = findPostEntityById(postId);
-        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost);
+        boolean postExistsByLoggedUser = isPostExistsByLoggedUser(existingPost, loggedUserId);
         if (postExistsByLoggedUser) postRepository.deleteById(postId);
-        else throw new BadRequestException(AUTHOR_MISMATCH_MESSAGE);
+        else throw new CustomErrorException(AUTHOR_MISMATCH_MESSAGE);
     }
 
     @Override
-    public Page<PostResponse> getPostsByUserId(UUID userId, Integer pageNumber, Integer pageSize) {
+    public Page<PostResponse> getPostsByUserId(String userId, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         Page<Post> postPage;
         if (userId != null) {
@@ -132,13 +134,11 @@ public class PostServiceImpl implements PostService {
         return postRepository.findAllByQuery(query, pageRequest).map(postMapper::postEntityToResponse);
     }
 
-    private boolean isPostExistsByLoggedUser(Post existingPost) {
-        return existingPost.getUserId().equals(userClient.getLoggedUser()
-                .map(UserResponse::getId)
-                .orElseThrow(UserNotFoundException::new));
+    private boolean isPostExistsByLoggedUser(Post existingPost, String loggedUserId) {
+        return existingPost.getUserId().equals(loggedUserId);
     }
 
-    private Post findPostEntityById(UUID postId) {
+    private Post findPostEntityById(String postId) {
         return postRepository.findById(postId)
                 .orElseThrow(EntityNotFoundException::new);
     }

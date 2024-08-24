@@ -1,9 +1,8 @@
-package com.jellybrains.quietspace_backend_ms.feedservice.model.response;
+package com.jellybrains.quietspace_backend_ms.feedservice.common.model.response;
 
 import lombok.*;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserResponse {
 
-    private UUID id;
+    private String id;
     private String role;
     private String username;
     private String email;

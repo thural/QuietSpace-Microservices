@@ -1,79 +1,89 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.controller;
 
+import com.jellybrains.quietspace_backend_ms.feedservice.common.service.NotificationService;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.CommentService;
+import com.jellybrains.quietspace_backend_ms.feedservice.common.utils.enums.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comments")
 public class CommentController {
 
+    public static final String COMMENT_PATH = "/api/v1/comments";
     public static final String COMMENT_PATH_ID = "/{commentId}";
 
     private final CommentService commentService;
+    private final NotificationService notificationService;
 
 
     @GetMapping("/post/{postId}")
-    Page<CommentResponse> getCommentsByPostId(@PathVariable UUID postId,
-                                              @RequestParam(required = false) Integer pageNumber,
-                                              @RequestParam(required = false) Integer pageSize) {
-        return commentService.getCommentsByPost(postId, pageNumber, pageSize);
+    Page<CommentResponse> getCommentsByPostId(
+            @PathVariable String postId,
+            @RequestParam(name = "page-number", required = false) Integer pageNumber,
+            @RequestParam(name = "page-size", required = false) Integer pageSize
+    ) {
+        return commentService.getCommentsByPostId(postId, pageNumber, pageSize);
     }
 
     @GetMapping("/user/{userId}")
-    Page<CommentResponse> getCommentsByUserId(@PathVariable UUID userId,
-                                              @RequestParam(required = false) Integer pageNumber,
-                                              @RequestParam(required = false) Integer pageSize) {
-        return commentService.getCommentsByUser(userId, pageNumber, pageSize);
+    Page<CommentResponse> getCommentsByUserId(
+            @PathVariable String userId,
+            @RequestParam(name = "page-number", required = false) Integer pageNumber,
+            @RequestParam(name = "page-size", required = false) Integer pageSize
+    ) {
+        return commentService.getCommentsByUserId(userId, pageNumber, pageSize);
     }
 
     @GetMapping(COMMENT_PATH_ID + "/replies")
-    Page<CommentResponse> getCommentRepliesById(@PathVariable UUID commentId,
-                                              @RequestParam(required = false) Integer pageNumber,
-                                              @RequestParam(required = false) Integer pageSize) {
+    Page<CommentResponse> getCommentRepliesById(
+            @PathVariable String commentId,
+            @RequestParam(name = "page-number", required = false) Integer pageNumber,
+            @RequestParam(name = "page-size", required = false) Integer pageSize
+    ) {
         return commentService.getRepliesByParentId(commentId, pageNumber, pageSize);
     }
 
     @GetMapping(COMMENT_PATH_ID)
-    CommentResponse getCommentById(@PathVariable UUID commentId) {
-        Optional<CommentResponse> optionalComment = commentService.getCommentById(commentId);
-        return optionalComment.orElse(null);
+    ResponseEntity<CommentResponse> getCommentById(@PathVariable String commentId) {
+        return commentService.getCommentById(commentId)
+                .map(comment -> ResponseEntity.ok().body(comment))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    ResponseEntity<?> createComment(@RequestBody @Validated CommentRequest comment) {
-        CommentResponse createdComment = commentService.createComment(comment);
-        return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
+    ResponseEntity<CommentResponse> createComment(@RequestBody @Validated CommentRequest comment) {
+        CommentResponse response = commentService.createComment(comment);
+        notificationService.processNotification(NotificationType.COMMENT, comment.getPostId());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping(COMMENT_PATH_ID)
-    ResponseEntity<?> putComment(@PathVariable UUID commentId,
-                                 @RequestBody @Validated CommentRequest comment) {
-        CommentResponse patchedComment = commentService.updateComment(commentId, comment);
-        return new ResponseEntity<>(patchedComment, HttpStatus.NO_CONTENT);
+    ResponseEntity<CommentResponse> putComment(
+            @PathVariable String commentId,
+            @RequestBody @Validated CommentRequest comment
+    ) {
+        // TODO: broadcast the update over socket
+        return ResponseEntity.ok(commentService.updateComment(commentId, comment));
     }
 
     @DeleteMapping(COMMENT_PATH_ID)
-    ResponseEntity<?> deleteComment(@PathVariable UUID commentId) {
+    ResponseEntity<?> deleteComment(@PathVariable String commentId) {
+        // TODO: broadcast the update over socket
         commentService.deleteComment(commentId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping(COMMENT_PATH_ID)
-    ResponseEntity<?> patchComment(@PathVariable UUID commentId,
-                                   @RequestBody CommentRequest comment) {
-        CommentResponse patchedComment = commentService.patchComment(commentId, comment);
-        return new ResponseEntity<>(patchedComment, HttpStatus.OK);
+    ResponseEntity<CommentResponse> patchComment(@PathVariable String commentId, @RequestBody CommentRequest comment) {
+        return ResponseEntity.ok(commentService.patchComment(commentId, comment));
     }
 
 }

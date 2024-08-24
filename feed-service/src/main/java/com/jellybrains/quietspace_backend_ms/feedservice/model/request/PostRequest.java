@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class PostRequest {
 
     @NotNull(message = "user id can not be null")
-    private UUID userId;
+    private String userId;
 
     private String title;
 

@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -13,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PollResponse {
 
-    private UUID id;
+    private String id;
     private String votedOption;
     private Integer voteCount;
     private List<OptionResponse> options;

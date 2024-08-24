@@ -7,7 +7,6 @@ import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResp
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface PostService {
 
@@ -15,19 +14,19 @@ public interface PostService {
 
     PostResponse addPost(PostRequest post);
 
-    Optional<PostResponse> getPostById(UUID id);
+    Optional<PostResponse> getPostById(String id);
 
-    PostResponse updatePost(UUID id, PostRequest post);
+    PostResponse updatePost(String id, PostRequest post);
 
-    void deletePost(UUID id);
+    void deletePost(String id);
 
-    PostResponse patchPost(UUID id, PostRequest post);
+    PostResponse patchPost(String id, PostRequest post);
 
     void votePoll(VoteRequest voteRequest);
 
     String getVotedPollOptionLabel(Poll poll);
 
-    Page<PostResponse> getPostsByUserId(UUID userId, Integer pageNumber, Integer pageSize);
+    Page<PostResponse> getPostsByUserId(String userId, Integer pageNumber, Integer pageSize);
 
     Page<PostResponse> getAllByQuery(String query, Integer pageNumber, Integer pageSize);
 }

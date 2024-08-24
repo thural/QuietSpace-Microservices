@@ -2,7 +2,6 @@ package com.jellybrains.quietspace_backend_ms.feedservice.model.response;
 
 import lombok.*;
 
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OptionResponse {
 
-    private UUID id;
+    private String id;
     private String label;
     private String voteShare;
 

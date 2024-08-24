@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace_backend_ms.feedservice.utils;
+package com.jellybrains.quietspace_backend_ms.feedservice.common.utils;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

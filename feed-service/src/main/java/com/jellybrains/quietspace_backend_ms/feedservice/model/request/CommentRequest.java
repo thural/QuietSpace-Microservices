@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,12 +14,12 @@ import java.util.UUID;
 public class CommentRequest {
 
     @NotNull(message = "user id can not be null")
-    private UUID userId;
+    private String userId;
 
     @NotNull(message = "post id can not be null")
-    private UUID postId;
+    private String postId;
 
-    private UUID parentId;
+    private String parentId;
 
     @NotBlank(message = "comment text can not be blank")
     @Size(min = 1, max = 255, message = "at least 1 and max 255 characters expected")

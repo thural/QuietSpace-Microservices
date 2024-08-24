@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace_backend_ms.feedservice.exception;
+package com.jellybrains.quietspace_backend_ms.feedservice.common.exception;
 
 public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException(String message) {
