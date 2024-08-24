@@ -1,9 +1,9 @@
 package com.jellybrains.quietspace_backend_ms.notification_service.kafka;
 
+import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.NotificationType;
 import com.jellybrains.quietspace_backend_ms.notification_service.event.NewMessageEvent;
 import com.jellybrains.quietspace_backend_ms.notification_service.model.Notification;
 import com.jellybrains.quietspace_backend_ms.notification_service.repository.NotificationRepository;
-import com.jellybrains.quietspace_backend_ms.notification_service.utils.enums.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -24,8 +24,8 @@ public class NotificationConsumer {
         notificationRepository.save(
                 Notification.builder()
                         .message(newMessageEvent.getMessage())
-                        .notificationType(NotificationType.MESSAGE)
-                        .receiverId(newMessageEvent.getReceiverId())
+                        .notificationType(NotificationType.COMMENT)
+                        .userId(newMessageEvent.getReceiverId())
                         .build()
         );
         // TODO: use a socket to relay notification to frontend client

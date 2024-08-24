@@ -1,12 +1,15 @@
 package com.jellybrains.quietspace_backend_ms.notification_service.model;
 
-import com.jellybrains.quietspace_backend_ms.notification_service.utils.enums.NotificationType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.ContentType;
+import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.NotificationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -23,28 +26,43 @@ public class Notification {
     @Id
     private String id;
 
-    @Indexed
-    @NotNull(message = "notification sender can not be null")
-    private String senderId;
+    @NotNull(message = "notification content can not be null")
+    private String contentId;
 
     @Indexed
+    @NotNull(message = "notification sender can not be null")
+    private String actorId;
+
+    @Indexed
+    @JsonIgnore
     @NotNull(message = "notification receiver can not be null")
-    private String receiverId;
+    private String userId;
+
+    @NotNull(message = "notification username can not be null")
+    @NotBlank(message = "notification username can not be blank")
+    @Transient
+    private String username;
 
     @NotBlank(message = "notification message can not be blank")
     private String message;
 
     @Builder.Default
     @NotNull(message = "notification seen state can not be null")
-    private Boolean seen = Boolean.FALSE;
+    private Boolean isSeen = Boolean.FALSE;
 
-    @NotNull(message = "notification type can not be null")
+    @JsonIgnore
+    @NotNull(message = "notification content type can not be null")
+    private ContentType contentType;
+
+    @NotNull(message = "notification type cna not be null")
     private NotificationType notificationType;
 
     @CreatedDate
-    @NotNull(message = "notification ")
+    @NotNull(message = "notification create date can not be null")
     private OffsetDateTime createdDate;
+
     @LastModifiedDate
+    @NotNull(message = "notification update date can not be null")
     private OffsetDateTime updateDDate;
 
 }

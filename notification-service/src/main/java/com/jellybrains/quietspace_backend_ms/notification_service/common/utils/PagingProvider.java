@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace_backend_ms.notification_service.utils;
+package com.jellybrains.quietspace_backend_ms.notification_service.common.utils;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
