@@ -11,7 +11,7 @@ FROM eclipse-temurin:21-jre-alpine AS builder
 
 WORKDIR extracted
 
-COPY --from=build /app/build/libs/user-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=build /app/build/libs/profile-service-0.0.1-SNAPSHOT.jar ./app.jar
 
 RUN java -Djarmode=layertools -jar app.jar extract
 
