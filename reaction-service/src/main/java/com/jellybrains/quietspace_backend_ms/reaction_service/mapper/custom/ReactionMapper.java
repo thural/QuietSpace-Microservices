@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.reaction_service.mapper.custom;
 
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.model.request.ReactionRequest;
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.model.response.ReactionResponse;
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.service.UserService;
+import com.jellybrains.quietspace.common_service.model.request.ReactionRequest;
+import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.Reaction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

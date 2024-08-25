@@ -1,9 +1,10 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service;
 
-import com.jellybrains.quietspace_backend_ms.userservice.common.enums.StatusType;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.request.CreateProfileRequest;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.response.ProfileResponse;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.response.UserResponse;
+
+import com.jellybrains.quietspace.common_service.enums.StatusType;
+import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
+import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
+import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.userservice.entity.Profile;
 import org.springframework.data.domain.Page;
 

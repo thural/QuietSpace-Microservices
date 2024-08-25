@@ -1,10 +1,10 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.common.service.UserService;
+import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
+import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Comment;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.common.exception.CustomErrorException;
-import com.jellybrains.quietspace_backend_ms.feedservice.common.exception.UnauthorizedException;
 import com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom.CommentMapper;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
@@ -22,8 +22,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
-import static com.jellybrains.quietspace_backend_ms.feedservice.common.utils.PagingProvider.BY_CREATED_DATE_ASC;
-import static com.jellybrains.quietspace_backend_ms.feedservice.common.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.BY_CREATED_DATE_ASC;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
 
 
 @Slf4j

@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.common.UserService;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Message;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.CustomErrorException;
@@ -19,7 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static com.jellybrains.quietspace_backend_ms.chatservice.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
+
 
 @Slf4j
 @Service

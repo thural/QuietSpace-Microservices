@@ -1,13 +1,13 @@
 package com.jellybrains.quietspace_backend_ms.userservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.userservice.common.enums.StatusType;
-import com.jellybrains.quietspace_backend_ms.userservice.common.exception.CustomErrorException;
-import com.jellybrains.quietspace_backend_ms.userservice.common.exception.UnauthorizedException;
-import com.jellybrains.quietspace_backend_ms.userservice.common.exception.UserNotFoundException;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.request.CreateProfileRequest;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.response.ProfileResponse;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.response.UserResponse;
-import com.jellybrains.quietspace_backend_ms.userservice.common.service.UserService;
+import com.jellybrains.quietspace.common_service.enums.StatusType;
+import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
+import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
+import com.jellybrains.quietspace.common_service.exception.UserNotFoundException;
+import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
+import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
+import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.userservice.entity.Profile;
 import com.jellybrains.quietspace_backend_ms.userservice.mapper.custom.ProfileMapper;
 import com.jellybrains.quietspace_backend_ms.userservice.repository.ProfileRepository;
@@ -25,8 +25,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 
-import static com.jellybrains.quietspace_backend_ms.userservice.common.utils.PagingProvider.DEFAULT_SORT_OPTION;
-import static com.jellybrains.quietspace_backend_ms.userservice.common.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.DEFAULT_SORT_OPTION;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
 
 @Slf4j
 @Service

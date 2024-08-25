@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.userservice.controller;
 
-import com.jellybrains.quietspace_backend_ms.userservice.common.exception.*;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.response.ErrorResponse;
+import com.jellybrains.quietspace.common_service.exception.*;
+import com.jellybrains.quietspace.common_service.model.response.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;

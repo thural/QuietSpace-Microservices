@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.notification_service.kafka;
 
-import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace_backend_ms.notification_service.event.NewMessageEvent;
 import com.jellybrains.quietspace_backend_ms.notification_service.model.Notification;
 import com.jellybrains.quietspace_backend_ms.notification_service.repository.NotificationRepository;

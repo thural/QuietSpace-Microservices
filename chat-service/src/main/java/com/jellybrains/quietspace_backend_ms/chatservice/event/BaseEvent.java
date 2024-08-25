@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.event;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.jellybrains.quietspace_backend_ms.chatservice.utils.enums.EventType;
+import com.jellybrains.quietspace.common_service.enums.EventType;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

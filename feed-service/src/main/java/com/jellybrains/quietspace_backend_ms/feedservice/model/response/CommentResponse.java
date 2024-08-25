@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.model.response;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.common.model.response.ReactionResponse;
+import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
 import lombok.*;
 
 import java.time.OffsetDateTime;

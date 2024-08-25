@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.reaction_service.controller;
 
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.client.NotificationClient;
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ContentType;
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ReactionType;
+import com.jellybrains.quietspace.common_service.client.NotificationClient;
+import com.jellybrains.quietspace.common_service.enums.ContentType;
+import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.Reaction;
 import com.jellybrains.quietspace_backend_ms.reaction_service.service.ReactionService;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.notification_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.ContentType;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.enums.ContentType;
+import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.userservice.mapper.custom;
 
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.request.CreateProfileRequest;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.response.ProfileResponse;
-import com.jellybrains.quietspace_backend_ms.userservice.common.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
+import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
+import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.userservice.entity.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;

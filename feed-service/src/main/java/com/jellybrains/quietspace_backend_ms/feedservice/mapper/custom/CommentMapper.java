@@ -1,8 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.common.client.ReactionClient;
-import com.jellybrains.quietspace_backend_ms.feedservice.common.service.ReactionService;
-import com.jellybrains.quietspace_backend_ms.feedservice.common.service.UserService;
+import com.jellybrains.quietspace.common_service.service.ReactionService;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Comment;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
@@ -21,7 +20,6 @@ public class CommentMapper {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final UserService userService;
-    private final ReactionClient reactionClient;
     private final ReactionService reactionService;
 
 

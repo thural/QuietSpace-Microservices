@@ -1,10 +1,10 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.common.service.UserService;
+import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.common.exception.CustomErrorException;
 import com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom.PostMapper;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
 import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.jellybrains.quietspace_backend_ms.feedservice.common.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
 
 
 @Service

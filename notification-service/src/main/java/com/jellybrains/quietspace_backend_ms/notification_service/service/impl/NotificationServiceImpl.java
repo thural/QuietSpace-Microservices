@@ -1,13 +1,13 @@
 package com.jellybrains.quietspace_backend_ms.notification_service.service.impl;
 
-import com.jellybrains.quietspace_backend_ms.notification_service.common.exception.CustomNotFoundException;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.message.NotificationEvent;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.service.CommentService;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.service.PostService;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.service.UserService;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.ContentType;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.EventType;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.enums.ContentType;
+import com.jellybrains.quietspace.common_service.enums.EventType;
+import com.jellybrains.quietspace.common_service.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.exception.CustomNotFoundException;
+import com.jellybrains.quietspace.common_service.message.NotificationEvent;
+import com.jellybrains.quietspace.common_service.service.CommentService;
+import com.jellybrains.quietspace.common_service.service.PostService;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.notification_service.model.Notification;
 import com.jellybrains.quietspace_backend_ms.notification_service.repository.NotificationRepository;
 import com.jellybrains.quietspace_backend_ms.notification_service.service.NotificationService;
@@ -20,8 +20,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
-import static com.jellybrains.quietspace_backend_ms.notification_service.common.utils.PagingProvider.DEFAULT_SORT_OPTION;
-import static com.jellybrains.quietspace_backend_ms.notification_service.common.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.DEFAULT_SORT_OPTION;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
 import static com.jellybrains.quietspace_backend_ms.notification_service.controller.NotificationController.NOTIFICATION_EVENT_PATH;
 import static com.jellybrains.quietspace_backend_ms.notification_service.controller.NotificationController.NOTIFICATION_SUBJECT_PATH;
 

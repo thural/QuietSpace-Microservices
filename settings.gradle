@@ -1,6 +1,6 @@
-rootProject.name = 'quietspace-backend-ms'
+rootProject.name = 'quietspace'
 
-include 'authorization-service'
+include 'auth-service'
 include 'chat-service'
 include 'config-server'
 include 'discovery-server'
@@ -10,4 +10,4 @@ include 'gateway-server'
 include 'notification-service'
 include 'reaction-service'
 include 'user-service'
-
+include 'common-service'

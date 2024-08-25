@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
-group = 'com.jellybrains.quietspace-backend-ms'
+group = 'com.jellybrains.quietspace'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -45,6 +45,8 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
+
+	implementation project(':common-service')
 }
 
 dependencyManagement {

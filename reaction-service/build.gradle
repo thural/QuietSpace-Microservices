@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.5'
 }
 
-group = 'com.jellybrains.quietspace-backend-ms'
+group = 'com.jellybrains.quietspace'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -40,6 +40,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation project(':common-service')
 }
 
 dependencyManagement {

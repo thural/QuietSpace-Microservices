@@ -1,6 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.notification_service.controller;
 
-import com.jellybrains.quietspace_backend_ms.notification_service.common.utils.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.enums.ContentType;
+import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace_backend_ms.notification_service.model.Notification;
 import com.jellybrains.quietspace_backend_ms.notification_service.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +63,14 @@ public class NotificationController {
     }
 
     @PostMapping("/process")
-    ResponseEntity<?> processNotification(NotificationType type, String contentId) {
+    ResponseEntity<?> processNotification(@RequestParam NotificationType type, @RequestParam String contentId) {
         notificationService.processNotification(type, contentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/process-reaction")
+    ResponseEntity<?> processNotificationByReaction(@RequestParam ContentType type, @RequestParam String contentId) {
+        notificationService.processNotificationByReaction(type, contentId);
         return ResponseEntity.ok().build();
     }
 

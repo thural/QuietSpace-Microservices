@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jellybrains.quietspace_backend_ms.feedservice.common.entity.BaseEntity;
+import com.jellybrains.quietspace.common_service.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;

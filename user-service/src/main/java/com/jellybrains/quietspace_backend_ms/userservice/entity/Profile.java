@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.userservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jellybrains.quietspace_backend_ms.userservice.common.enums.StatusType;
+import com.jellybrains.quietspace.common_service.enums.StatusType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotNull;

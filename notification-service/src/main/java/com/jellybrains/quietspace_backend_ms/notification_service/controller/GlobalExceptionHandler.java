@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.notification_service.controller;
 
-import com.jellybrains.quietspace_backend_ms.notification_service.common.exception.*;
-import com.jellybrains.quietspace_backend_ms.notification_service.common.model.response.ErrorResponse;
+import com.jellybrains.quietspace.common_service.exception.*;
+import com.jellybrains.quietspace.common_service.model.response.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

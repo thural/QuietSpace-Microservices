@@ -1,7 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.client.UserClient;
-import com.jellybrains.quietspace_backend_ms.chatservice.common.UserService;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.CustomErrorException;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.UnauthorizedException;
@@ -24,7 +23,6 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final ChatMapper chatMapper;
     private final UserService userService;
-    private final UserClient userClient;
 
 
     @Override

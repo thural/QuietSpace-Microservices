@@ -1,7 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.mapper.custom;
 
 import com.jellybrains.quietspace_backend_ms.chatservice.client.UserClient;
-import com.jellybrains.quietspace_backend_ms.chatservice.common.UserService;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.request.ChatRequest;
 import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ChatResponse;
@@ -16,7 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ChatMapper {
-    private final UserService userService;
+
     private final MessageService messageService;
     private final UserClient userClient;
 
