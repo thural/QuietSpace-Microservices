@@ -10,8 +10,8 @@ spring:
       - ${CONFIG_ACTIVE_PROFILE}
 
   datasource:
-    username: ${DB_USER_USERNAME}
-    password: ${DB_USER_PASSWORD}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     url: ${USER_DB_URI}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -22,7 +22,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
 
 eureka:

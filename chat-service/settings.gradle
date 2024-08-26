@@ -1,3 +1,0 @@
-rootProject.name = 'chat-service'
-
-project(':common-service').projectDir = new File(settingsDir, '../common-service')

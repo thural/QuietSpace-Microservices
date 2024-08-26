@@ -21,14 +21,14 @@ public class ChatMapper {
 
     public Chat chatRequestToEntity(ChatRequest chatRequest) {
         return Chat.builder()
-                .users(chatRequest.getUserIds())
+                .memberIds(chatRequest.getUserIds())
                 .build();
     }
 
     public ChatResponse chatEntityToResponse(Chat chat) {
         return ChatResponse.builder()
                 .id(chat.getId())
-                .userIds(chat.getUsers())
+                .userIds(chat.getMemberIds())
                 .members(getChatMembers(chat))
                 .recentMessage(getLastMessage(chat))
                 .createDate(chat.getCreateDate())
@@ -42,6 +42,6 @@ public class ChatMapper {
 
 
     private List<UserResponse> getChatMembers(Chat chat) {
-        return userClient.getUsersFromIdList(chat.getUsers());
+        return userClient.getUsersFromIdList(chat.getMemberIds());
     }
 }

@@ -1,3 +1,0 @@
-rootProject.name = 'notification-service'
-
-project(':common-service').projectDir = new File(settingsDir, '../common-service')

@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.entity;
+package com.jellybrains.quietspace_backend_ms.feedservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

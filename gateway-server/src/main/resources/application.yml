@@ -1,13 +1,14 @@
 spring:
 
   application:
-  name: gateway-server
-  security:
-    jwt:
-      secret-key: ${JWT_SECRET_KEY}
-      expiration: 600000 # 10 minutes
-      refresh-token:
-        expiration: 86400000 # one day
+    name: gateway-server
+    security:
+      jwt:
+        secret-key: ${JWT_SECRET_KEY}
+        expiration: 600000 # 10 minutes
+        refresh-token:
+          expiration: 86400000 # one day
+
 
   config:
     import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}

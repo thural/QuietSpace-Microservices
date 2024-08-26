@@ -31,7 +31,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_USER_DB_PORT}:3306
+      - ${USER_DB_PORT}:3306
     expose:
       - 3306
 
@@ -47,10 +47,10 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_CHAT_DB_PORT}:5432
+      - ${CHAT_DB_PORT}:5432
     expose:
       - 5432
-    command: -p ${EXP_CHAT_DB_PORT}
+    command: -p ${CHAT_DB_PORT}
     restart: on-failure
 
   feed-service-db:
@@ -66,7 +66,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_FEED_DB_PORT}:3306
+      - ${FEED_DB_PORT}:3306
 
   notification-service-db:
     image: mongo:5.0
@@ -79,7 +79,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_NOTIFICATION_DB_PORT}:27017
+      - ${NOTIFICATION_DB_PORT}:27017
     volumes:
       - notification-data:/data/db
 
@@ -94,7 +94,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${EXP_REACTION_DB_PORT}:27017
+      - ${REACTION_DB_PORT}:27017
     volumes:
       - reaction-data:/data/db
 

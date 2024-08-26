@@ -17,14 +17,14 @@ public interface ProfileRepository extends JpaRepository<Profile, String> {
 
     Optional<Profile> findByEmail(String email);
 
-    @Query("SELECT u FROM Profile u WHERE u.username LIKE %:query% OR u.email LIKE %:query%")
+    @Query("SELECT p FROM Profile p WHERE p.username LIKE %:query% OR p.email LIKE %:query%")
     Page<Profile> findAllByQuery(String query, PageRequest pageRequest);
 
     Optional<Profile> findByUsername(String username);
 
     Optional<Profile> findByUserId(String userId);
 
-    @Query("SELECT p FROM Profile p WHERE :userIds.contains(p.userId)")
-    Page<Profile> findByUserIdsInList(@Param("userIds") List<String> userIds, PageRequest pageRequest);
+//    @Query("SELECT p FROM Profile p WHERE p.userId MEMBER OF :userIds")
+//    Page<Profile> findAllByUserIdContaining(@Param("userIds") List<String> userIds, PageRequest pageRequest);
 
 }

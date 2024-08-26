@@ -4,7 +4,6 @@ import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
 import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
-import com.jellybrains.quietspace_backend_ms.chatservice.exception.CustomErrorException;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.UnauthorizedException;
 import com.jellybrains.quietspace_backend_ms.chatservice.mapper.custom.ChatMapper;
 import com.jellybrains.quietspace_backend_ms.chatservice.repository.ChatRepository;
@@ -13,7 +12,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -31,10 +29,11 @@ public class ChatServiceImpl implements ChatService {
         if (!userService.getAuthorizedUserId().equals(memberId))
             throw new UnauthorizedException("user mismatch with the chat member");
 
-        return chatRepository.findAllByUsersId(memberId)
-                .stream()
-                .map(chatMapper::chatEntityToResponse)
-                .toList();
+//        return chatRepository.findByUsersContainingUserId(memberId)
+//                .stream()
+//                .map(chatMapper::chatEntityToResponse)
+//                .toList();
+        return List.of();
     }
 
 
@@ -51,9 +50,9 @@ public class ChatServiceImpl implements ChatService {
         Chat foundChat = findChatEntityById(chatId);
 
         userService.validateUserId(memberId);
-        List<String> users = foundChat.getUsers();
+        List<String> users = foundChat.getMemberIds();
         users.add(memberId);
-        foundChat.setUsers(users);
+        foundChat.setMemberIds(users);
 
         chatRepository.save(foundChat);
     }
@@ -62,10 +61,10 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<String> removeMemberWithId(String memberId, String chatId) {
         Chat foundChat = findChatEntityById(chatId);
-        List<String> members = foundChat.getUsers();
+        List<String> members = foundChat.getMemberIds();
         userService.validateUserId(memberId);
         members.remove(memberId);
-        foundChat.setUsers(members);
+        foundChat.setMemberIds(members);
         chatRepository.save(foundChat);
         return members;
     }
@@ -79,11 +78,6 @@ public class ChatServiceImpl implements ChatService {
 
         if (!userList.contains(userId))
             throw new UnauthorizedException("requesting user is not member of requested chat");
-
-        boolean isChatDuplicate = chatRepository.findAllByUsersIn(userList).stream()
-                .anyMatch(chat -> new HashSet<>(chat.getUsers()).containsAll(userList));
-
-        if (isChatDuplicate) throw new CustomErrorException("a chat with same members already exists");
 
         Chat createdChat = chatRepository.save(chatMapper.chatRequestToEntity(chatRequest));
         return chatMapper.chatEntityToResponse(createdChat);
@@ -104,7 +98,7 @@ public class ChatServiceImpl implements ChatService {
         Chat foundChat = chatRepository.findById(chatId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!foundChat.getUsers().contains(loggedUser))
+        if (!foundChat.getMemberIds().contains(loggedUser))
             throw new UnauthorizedException("chat does not belong to logged user");
 
         return foundChat;

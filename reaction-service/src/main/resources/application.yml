@@ -6,7 +6,10 @@ spring:
   data:
     mongodb:
       database: ${DB_NAME}
-      uri: ${REACTION_DB_URI}
+      host: localhost
+      port: ${REACTION_DB_PORT}
+      username: ${DB_ROOT_USERNAME}
+      password: ${DB_ROOT_PASSWORD}
       replica-set-name: ${MONGO_REPLICASET_NAME}
 
 eureka:

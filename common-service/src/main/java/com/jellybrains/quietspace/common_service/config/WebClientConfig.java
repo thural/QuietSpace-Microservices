@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -20,6 +24,7 @@ public class WebClientConfig {
 
     @Bean
     @LoadBalanced
+    @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public WebClient webClient() {
         return WebClient.builder()
                 .baseUrl(gatewayUrl)
@@ -30,5 +35,11 @@ public class WebClientConfig {
                 })
                 .build();
     }
+
+    @Bean
+    public RequestContextListener requestContextListener() {
+        return new RequestContextListener();
+    }
+
 
 }

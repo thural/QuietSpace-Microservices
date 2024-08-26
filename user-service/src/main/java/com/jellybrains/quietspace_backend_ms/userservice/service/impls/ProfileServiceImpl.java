@@ -116,7 +116,8 @@ public class ProfileServiceImpl implements ProfileService {
     public Page<UserResponse> listFollowings(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        Page<Profile> profilePage = profileRepository.findByUserIdsInList(profile.getFollowingUserIds(), pageRequest);
+//        Page<Profile> profilePage = profileRepository.findAllByUserIdContaining(profile.getFollowingUserIds(), pageRequest);
+        Page<Profile> profilePage = Page.empty();
         return profilePage.map(profileMapper::toUserResponse);
     }
 
@@ -124,7 +125,8 @@ public class ProfileServiceImpl implements ProfileService {
     public Page<UserResponse> listFollowers(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        Page<Profile> profilePage = profileRepository.findByUserIdsInList(profile.getFollowerUserIds(), pageRequest);
+//        Page<Profile> profilePage = profileRepository.findAllByUserIdContaining(profile.getFollowerUserIds(), pageRequest);
+        Page<Profile> profilePage = Page.empty();
         return profilePage.map(profileMapper::toUserResponse);
     }
 

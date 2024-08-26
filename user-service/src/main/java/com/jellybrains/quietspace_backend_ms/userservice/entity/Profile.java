@@ -2,7 +2,9 @@ package com.jellybrains.quietspace_backend_ms.userservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jellybrains.quietspace.common_service.enums.StatusType;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,10 +32,13 @@ public class Profile extends BaseEntity {
     String email;
 
     @JsonIgnore
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> followingUserIds;
     @JsonIgnore
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> followerUserIds;
     @JsonIgnore
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> blockedUserIds;
 
     @JsonIgnore

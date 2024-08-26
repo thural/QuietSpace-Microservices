@@ -3,7 +3,6 @@ package com.jellybrains.quietspace.common_service.model.response;
 import lombok.*;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserResponse {
 
-    private UUID id;
+    private String id;
     private String role;
     private String username;
     private String email;

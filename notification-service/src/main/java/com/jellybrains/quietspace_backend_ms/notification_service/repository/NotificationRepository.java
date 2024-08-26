@@ -14,8 +14,8 @@ public interface NotificationRepository extends MongoRepository<Notification, St
 
     Page<Notification> findAllByUserIdAndNotificationType(String userId, NotificationType type, Pageable pageable);
 
-    Optional<Notification> findByContentIdAndUserId(String contentId, String id);
+    Optional<Notification> findByContentIdAndUserId(String contentId, String userId);
 
-    Integer countByUserIdAndIsSeen(String contentId, Boolean isSeen);
+    Integer countByUserIdAndIsSeen(String userId, Boolean isSeen);
 
 }

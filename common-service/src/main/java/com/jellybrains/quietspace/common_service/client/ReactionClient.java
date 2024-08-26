@@ -1,7 +1,5 @@
 package com.jellybrains.quietspace.common_service.client;
 
-
-
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
 

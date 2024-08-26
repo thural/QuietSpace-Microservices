@@ -9,8 +9,8 @@ spring:
       - ${CONFIG_ACTIVE_PROFILE}
 
   datasource:
-    username: ${DB_USER_USERNAME}
-    password: ${DB_USER_PASSWORD}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     url: ${FEED_DB_URI}
     driver-class-name: com.mysql.cj.jdbc.Driver
 

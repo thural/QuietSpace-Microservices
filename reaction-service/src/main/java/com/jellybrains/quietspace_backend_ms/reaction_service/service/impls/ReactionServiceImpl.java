@@ -1,9 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.reaction_service.service.impls;
 
-
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.service.UserService;
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ContentType;
-import com.jellybrains.quietspace_backend_ms.reaction_service.common.enums.ReactionType;
+import com.jellybrains.quietspace.common_service.enums.ContentType;
+import com.jellybrains.quietspace.common_service.enums.ReactionType;
+import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.reaction_service.mapper.custom.ReactionMapper;
 import com.jellybrains.quietspace_backend_ms.reaction_service.model.Reaction;
 import com.jellybrains.quietspace_backend_ms.reaction_service.repository.ReactionRepository;
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static com.jellybrains.quietspace_backend_ms.reaction_service.common.utils.PagingProvider.DEFAULT_SORT_OPTION;
-import static com.jellybrains.quietspace_backend_ms.reaction_service.common.utils.PagingProvider.buildPageRequest;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.DEFAULT_SORT_OPTION;
+import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
 
 
 @Service

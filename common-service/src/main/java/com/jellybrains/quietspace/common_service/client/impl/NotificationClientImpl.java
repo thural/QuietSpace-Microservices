@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.common_service.client.impl;
 
-import com.jellybrains.quietspace_backend_ms.userservice.common.client.NotificationClient;
-import com.jellybrains.quietspace_backend_ms.userservice.common.enums.ContentType;
-import com.jellybrains.quietspace_backend_ms.userservice.common.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.client.NotificationClient;
+import com.jellybrains.quietspace.common_service.enums.ContentType;
+import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
