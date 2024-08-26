@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace_backend_ms.chatservice.model.request;
+package com.jellybrains.quietspace.common_service.model.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

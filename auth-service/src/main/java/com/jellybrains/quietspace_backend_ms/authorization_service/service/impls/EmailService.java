@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.service.impls;
 
-import com.jellybrains.quietspace_backend_ms.authorization_service.utils.enums.EmailTemplateName;
+import com.jellybrains.quietspace.common_service.enums.EmailTemplateName;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

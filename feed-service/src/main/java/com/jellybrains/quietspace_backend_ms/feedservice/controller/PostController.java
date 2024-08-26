@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.controller;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
+import com.jellybrains.quietspace.common_service.model.request.PostRequest;
+import com.jellybrains.quietspace.common_service.model.request.VoteRequest;
+import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -56,7 +56,7 @@ public class PostController {
     }
 
     @DeleteMapping(POST_PATH_ID)
-    ResponseEntity<?> deletePost(@PathVariable String postId) {
+    ResponseEntity<Void> deletePost(@PathVariable String postId) {
         postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
@@ -67,7 +67,7 @@ public class PostController {
     }
 
     @PostMapping("/vote-poll")
-    ResponseEntity<?> votePoll(@RequestBody VoteRequest voteRequest) {
+    ResponseEntity<Void> votePoll(@RequestBody VoteRequest voteRequest) {
         postService.votePoll(voteRequest);
         return ResponseEntity.ok().build();
     }

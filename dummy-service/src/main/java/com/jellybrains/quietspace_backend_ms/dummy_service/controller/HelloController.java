@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.dummy_service.controller;
 
-import com.jellybrains.quietspace_backend_ms.dummy_service.dto.request.DummyRequest;
+import com.jellybrains.quietspace_backend_ms.dummy_service.model.request.DummyRequest;
 import com.jellybrains.quietspace_backend_ms.dummy_service.service.DummyService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;

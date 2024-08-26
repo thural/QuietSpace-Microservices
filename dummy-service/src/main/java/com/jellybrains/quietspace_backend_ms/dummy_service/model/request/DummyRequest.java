@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace_backend_ms.dummy_service.dto.request;
+package com.jellybrains.quietspace_backend_ms.dummy_service.model.request;
 
 import lombok.*;
 

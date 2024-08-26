@@ -1,9 +1,9 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service;
 
+import com.jellybrains.quietspace.common_service.model.request.PostRequest;
+import com.jellybrains.quietspace.common_service.model.request.VoteRequest;
+import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;

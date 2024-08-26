@@ -1,12 +1,12 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
+import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
+import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Message;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.CustomErrorException;
 import com.jellybrains.quietspace_backend_ms.chatservice.mapper.custom.MessageMapper;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.request.MessageRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.MessageResponse;
 import com.jellybrains.quietspace_backend_ms.chatservice.repository.ChatRepository;
 import com.jellybrains.quietspace_backend_ms.chatservice.repository.MessageRepository;
 import com.jellybrains.quietspace_backend_ms.chatservice.service.MessageService;

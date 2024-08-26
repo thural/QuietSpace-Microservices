@@ -1,14 +1,14 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 
 import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
+import com.jellybrains.quietspace.common_service.model.request.PostRequest;
+import com.jellybrains.quietspace.common_service.model.request.VoteRequest;
+import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
 import com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom.PostMapper;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.VoteRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.PostService;
 import jakarta.persistence.EntityNotFoundException;

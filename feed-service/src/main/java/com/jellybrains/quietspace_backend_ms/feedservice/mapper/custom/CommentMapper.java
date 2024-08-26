@@ -1,11 +1,11 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom;
 
+import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
+import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import com.jellybrains.quietspace.common_service.service.ReactionService;
 import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Comment;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.CommentRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;

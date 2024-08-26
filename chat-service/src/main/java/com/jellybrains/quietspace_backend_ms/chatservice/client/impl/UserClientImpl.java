@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.client.impl;
 
+import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace_backend_ms.chatservice.client.UserClient;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.retry.annotation.Backoff;

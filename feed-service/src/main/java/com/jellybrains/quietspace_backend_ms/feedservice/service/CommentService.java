@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.service;
 
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
+import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
+import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;

@@ -1,9 +1,9 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.controller;
 
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
+import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import com.jellybrains.quietspace.common_service.service.NotificationService;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

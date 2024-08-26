@@ -13,11 +13,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
+
     @Value("${spring.application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${spring.application.security.jwt.expiration}")
     private long jwtExpiration;
-
     @Value("${spring.application.security.jwt.refresh-token.expiration}")
     private long jwtRefreshExpiration;
 
@@ -39,7 +39,6 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token) {
-        final String username = extractUsername(token);
         return !isTokenExpired(token);
     }
 

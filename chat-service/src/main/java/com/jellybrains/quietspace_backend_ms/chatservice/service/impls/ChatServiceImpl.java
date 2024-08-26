@@ -1,12 +1,12 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.service.impls;
 
+import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
+import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Chat;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.CustomErrorException;
 import com.jellybrains.quietspace_backend_ms.chatservice.exception.UnauthorizedException;
 import com.jellybrains.quietspace_backend_ms.chatservice.mapper.custom.ChatMapper;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.request.ChatRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ChatResponse;
 import com.jellybrains.quietspace_backend_ms.chatservice.repository.ChatRepository;
 import com.jellybrains.quietspace_backend_ms.chatservice.service.ChatService;
 import jakarta.persistence.EntityNotFoundException;

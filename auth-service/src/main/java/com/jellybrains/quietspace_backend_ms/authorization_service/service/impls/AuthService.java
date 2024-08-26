@@ -1,20 +1,20 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.service.impls;
 
+import com.jellybrains.quietspace.common_service.enums.EmailTemplateName;
+import com.jellybrains.quietspace.common_service.enums.RoleType;
+import com.jellybrains.quietspace.common_service.enums.StatusType;
+import com.jellybrains.quietspace.common_service.model.request.AuthRequest;
+import com.jellybrains.quietspace.common_service.model.request.RegistrationRequest;
+import com.jellybrains.quietspace.common_service.model.response.AuthResponse;
 import com.jellybrains.quietspace_backend_ms.authorization_service.entity.Role;
 import com.jellybrains.quietspace_backend_ms.authorization_service.entity.Token;
 import com.jellybrains.quietspace_backend_ms.authorization_service.entity.User;
 import com.jellybrains.quietspace_backend_ms.authorization_service.exception.ActivationTokenException;
 import com.jellybrains.quietspace_backend_ms.authorization_service.exception.UserNotFoundException;
-import com.jellybrains.quietspace_backend_ms.authorization_service.model.request.AuthRequest;
-import com.jellybrains.quietspace_backend_ms.authorization_service.model.request.RegistrationRequest;
-import com.jellybrains.quietspace_backend_ms.authorization_service.model.response.AuthResponse;
 import com.jellybrains.quietspace_backend_ms.authorization_service.repository.RoleRepository;
 import com.jellybrains.quietspace_backend_ms.authorization_service.repository.TokenRepository;
 import com.jellybrains.quietspace_backend_ms.authorization_service.repository.UserRepository;
 import com.jellybrains.quietspace_backend_ms.authorization_service.security.JwtService;
-import com.jellybrains.quietspace_backend_ms.authorization_service.utils.enums.EmailTemplateName;
-import com.jellybrains.quietspace_backend_ms.authorization_service.utils.enums.RoleType;
-import com.jellybrains.quietspace_backend_ms.authorization_service.utils.enums.StatusType;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +88,6 @@ public class AuthService {
         String jwtRefreshToken = jwtService.generateRefreshToken(claims, user);
         log.info("generated jwt token during authentication: {}", jwtAccessToken);
 
-        setOnlineStatus(user.getEmail(), StatusType.ONLINE);
         return AuthResponse.builder()
                 .message("authentication was successful")
                 .userId(user.getId().toString())
@@ -124,7 +123,6 @@ public class AuthService {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             addToBlacklist(authHeader, currentUserName);
-            setOnlineStatus(StatusType.OFFLINE);
             SecurityContextHolder.clearContext();
         }
     }
@@ -236,7 +234,6 @@ public class AuthService {
     private void setOnlineStatus(StatusType type) {
         // TODO: consider user settings after implementation
         User user = getSignedUser();
-        user.setStatusType(type);
         userRepository.save(user);
     }
 
@@ -244,7 +241,6 @@ public class AuthService {
         // TODO: consider user settings after implementation
         User user = userRepository.findUserEntityByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
-        user.setStatusType(type);
         userRepository.save(user);
     }
 

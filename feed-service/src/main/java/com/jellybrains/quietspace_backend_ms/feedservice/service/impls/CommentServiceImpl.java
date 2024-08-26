@@ -2,12 +2,12 @@ package com.jellybrains.quietspace_backend_ms.feedservice.service.impls;
 
 import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
+import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
+import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Comment;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
 import com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom.CommentMapper;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.CommentRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.CommentResponse;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.CommentRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.repository.PostRepository;
 import com.jellybrains.quietspace_backend_ms.feedservice.service.CommentService;

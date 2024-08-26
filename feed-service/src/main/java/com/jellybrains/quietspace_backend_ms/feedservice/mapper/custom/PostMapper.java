@@ -1,16 +1,16 @@
 package com.jellybrains.quietspace_backend_ms.feedservice.mapper.custom;
 
+import com.jellybrains.quietspace.common_service.model.request.PollRequest;
+import com.jellybrains.quietspace.common_service.model.request.PostRequest;
+import com.jellybrains.quietspace.common_service.model.response.OptionResponse;
+import com.jellybrains.quietspace.common_service.model.response.PollResponse;
+import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
 import com.jellybrains.quietspace.common_service.service.ReactionService;
 import com.jellybrains.quietspace.common_service.service.UserService;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Poll;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.PollOption;
 import com.jellybrains.quietspace_backend_ms.feedservice.entity.Post;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PollRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.request.PostRequest;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.OptionResponse;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PollResponse;
-import com.jellybrains.quietspace_backend_ms.feedservice.model.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

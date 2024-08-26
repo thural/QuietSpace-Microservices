@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.controller;
 
-import com.jellybrains.quietspace_backend_ms.chatservice.model.request.MessageRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.MessageResponse;
+import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
+import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace_backend_ms.chatservice.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,13 +22,13 @@ public class MessageController {
 
 
     @PostMapping
-    ResponseEntity<?> createMessage(@RequestBody @Validated MessageRequest messageRequest) {
+    ResponseEntity<MessageResponse> createMessage(@RequestBody @Validated MessageRequest messageRequest) {
         MessageResponse createdMessage = messageService.addMessage(messageRequest);
         return new ResponseEntity<>(createdMessage, HttpStatus.CREATED);
     }
 
     @DeleteMapping(MESSAGE_PATH_ID)
-    ResponseEntity<?> deleteMessage(@PathVariable String messageId) {
+    ResponseEntity<Void> deleteMessage(@PathVariable String messageId) {
         messageService.deleteMessage(messageId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

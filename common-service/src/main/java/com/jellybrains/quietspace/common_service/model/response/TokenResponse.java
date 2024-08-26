@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace_backend_ms.authorization_service.model.response;
+package com.jellybrains.quietspace.common_service.model.response;
 
 import lombok.*;
 

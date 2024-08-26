@@ -1,12 +1,12 @@
 package com.jellybrains.quietspace_backend_ms.chatservice.controller;
 
 import com.jellybrains.quietspace.common_service.enums.EventType;
+import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
+import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
+import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
+import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace_backend_ms.chatservice.entity.Message;
 import com.jellybrains.quietspace_backend_ms.chatservice.event.ChatEvent;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.request.ChatRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.request.MessageRequest;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.ChatResponse;
-import com.jellybrains.quietspace_backend_ms.chatservice.model.response.MessageResponse;
 import com.jellybrains.quietspace_backend_ms.chatservice.repository.MessageRepository;
 import com.jellybrains.quietspace_backend_ms.chatservice.service.ChatService;
 import com.jellybrains.quietspace_backend_ms.chatservice.service.MessageService;

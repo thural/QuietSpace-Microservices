@@ -1,1 +1,3 @@
 rootProject.name = 'auth-service'
+
+project(':common-service').projectDir = new File(settingsDir, '../common-service')

@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.controller;
 
-import com.jellybrains.quietspace_backend_ms.authorization_service.model.request.AuthRequest;
-import com.jellybrains.quietspace_backend_ms.authorization_service.model.request.RegistrationRequest;
-import com.jellybrains.quietspace_backend_ms.authorization_service.model.response.AuthResponse;
+import com.jellybrains.quietspace.common_service.model.request.AuthRequest;
+import com.jellybrains.quietspace.common_service.model.request.RegistrationRequest;
+import com.jellybrains.quietspace.common_service.model.response.AuthResponse;
 import com.jellybrains.quietspace_backend_ms.authorization_service.service.impls.AuthService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
