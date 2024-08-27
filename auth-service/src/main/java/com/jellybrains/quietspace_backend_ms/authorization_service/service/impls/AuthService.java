@@ -1,16 +1,16 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.service.impls;
 
-import com.jellybrains.quietspace.common_service.enums.EmailTemplateName;
-import com.jellybrains.quietspace.common_service.enums.RoleType;
-import com.jellybrains.quietspace.common_service.enums.StatusType;
-import com.jellybrains.quietspace.common_service.model.request.AuthRequest;
-import com.jellybrains.quietspace.common_service.model.request.RegistrationRequest;
-import com.jellybrains.quietspace.common_service.model.response.AuthResponse;
 import com.jellybrains.quietspace_backend_ms.authorization_service.entity.Role;
 import com.jellybrains.quietspace_backend_ms.authorization_service.entity.Token;
 import com.jellybrains.quietspace_backend_ms.authorization_service.entity.User;
+import com.jellybrains.quietspace_backend_ms.authorization_service.enums.EmailTemplateName;
+import com.jellybrains.quietspace_backend_ms.authorization_service.enums.RoleType;
+import com.jellybrains.quietspace_backend_ms.authorization_service.enums.StatusType;
 import com.jellybrains.quietspace_backend_ms.authorization_service.exception.ActivationTokenException;
 import com.jellybrains.quietspace_backend_ms.authorization_service.exception.UserNotFoundException;
+import com.jellybrains.quietspace_backend_ms.authorization_service.model.AuthRequest;
+import com.jellybrains.quietspace_backend_ms.authorization_service.model.AuthResponse;
+import com.jellybrains.quietspace_backend_ms.authorization_service.model.RegistrationRequest;
 import com.jellybrains.quietspace_backend_ms.authorization_service.repository.RoleRepository;
 import com.jellybrains.quietspace_backend_ms.authorization_service.repository.TokenRepository;
 import com.jellybrains.quietspace_backend_ms.authorization_service.repository.UserRepository;
@@ -90,7 +90,7 @@ public class AuthService {
 
         return AuthResponse.builder()
                 .message("authentication was successful")
-                .userId(user.getId().toString())
+                .userId(user.getId())
                 .accessToken(jwtAccessToken)
                 .refreshToken(jwtRefreshToken)
                 .build();
@@ -166,7 +166,7 @@ public class AuthService {
             generatedCode.append(characters.charAt(randomIndex));
         }
 
-        log.info("generated activation token: {}", generatedCode.toString());
+        log.info("generated activation token: {}", generatedCode);
         return generatedCode.toString();
     }
 

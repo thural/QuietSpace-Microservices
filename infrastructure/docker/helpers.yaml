@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+
+  mail-dev:
+    container_name: mail-dev
+    image: maildev/maildev
+    networks:
+      - microservices-net
+    ports:
+      - "1080:1080"
+      - ${MAILDEV_PORT}:1025
+
+networks:
+  microservices-net:
+    name: microservices-net
+    driver: bridge

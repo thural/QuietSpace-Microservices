@@ -1,14 +1,14 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.controller;
 
-import com.jellybrains.quietspace.common_service.model.request.AuthRequest;
-import com.jellybrains.quietspace.common_service.model.request.RegistrationRequest;
-import com.jellybrains.quietspace.common_service.model.response.AuthResponse;
+import com.jellybrains.quietspace_backend_ms.authorization_service.model.AuthRequest;
+import com.jellybrains.quietspace_backend_ms.authorization_service.model.AuthResponse;
+import com.jellybrains.quietspace_backend_ms.authorization_service.model.RegistrationRequest;
 import com.jellybrains.quietspace_backend_ms.authorization_service.service.impls.AuthService;
 import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegistrationRequest request) throws MessagingException {
+    public ResponseEntity<?> register(@RequestBody @Validated RegistrationRequest request) throws MessagingException {
         authService.register(request);
         return ResponseEntity.ok().build();
     }

@@ -20,12 +20,17 @@ public class HelloController {
 
     private final DummyService dummyService;
 
+//    @GetMapping("/hello")
+//    @CircuitBreaker(name = "dummy", fallbackMethod = "fallbackMethod")
+//    @TimeLimiter(name = "dummy")
+//    @Retry(name = "dummy")
+//    public CompletableFuture<String> hello(@RequestBody DummyRequest dummyRequest) {
+//        return CompletableFuture.supplyAsync(() -> dummyService.buildMessage(dummyRequest));
+//    }
+
     @GetMapping("/hello")
-    @CircuitBreaker(name = "dummy", fallbackMethod = "fallbackMethod")
-    @TimeLimiter(name = "dummy")
-    @Retry(name = "dummy")
-    public CompletableFuture<String> hello(@RequestBody DummyRequest dummyRequest) {
-        return CompletableFuture.supplyAsync(() -> dummyService.buildMessage(dummyRequest));
+    public String hello(){
+        return "hello from dummy controller";
     }
 
     public CompletableFuture<String> fallbackMethod(DummyRequest dummyRequest, RuntimeException runtimeException) {

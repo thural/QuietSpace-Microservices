@@ -1,8 +1,7 @@
 package com.jellybrains.quietspace_backend_ms.gateway_server.filter;
 
 import com.jellybrains.quietspace_backend_ms.gateway_server.util.JwtUtil;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+@Slf4j
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
@@ -29,9 +29,12 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
     @Override
     public GatewayFilter apply(Config config) {
+
         return ((exchange, chain) -> {
             ServerHttpRequest request = null;
             if (validator.isSecured.test(exchange.getRequest())) {
+
+                log.info("********GATEWAY FILTER RECEIVED A REQUEST*********");
 
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION))
                     throw new RuntimeException("missing authorization header");

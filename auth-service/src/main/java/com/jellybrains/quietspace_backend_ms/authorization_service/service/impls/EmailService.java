@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace_backend_ms.authorization_service.service.impls;
 
-import com.jellybrains.quietspace.common_service.enums.EmailTemplateName;
+import com.jellybrains.quietspace_backend_ms.authorization_service.enums.EmailTemplateName;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class EmailService {
         if (emailTemplate == null) {
             templateName = "confirm-email";
         } else {
-            templateName = emailTemplate.name();
+            templateName = emailTemplate.getName();
         }
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -66,5 +66,7 @@ public class EmailService {
         helper.setText(template, true);
 
         mailSender.send(mimeMessage);
+
+        log.info("sent email to {}", to);
     }
 }

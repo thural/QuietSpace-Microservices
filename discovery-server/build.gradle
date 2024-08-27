@@ -15,6 +15,16 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+
+    configureEach {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-webflux'
+        exclude group: 'org.springframework', module: 'retry:spring-retry:2.0.6'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-validation'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-websocket:3.3.3'
+        exclude group: 'org.springframework.kafka', module: 'spring-kafka'
+        exclude group: 'org.springframework.kafka', module: 'spring-kafka-test'
+        exclude group: 'io.projectreactor', module: 'reactor-test'
+    }
 }
 
 repositories {
@@ -27,9 +37,6 @@ ext {
 
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 dependencyManagement {

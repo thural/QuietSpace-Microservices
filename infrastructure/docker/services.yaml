@@ -2,8 +2,9 @@ version: '3.8'
 services:
 
   config-server:
+    container_name: config-server
     build:
-      context: ./config-server
+      context: /config-server
       dockerfile: ./Dockerfile
     image: thural/quietspace:config-server
     env_file:
@@ -14,8 +15,9 @@ services:
       - ${CONFIG_SERVER_PORT}:${CONFIG_SERVER_PORT}
 
   discovery-server:
+    container_name: discovery-server
     build:
-      context: ./discovery-server
+      context: /discovery-server
       dockerfile: ./Dockerfile
     image: thural/quietspace:discovery-server
     env_file:
@@ -28,8 +30,9 @@ services:
       - ${DISCOVERY_SERVER_PORT}:${DISCOVERY_SERVER_PORT}
 
   gateway-server:
+    container_name: gateway-server
     build:
-      context: ./gateway-server
+      context: /gateway-server
       dockerfile: ./Dockerfile
     image: thural/quietspace:gateway-server
     env_file:
@@ -42,13 +45,26 @@ services:
     ports:
       - ${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}
 
-#  auth-service:
-#    build:
-#      context:
+  auth-service:
+    build:
+      context: /auth-service
+      dockerfile: ./Dockerfile
+    image: thural/quietspace:auth-service
+    env_file:
+      - .env
+    depends_on:
+      - config-server
+      - discovery-server
+      - gateway-server
+    networks:
+      - microservices-net
+    ports:
+      - ${AUTH_SERVICE_PORT}:8080
 
   feed-service:
+    container_name: feed-service
     build:
-      context: ./feed-service
+      context: /feed-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:feed-service
     env_file:
@@ -61,8 +77,9 @@ services:
       - ${FEED_SERVICE_PORT}:${FEED_SERVICE_PORT}
 
   chat-service:
+    container_name: chat-service
     build:
-      context: ./chat-service
+      context: /chat-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:chat-service
     env_file:
@@ -75,8 +92,9 @@ services:
       - ${CHAT_SERVICE_PORT}:${CHAT_SERVICE_PORT}
 
   notification-service:
+    container_name: notification-service
     build:
-      context: ./notification-service
+      context: /notification-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:notification-service
     env_file:
@@ -89,8 +107,9 @@ services:
       - ${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}
 
   user-service:
+    container_name: user-service
     build:
-      context: ./user-service
+      context: /user-service
       dockerfile: ./Dockerfile
     image: thural/quietspace:user-service
     env_file:
