@@ -3,6 +3,7 @@ package com.jellybrains.quietspace.user_service.controller;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     public static final String USER_PATH = "/api/v1/user";
@@ -50,6 +52,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<UserResponse> getAuthenticatedUser() {
+        log.info("get authenticated user was requested at controller");
         return profileService.getSignedUserResponse()
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

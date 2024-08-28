@@ -6,16 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.Optional;
-
 public interface NotificationRepository extends MongoRepository<Notification, String> {
 
-    Page<Notification> findAllByUserId(String userId, Pageable pageable);
+//    Page<Notification> findAllByUserId(String userId, Pageable pageable);
 
-    Page<Notification> findAllByUserIdAndNotificationType(String userId, NotificationType type, Pageable pageable);
+//    Page<Notification> findAllByUserIdAndNotificationType(String userId, NotificationType type, Pageable pageable);
 
-    Optional<Notification> findByContentIdAndUserId(String contentId, String userId);
+//    Optional<Notification> findByContentIdAndUserId(String contentId, String userId);
 
-    Integer countByUserIdAndIsSeen(String userId, Boolean isSeen);
+//    Integer countByUserIdAndSeen(String userId, Boolean seen);
 
 }

@@ -1,13 +1,7 @@
 spring:
-
-  application:
-    name: notification-service
-
+  application.name: notification-service
   config:
     import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
-  profiles:
-    active:
-      - ${CONFIG_ACTIVE_PROFILE}
 
   data:
     mongodb:
@@ -17,23 +11,19 @@ spring:
       username: ${DB_ROOT_USERNAME}
       password: ${DB_ROOT_PASSWORD}
 
-  kafka:
-    bootstrap-servers: ${KAFKA_BROKER_HOST:localhost}:${KAFKA_BROKER_PORT:9092}
-    template:
-      default-topic: notificationTopic
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "*"
-        spring.json.type:
-              mapping: new_message_event:com.jellybrains.quietspace_backend_ms.notification_service.event.NewMessageEvent
-      group-id: notificationId
-
 eureka:
   client:
     serviceUrl:
       defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
+
+values:
+  gateway:
+    url: ${GATEWAY_URL}
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
 
 server:
   port: ${NOTIFICATION_SERVICE_PORT}

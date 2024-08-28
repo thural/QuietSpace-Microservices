@@ -34,8 +34,8 @@ spring:
         - id: user-service
           uri: lb://${USER_SERVICE_HOST}
           predicates:
-            - Path=/api/v1/user/**
-            - Path=/api/v1/profile/**
+            - Path=/api/v1/users/**
+            - Path=/api/v1/profiles/**
           filters:
             - AuthenticationFilter
         - id: feed-service

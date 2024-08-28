@@ -48,7 +48,7 @@ public class Notification {
 
     @Builder.Default
     @NotNull(message = "notification seen state can not be null")
-    private Boolean isSeen = Boolean.FALSE;
+    private Boolean seen = Boolean.FALSE;
 
     @JsonIgnore
     @NotNull(message = "notification content type can not be null")

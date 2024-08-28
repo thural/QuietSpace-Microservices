@@ -28,6 +28,11 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    @GetMapping
+    String sayHello(){
+        return "hello from notification service";
+    }
+
 
     @PostMapping("/seen/{contentId}")
     ResponseEntity<?> handleSeen(@PathVariable String contentId) {

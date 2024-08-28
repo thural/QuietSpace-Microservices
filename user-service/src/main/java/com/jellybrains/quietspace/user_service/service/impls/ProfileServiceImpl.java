@@ -59,6 +59,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile getUserProfile() {
         String userId = userService.getAuthorizedUserId();
+        log.info("authorized user id: {}", userId);
         return profileRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
     }
 
@@ -72,17 +73,13 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Optional<UserResponse> getUserResponseById(String id) {
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
-        UserResponse userResponse = profileMapper.toUserResponse(profile);
-        return Optional.of(userResponse);
+        return profileRepository.findByUserId(id)
+                .map(profileMapper::toUserResponse);
     }
 
     @Override
     public Optional<Profile> getProfileById(String userId) {
-        Profile foundUser = profileRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
-        return Optional.of(foundUser);
+        return profileRepository.findById(userId);
     }
 
     @Override
@@ -191,6 +188,18 @@ public class ProfileServiceImpl implements ProfileService {
     public Boolean validateUsersByIdList(List<String> userIds) {
         return userIds.stream()
                 .allMatch(userId -> profileRepository.findByUserId(userId).isPresent());
+    }
+
+    @Override
+    public UserResponse createProfile(CreateProfileRequest userRequest) {
+        Profile createdProfile = profileRepository.save(
+                Profile.builder()
+                        .userId(userRequest.getUserId())
+                        .username(userRequest.getUsername())
+                        .email(userRequest.getEmail())
+                .build());
+
+        return profileMapper.toUserResponse(createdProfile);
     }
 
     @Override

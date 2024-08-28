@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
                         .status(status.name())
                         .message(e.getMessage())
                         .timestamp(new Date())
-                        .stackTrace(Arrays.toString(e.getStackTrace()))
+                        .stackTrace(Arrays.toString(e.getStackTrace())) // TODO: marked for removal
                         .build());
     }
 

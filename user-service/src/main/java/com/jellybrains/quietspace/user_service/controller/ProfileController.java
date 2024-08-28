@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/profile")
+@RequestMapping("/api/v1/profiles")
 public class ProfileController {
 
     public static final String FOLLOW_PATH_ID = "/follow/{userId}";
@@ -23,6 +23,10 @@ public class ProfileController {
     private final ProfileService profileService;
     private final NotificationClient notificationClient;
 
+    @PostMapping
+    private ResponseEntity<UserResponse> createProfile(@RequestBody CreateProfileRequest userRequest) {
+        return ResponseEntity.ok(profileService.createProfile(userRequest));
+    }
 
 
     @PatchMapping

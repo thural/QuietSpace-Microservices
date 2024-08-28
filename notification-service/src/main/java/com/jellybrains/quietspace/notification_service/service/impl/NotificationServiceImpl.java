@@ -46,8 +46,8 @@ public class NotificationServiceImpl implements NotificationService {
         if (!notification.getUserId().equals(userId))
             throw new ResourceAccessException("user is denied access for requested resource");
 
-        if (!notification.getIsSeen()) {
-            notification.setIsSeen(true);
+        if (!notification.getSeen()) {
+            notification.setSeen(true);
             notificationRepository.save(notification);
         }
 
@@ -64,7 +64,8 @@ public class NotificationServiceImpl implements NotificationService {
     public Page<Notification> getAllNotifications(Integer pageNumber, Integer pageSize) {
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        return notificationRepository.findAllByUserId(signedUserId, pageRequest);
+//        return notificationRepository.findAllByUserId(signedUserId, pageRequest);
+        return Page.empty();
     }
 
     @Override
@@ -72,14 +73,15 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationType type = NotificationType.valueOf(notificationType);
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        return notificationRepository
-                .findAllByUserIdAndNotificationType(signedUserId, type, pageRequest);
+//        return notificationRepository.findAllByUserIdAndNotificationType(signedUserId, type, pageRequest);
+        return Page.empty();
     }
 
     @Override
     public Integer getCountOfPendingNotifications() {
         String signedUserId = userService.getAuthorizedUserId();
-        return notificationRepository.countByUserIdAndIsSeen(signedUserId, false);
+//        return notificationRepository.countByUserIdAndSeen(signedUserId, false);
+        return 0;
     }
 
     public void processNotification(NotificationType type, String contentId) {

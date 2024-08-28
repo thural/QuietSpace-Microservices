@@ -17,14 +17,13 @@ eureka:
       defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
 values:
-    gateway:
-      url: ${GATEWAY_URL}
+  gateway:
+    url: ${GATEWAY_URL}
 
 logging:
   level:
     root: INFO
     org.springframework.web: DEBUG
-
 
 server:
   port: ${REACTION_SERVICE_PORT}

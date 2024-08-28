@@ -44,4 +44,6 @@ public interface ProfileService {
     Boolean validateUserInRequest(String userId);
 
     Boolean validateUsersByIdList(List<String> userIds);
+
+    UserResponse createProfile(CreateProfileRequest userRequest);
 }
