@@ -75,7 +75,6 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${DB_NAME}
-      MONGO_REPLICASET_NAME: ${MONGO_REPLICASET_NAME}
     networks:
       - microservices-net
     ports:
@@ -90,7 +89,6 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${DB_NAME}
-      MONGO_REPLICASET_NAME: ${MONGO_REPLICASET_NAME}
     networks:
       - microservices-net
     ports:

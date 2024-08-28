@@ -35,12 +35,14 @@ spring:
           uri: lb://${USER_SERVICE_HOST}
           predicates:
             - Path=/api/v1/user/**
+            - Path=/api/v1/profile/**
           filters:
             - AuthenticationFilter
         - id: feed-service
           uri: lb://${FEED_SERVICE_HOST}
           predicates:
             - Path=/api/v1/feed/**
+            - Path=/api/v1/comments/**
           filters:
             - AuthenticationFilter
         - id: chat-service
@@ -53,6 +55,20 @@ spring:
           uri: lb://${DUMMY_SERVICE_HOST}
           predicates:
             - Path=/api/v1/dummy/**
+          filters:
+            - AuthenticationFilter
+        - id: reaction-service
+          uri: lb://${REACTION_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/reactions/**
+          filters:
+            - AuthenticationFilter
+        - id: notification-service
+          uri: lb://${NOTIFICATION_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - AuthenticationFilter
         - id: auth-service
           uri: lb://${AUTH_SERVICE_HOST}
           predicates:

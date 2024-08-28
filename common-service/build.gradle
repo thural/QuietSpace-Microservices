@@ -15,7 +15,12 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	configureEach {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-webflux'
+	}
 }
+
 
 repositories {
 	mavenCentral()

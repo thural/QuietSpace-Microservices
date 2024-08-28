@@ -1,0 +1,35 @@
+package com.jellybrains.quietspace.dummy_service.controller;
+
+import com.jellybrains.quietspace.dummy_service.model.request.DummyRequest;
+import com.jellybrains.quietspace.dummy_service.service.DummyService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.CompletableFuture;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/v1/dummy")
+public class HelloController {
+
+    private final DummyService dummyService;
+
+//    @GetMapping("/hello")
+//    @CircuitBreaker(name = "dummy", fallbackMethod = "fallbackMethod")
+//    @TimeLimiter(name = "dummy")
+//    @Retry(name = "dummy")
+//    public CompletableFuture<String> hello(@RequestBody DummyRequest dummyRequest) {
+//        return CompletableFuture.supplyAsync(() -> dummyService.buildMessage(dummyRequest));
+//    }
+
+    @GetMapping("/hello")
+    public String hello(){
+        return "hello from dummy controller";
+    }
+
+    public CompletableFuture<String> fallbackMethod(DummyRequest dummyRequest, RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> "Something went wrong, please try later");
+    }
+}

@@ -16,7 +16,6 @@ spring:
       port: ${NOTIFICATION_DB_PORT}
       username: ${DB_ROOT_USERNAME}
       password: ${DB_ROOT_PASSWORD}
-      replica-set-name: ${MONGO_REPLICASET_NAME}
 
   kafka:
     bootstrap-servers: ${KAFKA_BROKER_HOST:localhost}:${KAFKA_BROKER_PORT:9092}

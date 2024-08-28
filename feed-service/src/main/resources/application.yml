@@ -29,4 +29,15 @@ eureka:
     serviceUrl:
       defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
+logging:
+  level:
+    root: INFO
+    org.springframework.messaging: TRACE
+    org.springframework.web.socket: TRACE
+    org.hibernate.orm.jdbc.bind: ERROR
+    dev.thural.quietspace.service: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.sql: ERROR
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: ERROR
+
 server.port: ${FEED_SERVICE_PORT}
