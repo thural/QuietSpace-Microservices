@@ -1,6 +1,16 @@
 spring:
 
-  application.name: feed-service
+  application:
+    name: feed-service
+    security:
+      jwt:
+        secret-key: ${JWT_SECRET_KEY}
+        expiration: 600000 # 10 minutes
+        refresh-token:
+          expiration: 86400000 # one day
+
+    urls:
+      frontend: "http://localhost:5000"
 
   config:
     import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}

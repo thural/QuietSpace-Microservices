@@ -10,8 +10,9 @@ spring:
   config:
     import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
   profiles:
+    default: default
     active:
-      - ${CONFIG_ACTIVE_PROFILE}
+      - default
   cloud:
     gateway:
       globalcors:
@@ -31,44 +32,49 @@ spring:
           uri: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}
           predicates:
             - Path=/eureka/**
+
         - id: user-service
           uri: lb://${USER_SERVICE_HOST}
           predicates:
             - Path=/api/v1/users/**
-            - Path=/api/v1/profiles/**
           filters:
             - AuthenticationFilter
+
         - id: feed-service
           uri: lb://${FEED_SERVICE_HOST}
           predicates:
             - Path=/api/v1/feed/**
-            - Path=/api/v1/comments/**
           filters:
             - AuthenticationFilter
+
         - id: chat-service
           uri: lb://${CHAT_SERVICE_HOST}
           predicates:
             - Path=/api/v1/chat/**
           filters:
             - AuthenticationFilter
+
         - id: dummy-service
           uri: lb://${DUMMY_SERVICE_HOST}
           predicates:
             - Path=/api/v1/dummy/**
           filters:
             - AuthenticationFilter
+
         - id: reaction-service
           uri: lb://${REACTION_SERVICE_HOST}
           predicates:
             - Path=/api/v1/reactions/**
           filters:
             - AuthenticationFilter
+
         - id: notification-service
           uri: lb://${NOTIFICATION_SERVICE_HOST}
           predicates:
             - Path=/api/v1/notifications/**
           filters:
             - AuthenticationFilter
+
         - id: auth-service
           uri: lb://${AUTH_SERVICE_HOST}
           predicates:
@@ -84,8 +90,10 @@ eureka:
       defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 logging:
   level:
-    root: INFO
+    root: DEBUG
     org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
-    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
+
 server:
   port: ${GATEWAY_SERVER_PORT}

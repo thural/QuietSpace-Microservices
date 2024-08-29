@@ -7,9 +7,8 @@ spring:
 
 eureka:
   server:
-    enableSelfPreservation: false
-    instance.lease-renewal-interval-in-seconds: 30
     wait-time-in-ms-when-sync-empty: 0
+    enable-self-preservation: false
   client:
     registerWithEureka: false
     fetchRegistry: false
