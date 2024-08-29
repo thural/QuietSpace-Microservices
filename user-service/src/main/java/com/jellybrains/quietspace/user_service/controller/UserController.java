@@ -1,7 +1,9 @@
 package com.jellybrains.quietspace.user_service.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
+import com.jellybrains.quietspace.user_service.webclient.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -9,7 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -22,6 +26,7 @@ public class UserController {
     public static final String ONLINE_USERS_PATH = "/user/onlineUsers";
 
     private final ProfileService profileService;
+    private final UserService userService;
 
 
     @GetMapping("/search")
@@ -68,6 +73,18 @@ public class UserController {
     @GetMapping("/validate/list")
     public ResponseEntity<Boolean> validateUserList(@RequestParam List<String> userIds) {
         return ResponseEntity.ok(profileService.validateUsersByIdList(userIds));
+    }
+
+    @GetMapping("/claims")
+    Map<String, String> getClaims (){
+        Map<String,String> claims = new HashMap<>();
+        String userId = userService.getAuthorizedUserId();
+        String username = userService.getAuthorizedUsername();
+        String userFullName = userService.getAuthorizedUserFullName();
+        claims.put("userId", userId);
+        claims.put("username", username);
+        claims.put("userFullName", userFullName);
+        return claims;
     }
 
 }

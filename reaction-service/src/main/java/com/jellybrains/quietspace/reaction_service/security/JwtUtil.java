@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.user_service.security;
+package com.jellybrains.quietspace.reaction_service.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -6,16 +6,19 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class JwtService {
+public class JwtUtil {
     @Value("${spring.application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${spring.application.security.jwt.expiration}")
@@ -37,6 +40,22 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    public  String extractFullName(String token) {
+        return extractClaim(token, claims -> claims.get("fullName", String.class));
+    }
+
+    public  String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", String.class));
+    }
+
+    public List<SimpleGrantedAuthority> getAuthoritiesFromToken(String token) {
+        Claims claims = extractAllClaims(token);
+        List<String> authorities = claims.get("authorities", List.class);
+        return authorities.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     public boolean isTokenExpired(String token) {

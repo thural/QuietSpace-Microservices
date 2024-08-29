@@ -11,12 +11,13 @@ public class FilterConfig {
 
     private final JwtFilter jwtFilter;
 
-    @Bean
+//    @Bean // in case of not using Security filter
     public FilterRegistrationBean<JwtFilter> tokenFilter() {
         FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(jwtFilter);
         registrationBean.addUrlPatterns("/api/*");
         return registrationBean;
     }
+
 }
 

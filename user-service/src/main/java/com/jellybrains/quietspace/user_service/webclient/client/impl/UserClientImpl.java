@@ -1,6 +1,5 @@
 package com.jellybrains.quietspace.user_service.webclient.client.impl;
 
-import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.user_service.webclient.client.UserClient;
 import lombok.RequiredArgsConstructor;

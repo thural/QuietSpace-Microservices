@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.user_service.security;
+package com.jellybrains.quietspace.feed_service.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -14,7 +14,7 @@ import com.jellybrains.quietspace.auth_service.model.RegistrationRequest;
 import com.jellybrains.quietspace.auth_service.repository.RoleRepository;
 import com.jellybrains.quietspace.auth_service.repository.TokenRepository;
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
-import com.jellybrains.quietspace.auth_service.security.JwtService;
+import com.jellybrains.quietspace.auth_service.security.JwtUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +23,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,11 +42,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
     private final TokenRepository tokenRepository;
+    private final UserDetailsService userDetailsService;
 
     @Value("${spring.application.mailing.frontend.activation-url}")
     private String activationUrl;
@@ -71,10 +74,12 @@ public class AuthService {
     }
 
     public AuthResponse authenticate(AuthRequest request) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+
         log.info("authenticating user by email: {}", request.getEmail());
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        userDetails,
                         request.getPassword()
                 )
         );
@@ -84,8 +89,8 @@ public class AuthService {
         claims.put("fullName", user.getFullName());
         claims.put("userId", user.getId());
 
-        String jwtAccessToken = jwtService.generateToken(claims, user);
-        String jwtRefreshToken = jwtService.generateRefreshToken(claims, user);
+        String jwtAccessToken = jwtUtil.generateToken(claims, user);
+        String jwtRefreshToken = jwtUtil.generateRefreshToken(claims, user);
         log.info("generated jwt token during authentication: {}", jwtAccessToken);
 
         return AuthResponse.builder()
@@ -197,17 +202,17 @@ public class AuthService {
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) return authResponse;
         if (tokenRepository.existsByToken(refreshToken)) return authResponse;
 
-        String username = jwtService.extractUsername(refreshToken);
+        String username = jwtUtil.extractUsername(refreshToken);
         log.info("extracted username during jwt filtering: {}", username);
         if (username == null) return authResponse;
 
         User user = userRepository.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
-        if (!jwtService.isTokenValid(refreshToken, user)) return authResponse;
+        if (!jwtUtil.isTokenValid(refreshToken, user)) return authResponse;
 
         var claims = new HashMap<String, Object>();
         claims.put("fullName", user.getFullName());
         claims.put("userId", user.getId());
-        String newAccessToken = jwtService.generateToken(claims, user);
+        String newAccessToken = jwtUtil.generateToken(claims, user);
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
