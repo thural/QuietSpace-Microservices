@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/feed")
+@RequestMapping("/api/v1/posts")
 public class PostController {
 
     public static final String POST_PATH = "/api/v1/feed";

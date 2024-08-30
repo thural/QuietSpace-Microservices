@@ -61,31 +61,6 @@ public class AppConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Collections.singletonList("*"));
-        config.setAllowedHeaders(Arrays.asList(
-                HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
-                HttpHeaders.CACHE_CONTROL,
-                HttpHeaders.ORIGIN,
-                HttpHeaders.CONTENT_TYPE,
-                HttpHeaders.ACCEPT,
-                HttpHeaders.AUTHORIZATION
-        ));
-        config.setAllowedMethods(Stream.of(
-                HttpMethod.GET,
-                HttpMethod.POST,
-                HttpMethod.DELETE,
-                HttpMethod.PUT,
-                HttpMethod.PATCH
-        ).map(HttpMethod::toString).toList());
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

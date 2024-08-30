@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace.notification_service.webclient.service;
 
+import com.jellybrains.quietspace.common_service.enums.StatusType;
 import com.jellybrains.quietspace.notification_service.exception.UserNotFoundException;
 import com.jellybrains.quietspace.notification_service.webclient.client.UserClient;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,4 +33,9 @@ public class UserService {
     public String getAuthorizedUserFullName(){
         return request.getHeader("fullName");
     }
+
+    public void setOnlineStatus(String username, StatusType statusType) {
+        // TODO: implement kafka
+    }
+
 }

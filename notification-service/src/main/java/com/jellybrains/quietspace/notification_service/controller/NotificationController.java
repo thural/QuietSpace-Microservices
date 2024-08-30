@@ -28,7 +28,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping
+    @GetMapping("/hello")
     String sayHello(){
         return "hello from notification service";
     }
