@@ -20,7 +20,7 @@ public class ReactionService {
     }
 
     public Integer getDislikeCount(String contentId) {
-        return reactionClient.countByContentIdAndReactionType(contentId, ReactionType.LIKE)
+        return reactionClient.countByContentIdAndReactionType(contentId, ReactionType.DISLIKE)
                 .orElseThrow(CustomNotFoundException::new);
     }
 

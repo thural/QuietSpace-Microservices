@@ -40,5 +40,8 @@ eureka:
     serviceUrl:
       defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
+logging:
+  root: DEBUG
+
 server:
   port: ${USER_SERVICE_PORT}

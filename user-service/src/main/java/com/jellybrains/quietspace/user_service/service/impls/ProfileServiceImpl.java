@@ -66,7 +66,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public List<UserResponse> getUsersFromIdList(List<String> userIds) {
         return userIds.stream()
-                .map(userId -> profileRepository.findById(userId)
+                .map(userId -> profileRepository.findByUserId(userId)
                         .orElseThrow(UserNotFoundException::new))
                 .map(profileMapper::toUserResponse).toList();
     }
@@ -113,8 +113,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Page<UserResponse> listFollowings(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-//        Page<Profile> profilePage = profileRepository.findAllByUserIdContaining(profile.getFollowingUserIds(), pageRequest);
-        Page<Profile> profilePage = Page.empty();
+        Page<Profile> profilePage = profileRepository.findAllByUserIdIn(profile.getFollowingUserIds(), pageRequest);
         return profilePage.map(profileMapper::toUserResponse);
     }
 
@@ -122,8 +121,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Page<UserResponse> listFollowers(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-//        Page<Profile> profilePage = profileRepository.findAllByUserIdContaining(profile.getFollowerUserIds(), pageRequest);
-        Page<Profile> profilePage = Page.empty();
+        Page<Profile> profilePage = profileRepository.findAllByUserIdIn(profile.getFollowerUserIds(), pageRequest);
         return profilePage.map(profileMapper::toUserResponse);
     }
 
@@ -192,13 +190,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public UserResponse createProfile(CreateProfileRequest userRequest) {
-        Profile createdProfile = profileRepository.save(
-                Profile.builder()
-                        .userId(userRequest.getUserId())
-                        .username(userRequest.getUsername())
-                        .email(userRequest.getEmail())
-                .build());
-
+        Profile profile = new Profile();
+        BeanUtils.copyProperties(userRequest, profile);
+        Profile createdProfile = profileRepository.save(profile);
         return profileMapper.toUserResponse(createdProfile);
     }
 

@@ -2,6 +2,7 @@ version: '3.8'
 services:
 
   auth-service-db:
+    container_name: auth-service-db
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -19,6 +20,7 @@ services:
       - 3306
 
   user-service-db:
+    container_name: user-service-db
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -36,6 +38,7 @@ services:
       - 3306
 
   chat-service-db:
+    container_name: chat-service-db
     image: postgres
     volumes:
       - chat-data:/data/postgres
@@ -54,6 +57,7 @@ services:
     restart: on-failure
 
   feed-service-db:
+    container_name: feed-service-db
     image: mysql:8.0
     restart: on-failure
     environment:
@@ -69,7 +73,8 @@ services:
       - ${FEED_DB_PORT}:3306
 
   notification-service-db:
-    image: mongo:5.0
+    container_name: notification-service-db
+    image: mongo:latest
     restart: on-failure
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
@@ -83,7 +88,8 @@ services:
       - notification-data:/data/db
 
   reaction-service-db:
-    image: mongo:5.0
+    container_name: reaction-service-db
+    image: mongo:latest
     restart: on-failure
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}

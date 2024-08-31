@@ -37,7 +37,6 @@ public class PostController {
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize
     ) {
-        log.info("*** get all request received at FEED controller ***");
         return postService.getAllPosts(pageNumber, pageSize);
     }
 
@@ -52,7 +51,6 @@ public class PostController {
 
     @PostMapping
     ResponseEntity<PostResponse> createPost(@RequestBody @Validated PostRequest post) {
-        log.info("**** received post request to FEED controller ****");
         return ResponseEntity.ok(postService.addPost(post));
     }
 

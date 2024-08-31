@@ -10,6 +10,22 @@ services:
       - "1080:1080"
       - ${MAILDEV_PORT}:1025
 
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8087:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: reaction-service-db
+      ME_CONFIG_MONGODB_PORT: ${REACTION_DB_PORT}
+      ME_CONFIG_BASICAUTH_USERNAME: ${DB_ROOT_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${DB_ROOT_PASSWORD}
+    networks:
+      - microservices-net
+
 networks:
   microservices-net:
     name: microservices-net

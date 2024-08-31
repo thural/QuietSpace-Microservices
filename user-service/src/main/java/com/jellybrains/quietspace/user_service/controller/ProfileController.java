@@ -36,7 +36,7 @@ public class ProfileController {
     }
 
 
-    @GetMapping
+    @GetMapping("/profile")
     public ResponseEntity<Profile> loadUserProfile() {
         return ResponseEntity.ok(profileService.getUserProfile());
     }

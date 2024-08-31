@@ -46,6 +46,7 @@ services:
       - ${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}
 
   auth-service:
+    container_name: auth-service
     build:
       context: /auth-service
       dockerfile: ./Dockerfile
@@ -105,6 +106,21 @@ services:
       - microservices-net
     ports:
       - ${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}
+
+  reaction-service:
+    container_name: reaction-service
+    build:
+      context: /reaction-service
+      dockerfile: ./Dockerfile
+    image: thural/quietspace:reaction-service
+    env_file:
+      - .env
+    depends_on:
+      - config-server
+    networks:
+      - microservices-net
+    ports:
+      - ${REACTION_SERVICE_PORT}:${REACTION_SERVICE_PORT}
 
   user-service:
     container_name: user-service

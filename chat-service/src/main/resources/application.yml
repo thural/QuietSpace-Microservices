@@ -1,6 +1,10 @@
 spring:
 
-  application.name: chat-service
+  application:
+    name: chat-service
+    urls:
+      gateway: ${GATEWAY_URL}
+      frontend: http://${FRONTEND_HOST}:${FRONTEND_PORT}
 
   config:
     import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}

@@ -56,7 +56,7 @@ public class PostMapper {
 
     public PostResponse postEntityToResponse(Post post) {
         Integer commentCount = post.getComments() != null ? post.getComments().size() : 0;
-        Integer postLikeCount = reactionService.getLikeCount(post.getId());
+        Integer likeCount = reactionService.getLikeCount(post.getId());
         Integer dislikeCount = reactionService.getDislikeCount(post.getId());
         String username = userService.getUsernameById(post.getUserId());
         ReactionResponse userReaction = reactionService.getUserReactionByContentId(post.getId());
@@ -66,7 +66,7 @@ public class PostMapper {
                 .title(post.getTitle())
                 .text(post.getText())
                 .commentCount(commentCount)
-                .likeCount(postLikeCount)
+                .likeCount(likeCount)
                 .dislikeCount(dislikeCount)
                 .userId(post.getUserId())
                 .username(username)

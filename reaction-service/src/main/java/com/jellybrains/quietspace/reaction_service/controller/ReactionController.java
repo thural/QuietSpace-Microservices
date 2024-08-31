@@ -21,7 +21,6 @@ public class ReactionController {
 
     @GetMapping("/hello")
     String sayHello(){
-        log.info("***reaction hello controller received request***");
         return "hello from reaction service";
     }
 

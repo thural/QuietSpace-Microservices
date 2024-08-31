@@ -13,29 +13,21 @@ import org.springframework.stereotype.Component;
 public class ProfileMapper {
 
     public Profile toEntity(CreateProfileRequest request){
-        return Profile.builder()
-                .dateOfBirth(request.getDateOfBirth())
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .userId(request.getUserId())
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .build();
+        Profile profile = new Profile();
+        BeanUtils.copyProperties(request,profile);
+        return profile;
     }
 
     public UserResponse toUserResponse(Profile profile){
-        return UserResponse.builder()
-                .id(profile.getId())
-                .username(profile.getUsername())
-                .email(profile.getEmail())
-                .createDate(profile.getCreateDate())
-                .updateDate(profile.getUpdateDate())
-                .build();
+        UserResponse response = new UserResponse();
+        BeanUtils.copyProperties(profile, response);
+        response.setId(profile.getUserId());
+        return response;
     }
 
     public ProfileResponse toProfileResponse(Profile profile){
         ProfileResponse response = new ProfileResponse();
-        BeanUtils.copyProperties(response, profile);
+        BeanUtils.copyProperties(profile, response);
         return response;
     }
 

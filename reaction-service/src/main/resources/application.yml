@@ -2,7 +2,8 @@ spring:
   application:
     name: reaction-service
     urls:
-      frontend: "http://localhost:5000"
+      gateway: ${GATEWAY_URL}
+      frontend: http://${FRONTEND_HOST}:${FRONTEND_PORT}
 
     security:
       jwt:
@@ -26,13 +27,9 @@ eureka:
     serviceUrl:
       defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
 
-values:
-  gateway:
-    url: ${GATEWAY_URL}
-
 logging:
   level:
-    root: INFO
+    root: DEBUG
     org.springframework.web: DEBUG
 
 server:
