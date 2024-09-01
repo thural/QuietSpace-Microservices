@@ -2,8 +2,8 @@ package com.jellybrains.quietspace.auth_service.kafka;
 
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
 import com.jellybrains.quietspace.common_service.enums.EventType;
-import com.jellybrains.quietspace.common_service.message.ProfileDeletionFailedEvent;
-import com.jellybrains.quietspace.common_service.message.UserProfileEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileDeletionFailedEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.user.UserProfileEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,7 +1,11 @@
 package com.jellybrains.quietspace.user_service.saga;
 
 import com.jellybrains.quietspace.common_service.enums.EventType;
-import com.jellybrains.quietspace.common_service.message.*;
+import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEventFailed;
+import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEventFailed;
+import com.jellybrains.quietspace.common_service.message.kafka.user.UserProfileEvent;
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;

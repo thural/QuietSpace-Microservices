@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.message;
+package com.jellybrains.quietspace.common_service.message.kafka;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.jellybrains.quietspace.common_service.enums.EventType;
@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BaseEvent {
+public class KafkaBaseEvent {
 
     String message;
     Object eventBody;

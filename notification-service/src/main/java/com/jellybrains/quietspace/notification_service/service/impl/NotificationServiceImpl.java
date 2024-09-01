@@ -3,7 +3,7 @@ package com.jellybrains.quietspace.notification_service.service.impl;
 import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.EventType;
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
-import com.jellybrains.quietspace.common_service.message.NotificationEvent;
+import com.jellybrains.quietspace.common_service.message.websocket.NotificationEvent;
 import com.jellybrains.quietspace.notification_service.exception.CustomNotFoundException;
 import com.jellybrains.quietspace.notification_service.model.Notification;
 import com.jellybrains.quietspace.notification_service.repository.NotificationRepository;

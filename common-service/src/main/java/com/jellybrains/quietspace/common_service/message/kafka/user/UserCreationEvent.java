@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.message;
+package com.jellybrains.quietspace.common_service.message.kafka.user;
 
 import com.jellybrains.quietspace.common_service.enums.EventType;
 import lombok.Builder;
