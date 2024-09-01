@@ -29,6 +29,7 @@ public class UserDeletionListener {
 
         try {
             userRepository.deleteById(userId);
+            // TODO: send event to public websocket subscriber
             log.info("user deletion successful for userId: {}", userId);
         } catch (Exception e) {
             log.info("user deletion failed for userId: {} due to: {}", event.getUserId(), e.getMessage());

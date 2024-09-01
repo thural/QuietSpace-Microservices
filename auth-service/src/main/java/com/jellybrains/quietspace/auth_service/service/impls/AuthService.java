@@ -16,6 +16,8 @@ import com.jellybrains.quietspace.auth_service.repository.TokenRepository;
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
 import com.jellybrains.quietspace.auth_service.security.JwtUtil;
 import com.jellybrains.quietspace.common_service.message.ProfileDeletionEvent;
+import com.jellybrains.quietspace.common_service.message.UserCreationEvent;
+import com.jellybrains.quietspace.common_service.message.UserProfileEvent;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +53,7 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final UserDetailsService userDetailsService;
 
-    private final KafkaTemplate<String, ProfileDeletionEvent> kafkaProducerTemplate;
+    private final KafkaTemplate<String, UserProfileEvent> kafkaProducerTemplate;
 
     @Value("${kafka.topics.user-profile}")
     private String userProfileTopic;
@@ -59,7 +61,7 @@ public class AuthService {
     @Value("${spring.application.mailing.frontend.activation-url}")
     private String activationUrl;
 
-    public void register(RegistrationRequest request) throws MessagingException {
+    public User register(RegistrationRequest request) {
         log.info("registering new user with email: {}", request.getEmail());
 
         Role userRole = roleRepository.findByName(RoleType.USER.toString())
@@ -76,8 +78,8 @@ public class AuthService {
                 .roles(List.of(userRole))
                 .build();
 
-        User savedUser = userRepository.save(user);
-        sendValidationEmail(savedUser);
+        return userRepository.save(user);
+//        sendValidationEmail(savedUser);
     }
 
     public AuthResponse authenticate(AuthRequest request) {
@@ -153,7 +155,7 @@ public class AuthService {
         return activationCode;
     }
 
-    private void sendValidationEmail(User user) throws MessagingException {
+    public void sendValidationEmail(User user) throws MessagingException {
         log.info("sending activation code to email address: {}", user.getEmail());
         String newActivationCode = generateAndSaveActivationToken(user);
 
@@ -260,6 +262,18 @@ public class AuthService {
         kafkaProducerTemplate.send(
                 userProfileTopic,
                 ProfileDeletionEvent.builder().userId(userId).build()
+        );
+    }
+
+    public void requestUserCreation(RegistrationRequest request) {
+        User savedUser = register(request);
+
+        kafkaProducerTemplate.send(
+                userProfileTopic,
+                UserCreationEvent.builder()
+                        .userId(savedUser.getId())
+                        .eventBody(request)
+                        .build()
         );
     }
 

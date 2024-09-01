@@ -20,7 +20,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class UserDeletionStep implements SagaStep<ProfileDeletionEvent, ProfileDeletionFailedEvent> {
+public class ProfileDeletionStep implements SagaStep<ProfileDeletionEvent, ProfileDeletionFailedEvent> {
 
     public static final String USER_PROFILE = "user_profile";
     private final ProfileRepository profileRepository;
