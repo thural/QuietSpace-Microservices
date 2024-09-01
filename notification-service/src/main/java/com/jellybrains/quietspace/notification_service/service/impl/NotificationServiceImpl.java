@@ -64,8 +64,8 @@ public class NotificationServiceImpl implements NotificationService {
     public Page<Notification> getAllNotifications(Integer pageNumber, Integer pageSize) {
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-//        return notificationRepository.findAllByUserId(signedUserId, pageRequest);
-        return Page.empty();
+        return notificationRepository.findAllByUserId(signedUserId, pageRequest);
+//        return Page.empty();
     }
 
     @Override

@@ -19,7 +19,7 @@ public class ProfileLoader implements CommandLineRunner {
     }
 
     private void loadUserProfile() {
-        String signedUserId = "a400e8b6-52d4-4568-89fd-494388506c7d";
+        String signedUserId = "ed05122c-aced-40ec-9133-1dfe8ce42e83";
         String signedUserName = "sigma";
 
         if (profileRepository.findByUserId(signedUserId).isEmpty()) {

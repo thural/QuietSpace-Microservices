@@ -15,10 +15,12 @@ import com.jellybrains.quietspace.auth_service.repository.RoleRepository;
 import com.jellybrains.quietspace.auth_service.repository.TokenRepository;
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
 import com.jellybrains.quietspace.auth_service.security.JwtUtil;
+import com.jellybrains.quietspace.common_service.message.ProfileDeletionEvent;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,6 +50,11 @@ public class AuthService {
     private final EmailService emailService;
     private final TokenRepository tokenRepository;
     private final UserDetailsService userDetailsService;
+
+    private final KafkaTemplate<String, ProfileDeletionEvent> kafkaProducerTemplate;
+
+    @Value("${kafka.topics.user-profile}")
+    private String userProfileTopic;
 
     @Value("${spring.application.mailing.frontend.activation-url}")
     private String activationUrl;
@@ -247,6 +254,13 @@ public class AuthService {
         User user = userRepository.findUserEntityByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         userRepository.save(user);
+    }
+
+    public void requestUserDeletionById(String userId) {
+        kafkaProducerTemplate.send(
+                userProfileTopic,
+                ProfileDeletionEvent.builder().userId(userId).build()
+        );
     }
 
 }

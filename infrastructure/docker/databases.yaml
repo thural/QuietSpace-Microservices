@@ -77,9 +77,8 @@ services:
     image: mongo:latest
     restart: on-failure
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_USERNAME: ${DB_USERNAME}
+      MONGO_PASSWORD: ${DB_PASSWORD}
     networks:
       - microservices-net
     ports:
@@ -92,9 +91,8 @@ services:
     image: mongo:latest
     restart: on-failure
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_USERNAME: ${DB_USERNAME}
+      MONGO_PASSWORD: ${DB_PASSWORD}
     networks:
       - microservices-net
     ports:
