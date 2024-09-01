@@ -45,7 +45,7 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public void addMemberWithId(String memberId, String chatId) {
+    public List<String> addMemberWithId(String memberId, String chatId) {
 
         Chat foundChat = findChatEntityById(chatId);
 
@@ -55,6 +55,7 @@ public class ChatServiceImpl implements ChatService {
         foundChat.setMemberIds(users);
 
         chatRepository.save(foundChat);
+        return users;
     }
 
 

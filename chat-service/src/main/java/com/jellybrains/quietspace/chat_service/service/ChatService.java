@@ -11,7 +11,7 @@ public interface ChatService {
 
     void deleteChatById(String chatId);
 
-    void addMemberWithId(String memberId, String chatId);
+    List<String> addMemberWithId(String memberId, String chatId);
 
     List<String> removeMemberWithId(String memberId, String chatId);
 

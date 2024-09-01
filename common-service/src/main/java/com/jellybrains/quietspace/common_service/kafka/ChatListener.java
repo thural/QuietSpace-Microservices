@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.listener.kafka;
+package com.jellybrains.quietspace.common_service.kafka;
 
 import com.jellybrains.quietspace.common_service.message.kafka.chat.event.*;
 import com.jellybrains.quietspace.common_service.message.websocket.ChatEvent;

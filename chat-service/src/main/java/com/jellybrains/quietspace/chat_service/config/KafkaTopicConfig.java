@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class KafkaNotificationTopicConfig {
+public class KafkaTopicConfig {
 
     @Bean
-    public NewTopic notificationTopic() {
-        return new NewTopic("notification-topic", 1, (short) 1);
+    NewTopic chatTopic() {
+        return new NewTopic("chat-topic", 1, (short) 1);
     }
 
 }
