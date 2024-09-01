@@ -1,8 +1,5 @@
 package com.jellybrains.quietspace.chat_service.service.impls;
 
-import com.jellybrains.quietspace.chat_service.webclient.service.UserService;
-import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
-import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace.chat_service.entity.Chat;
 import com.jellybrains.quietspace.chat_service.entity.Message;
 import com.jellybrains.quietspace.chat_service.exception.CustomErrorException;
@@ -10,6 +7,9 @@ import com.jellybrains.quietspace.chat_service.mapper.custom.MessageMapper;
 import com.jellybrains.quietspace.chat_service.repository.ChatRepository;
 import com.jellybrains.quietspace.chat_service.repository.MessageRepository;
 import com.jellybrains.quietspace.chat_service.service.MessageService;
+import com.jellybrains.quietspace.chat_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
+import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

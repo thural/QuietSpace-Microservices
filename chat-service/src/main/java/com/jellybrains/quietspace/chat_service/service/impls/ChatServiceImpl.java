@@ -1,13 +1,13 @@
 package com.jellybrains.quietspace.chat_service.service.impls;
 
-import com.jellybrains.quietspace.chat_service.webclient.service.UserService;
-import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
-import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import com.jellybrains.quietspace.chat_service.entity.Chat;
 import com.jellybrains.quietspace.chat_service.exception.UnauthorizedException;
 import com.jellybrains.quietspace.chat_service.mapper.custom.ChatMapper;
 import com.jellybrains.quietspace.chat_service.repository.ChatRepository;
 import com.jellybrains.quietspace.chat_service.service.ChatService;
+import com.jellybrains.quietspace.chat_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
+import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void addMemberWithId(String memberId, String chatId) {
-        
+
         Chat foundChat = findChatEntityById(chatId);
 
         userService.validateUserId(memberId);

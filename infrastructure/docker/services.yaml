@@ -60,7 +60,7 @@ services:
     networks:
       - microservices-net
     ports:
-      - ${AUTH_SERVICE_PORT}:8080
+      - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
 
   feed-service:
     container_name: feed-service
@@ -136,6 +136,21 @@ services:
       - microservices-net
     ports:
       - ${USER_SERVICE_PORT}:${USER_SERVICE_PORT}
+
+  common-service:
+    container_name: common-service
+    build:
+      context: /common-service
+      dockerfile: ./Dockerfile
+    image: thural/quietspace:common-service
+    env_file:
+      - .env
+    depends_on:
+      - config-server
+    networks:
+      - microservices-net
+    ports:
+      - ${COMMON_SERVICE_PORT}:${COMMON_SERVICE_PORT}
 
 networks:
   microservices-net:

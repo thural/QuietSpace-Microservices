@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.chat_service.service;
 
+import com.jellybrains.quietspace.chat_service.entity.Chat;
 import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
 import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
-import com.jellybrains.quietspace.chat_service.entity.Chat;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;

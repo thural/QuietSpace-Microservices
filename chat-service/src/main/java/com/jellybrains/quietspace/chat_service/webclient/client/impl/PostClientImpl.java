@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace.chat_service.webclient.client.impl;
 
-import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace.chat_service.webclient.client.PostClient;
+import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;

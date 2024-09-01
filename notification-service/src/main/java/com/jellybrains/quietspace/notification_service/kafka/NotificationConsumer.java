@@ -8,14 +8,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 //@Service
 @RequiredArgsConstructor
 public class NotificationConsumer {
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final NotificationRepository notificationRepository;;
+    private final NotificationRepository notificationRepository;
+    ;
     // TODO: implement a socket service
 
     @KafkaListener(topics = "notification-topic")

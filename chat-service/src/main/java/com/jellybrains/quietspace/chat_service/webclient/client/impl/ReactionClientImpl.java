@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.chat_service.webclient.client.impl;
 
+import com.jellybrains.quietspace.chat_service.webclient.client.ReactionClient;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
-import com.jellybrains.quietspace.chat_service.webclient.client.ReactionClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

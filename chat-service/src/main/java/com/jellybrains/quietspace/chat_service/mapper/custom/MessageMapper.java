@@ -1,10 +1,10 @@
 package com.jellybrains.quietspace.chat_service.mapper.custom;
 
-import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
-import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace.chat_service.entity.Chat;
 import com.jellybrains.quietspace.chat_service.entity.Message;
 import com.jellybrains.quietspace.chat_service.repository.ChatRepository;
+import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
+import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

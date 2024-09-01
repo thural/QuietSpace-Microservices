@@ -1,9 +1,9 @@
 package com.jellybrains.quietspace.chat_service.webclient.service;
 
 import com.jellybrains.quietspace.chat_service.exception.CustomNotFoundException;
+import com.jellybrains.quietspace.chat_service.webclient.client.ReactionClient;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
-import com.jellybrains.quietspace.chat_service.webclient.client.ReactionClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class ReactionService {
                 .orElseThrow(CustomNotFoundException::new);
     }
 
-    public ReactionResponse getUserReactionByContentId(String contentId){
+    public ReactionResponse getUserReactionByContentId(String contentId) {
         return reactionClient.getUserReactionByContentId(contentId)
                 .orElseThrow(CustomNotFoundException::new);
     }

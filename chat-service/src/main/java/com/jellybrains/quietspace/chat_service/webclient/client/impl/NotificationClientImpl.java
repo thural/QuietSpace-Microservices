@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.chat_service.webclient.client.impl;
 
+import com.jellybrains.quietspace.chat_service.webclient.client.NotificationClient;
 import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
-import com.jellybrains.quietspace.chat_service.webclient.client.NotificationClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;

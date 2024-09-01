@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.chat_service.controller;
 
+import com.jellybrains.quietspace.chat_service.service.MessageService;
 import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
 import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
-import com.jellybrains.quietspace.chat_service.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

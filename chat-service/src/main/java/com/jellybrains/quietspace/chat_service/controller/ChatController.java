@@ -1,15 +1,15 @@
 package com.jellybrains.quietspace.chat_service.controller;
 
-import com.jellybrains.quietspace.common_service.enums.EventType;
-import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
-import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
-import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
-import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace.chat_service.entity.Message;
 import com.jellybrains.quietspace.chat_service.event.ChatEvent;
 import com.jellybrains.quietspace.chat_service.repository.MessageRepository;
 import com.jellybrains.quietspace.chat_service.service.ChatService;
 import com.jellybrains.quietspace.chat_service.service.MessageService;
+import com.jellybrains.quietspace.common_service.enums.EventType;
+import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
+import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
+import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
+import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -33,4 +33,4 @@ kafka:
     profile: profile-topic
 
 server:
-  port: 8484
+  port: ${COMMON_SERVICE_PORT}

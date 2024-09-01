@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace.chat_service.webclient.client.impl;
 
-import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.chat_service.webclient.client.UserClient;
+import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.retry.annotation.Backoff;
@@ -20,7 +20,7 @@ public class UserClientImpl implements UserClient {
     private final String USER_API_URI = "/api/v1/users/";
 
     @Override
-    public Boolean validateUserId(String userId){
+    public Boolean validateUserId(String userId) {
         return webClient.get()
                 .uri(USER_API_URI + "validate/" + userId)
                 .retrieve()
@@ -30,7 +30,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Optional<UserResponse> getLoggedUser(){
+    public Optional<UserResponse> getLoggedUser() {
         return webClient.get()
                 .uri(USER_API_URI + "user")
                 .retrieve()
@@ -59,7 +59,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public List<UserResponse> getUsersFromIdList(List<String> userIds){
+    public List<UserResponse> getUsersFromIdList(List<String> userIds) {
         return webClient.get()
                 .uri(USER_API_URI + "getUsersFromList")
                 .retrieve()

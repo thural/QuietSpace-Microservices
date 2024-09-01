@@ -1,6 +1,5 @@
 package com.jellybrains.quietspace.user_service.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
 import com.jellybrains.quietspace.user_service.webclient.service.UserService;
@@ -76,8 +75,8 @@ public class UserController {
     }
 
     @GetMapping("/claims")
-    Map<String, String> getClaims (){
-        Map<String,String> claims = new HashMap<>();
+    Map<String, String> getClaims() {
+        Map<String, String> claims = new HashMap<>();
         String userId = userService.getAuthorizedUserId();
         String username = userService.getAuthorizedUsername();
         String userFullName = userService.getAuthorizedUserFullName();
