@@ -1,11 +1,11 @@
-package com.jellybrains.quietspace.chat_service.kafka;
+package com.jellybrains.quietspace.chat_service.kafka.consumer;
 
 import com.jellybrains.quietspace.chat_service.entity.Message;
+import com.jellybrains.quietspace.chat_service.kafka.producer.ChatProducer;
 import com.jellybrains.quietspace.chat_service.repository.MessageRepository;
 import com.jellybrains.quietspace.chat_service.service.ChatService;
 import com.jellybrains.quietspace.chat_service.service.MessageService;
 import com.jellybrains.quietspace.common_service.enums.EventType;
-import com.jellybrains.quietspace.common_service.message.kafka.KafkaBaseEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.chat.event.*;
 import com.jellybrains.quietspace.common_service.message.kafka.chat.request.*;
 import com.jellybrains.quietspace.common_service.message.websocket.ChatEvent;
@@ -14,31 +14,26 @@ import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ChatListener {
-
-    @Value("${kafka.topics.chat}")
-    private String chatTopic;
+public class ChatConsumer {
 
     private final ChatService chatService;
+    private final ChatProducer chatProducer;
     private final MessageService messageService;
     private final MessageRepository messageRepository;
-    private final KafkaTemplate<String, KafkaBaseEvent> kafkaTemplate;
 
 
     @KafkaListener(topics = "#{'${kafka.topics.chat}'}")
     void sendMessageToUser(SendMessageRequest event) {
         MessageRequest message = event.getEventBody();
-        log.info("saving received message at {} topic: {}, sent by: {}", chatTopic, message.getText(), message.getSenderId());
+        log.info("saving received message: {} sent by: {}", message.getText(), message.getSenderId());
 
         try {
             MessageResponse savedMessage = messageService.addMessage(message);
-            kafkaTemplate.send(chatTopic, ReceiveMessageEvent.builder().eventBody(savedMessage).build());
+            chatProducer.chatMessage(SendMessageEvent.builder().eventBody(savedMessage).build());
         } catch (Exception e) {
             var chatEvent = ChatEvent.builder()
                     .message(e.getMessage())
@@ -46,8 +41,7 @@ public class ChatListener {
                     .actorId(message.getSenderId())
                     .type(EventType.EXCEPTION)
                     .build();
-
-            kafkaTemplate.send(chatTopic, ChatErrorEvent.builder().eventBody(chatEvent).build());
+            chatProducer.chatError(ChatErrorEvent.builder().eventBody(chatEvent).build());
         }
     }
 
@@ -68,12 +62,12 @@ public class ChatListener {
             MessageResponse message = messageService.deleteMessage(event.getMessageId())
                     .orElseThrow(RuntimeException::new);
             chatevent.setChatId(message.getChatId());
-            kafkaTemplate.send(chatTopic, DeleteMessageEvent.builder().eventBody(chatevent).build());
+            chatProducer.deleteChatMessage(DeleteMessageEvent.builder().eventBody(chatevent).build());
         } catch (Exception e) {
 
             chatevent.setMessage(e.getMessage());
             chatevent.setType(EventType.EXCEPTION);
-            kafkaTemplate.send(chatTopic, ChatErrorEvent.builder().eventBody(chatevent).build());
+            chatProducer.chatError(ChatErrorEvent.builder().eventBody(chatevent).build());
         }
     }
 
@@ -81,7 +75,6 @@ public class ChatListener {
     @KafkaListener(topics = "#{'${kafka.topics.chat}'}")
     void markMessageSeen(SeenMessageRequest event) {
         log.info("setting message with id {} as seen ...", event.getMessageId());
-
         MessageResponse message = messageService.setMessageSeen(event.getMessageId())
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -90,8 +83,7 @@ public class ChatListener {
                 .messageId(message.getId())
                 .type(EventType.SEEN_MESSAGE)
                 .build();
-
-        kafkaTemplate.send(chatTopic, SeenMessageEvent.builder().eventBody(chatEvent).build());
+        chatProducer.seenChatMessage(SeenMessageEvent.builder().eventBody(chatEvent).build());
     }
 
 
@@ -108,11 +100,11 @@ public class ChatListener {
         try {
             var userList = chatService.removeMemberWithId(eventBody.getActorId(), eventBody.getChatId());
             chatEvent.setUserIds(userList);
-            kafkaTemplate.send(chatTopic, LeftChatEvent.builder().eventBody(chatEvent).build());
+            chatProducer.leftChatEvent(LeftChatEvent.builder().eventBody(chatEvent).build());
         } catch (Exception e) {
             chatEvent.setMessage(e.getMessage());
             chatEvent.setType(EventType.EXCEPTION);
-            kafkaTemplate.send(chatTopic, ChatErrorEvent.builder().eventBody(chatEvent).build());
+            chatProducer.chatError(ChatErrorEvent.builder().eventBody(chatEvent).build());
         }
     }
 
@@ -134,13 +126,12 @@ public class ChatListener {
                     eventBody.getRecipientId(),
                     eventBody.getChatId()
             ));
-
-            kafkaTemplate.send(chatTopic, JoinedChatEvent.builder().eventBody(chatEvent).build());
+            chatProducer.joinedChatEvent(JoinedChatEvent.builder().eventBody(chatEvent).build());
 
         } catch (Exception e) {
             chatEvent.setMessage(e.getMessage());
             chatEvent.setType(EventType.EXCEPTION);
-            kafkaTemplate.send(chatTopic, ChatErrorEvent.builder().eventBody(chatEvent).build());
+            chatProducer.chatError(ChatErrorEvent.builder().eventBody(chatEvent).build());
         }
     }
 

@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.auth_service.bootstrap;
 
 import com.jellybrains.quietspace.auth_service.entity.Role;
-import com.jellybrains.quietspace.auth_service.enums.RoleType;
 import com.jellybrains.quietspace.auth_service.repository.RoleRepository;
+import com.jellybrains.quietspace.common_service.enums.RoleType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

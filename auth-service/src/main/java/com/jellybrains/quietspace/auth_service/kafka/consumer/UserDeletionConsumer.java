@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.auth_service.kafka;
+package com.jellybrains.quietspace.auth_service.kafka.consumer;
 
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
 import com.jellybrains.quietspace.common_service.enums.EventType;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class UserDeletionListener {
+public class UserDeletionConsumer {
 
     private final UserRepository userRepository;
     private final KafkaTemplate<String, ProfileDeletionFailedEvent> deleteUserKafkaTemplate;

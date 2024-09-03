@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.auth_service.kafka;
+package com.jellybrains.quietspace.auth_service.kafka.consumer;
 
 import com.jellybrains.quietspace.auth_service.entity.User;
 import com.jellybrains.quietspace.auth_service.exception.UserNotFoundException;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class UserCreationListener {
+public class UserCreationConsumer {
 
     private final UserRepository userRepository;
     private final AuthService authService;

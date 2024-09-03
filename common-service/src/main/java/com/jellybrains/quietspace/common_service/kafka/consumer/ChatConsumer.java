@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.kafka;
+package com.jellybrains.quietspace.common_service.kafka.consumer;
 
 import com.jellybrains.quietspace.common_service.message.kafka.chat.event.*;
 import com.jellybrains.quietspace.common_service.message.websocket.ChatEvent;
@@ -18,7 +18,7 @@ import static com.jellybrains.quietspace.common_service.constant.ChatPathValues.
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class ChatListener {
+public class ChatConsumer {
 
     @Value("${kafka.topics.chat}")
     private String chatTopic;

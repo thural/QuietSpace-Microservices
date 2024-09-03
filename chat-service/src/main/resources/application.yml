@@ -47,6 +47,7 @@ kafka:
     notification: notification-topic
     reaction: reaction-topic
     profile: profile-topic
+    chat: chat-topic
 
 eureka:
   client:
