@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.user_service.configuration;
+package com.jellybrains.quietspace.user_service.config;
 
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import org.springframework.cache.annotation.EnableCaching;
@@ -11,7 +11,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 @Configuration
 @EnableCaching
-public class RedisConfiguration {
+public class RedisConfig {
 
     @Bean
     public ReactiveRedisTemplate<String, Profile> redisTemplate(

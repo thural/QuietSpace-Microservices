@@ -56,7 +56,8 @@ kafka:
     notification: notification-topic
     reaction: reaction-topic
     profile: profile-topic
-    
+    user: user-topic
+
 eureka:
   client:
     serviceUrl:
