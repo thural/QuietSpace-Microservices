@@ -11,9 +11,17 @@ public class KafkaTopicConfig {
     @Value("${kafka.topics.chat}")
     private String chatTopic;
 
+    @Value("${kafka.topics.notification}")
+    private String notificationTopic;
+
     @Bean
-    NewTopic chatTopic() {
+    public NewTopic chatTopic() {
         return new NewTopic(chatTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic notificationTopic() {
+        return new NewTopic(notificationTopic, 1, (short) 1);
     }
 
 }

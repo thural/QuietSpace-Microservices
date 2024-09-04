@@ -92,21 +92,6 @@ services:
     ports:
       - ${CHAT_SERVICE_PORT}:${CHAT_SERVICE_PORT}
 
-  notification-service:
-    container_name: notification-service
-    build:
-      context: /notification-service
-      dockerfile: ./Dockerfile
-    image: thural/quietspace:notification-service
-    env_file:
-      - .env
-    depends_on:
-      - config-server
-    networks:
-      - microservices-net
-    ports:
-      - ${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}
-
   reaction-service:
     container_name: reaction-service
     build:

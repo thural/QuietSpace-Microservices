@@ -32,11 +32,15 @@ spring:
           predicates:
             - Path=/eureka/**
 
+        - id: auth-service
+          uri: lb://${AUTH_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/auth/**
+
         - id: user-service
           uri: lb://${USER_SERVICE_HOST}
           predicates:
             - Path=/api/v1/users/**, /api/v1/profiles/**
-
           filters:
             - AuthenticationFilter
 
@@ -68,22 +72,10 @@ spring:
           filters:
             - AuthenticationFilter
 
-        - id: notification-service
-          uri: lb://${NOTIFICATION_SERVICE_HOST}
-          predicates:
-            - Path=/api/v1/notifications/**
-          filters:
-            - AuthenticationFilter
-
-        - id: auth-service
-          uri: lb://${AUTH_SERVICE_HOST}
-          predicates:
-            - Path=/api/v1/auth/**
-
         - id: common-service
           uri: lb://${COMMON_SERVICE_HOST}
           predicates:
-            - Path=/ws, /ws/**, api/v1/ws/**
+            - Path=/api/v1/notifications/**, /ws, /ws/**, api/v1/ws/**
 
       discovery:
         locator:
