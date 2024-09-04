@@ -20,7 +20,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Validated RegistrationRequest request) throws MessagingException {
-        authService.register(request);
+        authService.requestUserRegistration(request);
         return ResponseEntity.ok().build();
     }
 

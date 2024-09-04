@@ -12,12 +12,12 @@ public class CommentService {
 
     private final CommentClient commentClient;
 
-    public CommentResponse getCommentById(String commentId){
+    public CommentResponse getCommentById(String commentId) {
         return commentClient.getCommentById(commentId)
                 .orElseThrow(CustomNotFoundException::new);
     }
 
-    public String getUserIdByCommentId(String postId){
-        return getCommentById(postId).getUserId(); // TODO: use kafka instead
+    public String getUserIdByCommentId(String postId) {
+        return getCommentById(postId).getUserId();
     }
 }

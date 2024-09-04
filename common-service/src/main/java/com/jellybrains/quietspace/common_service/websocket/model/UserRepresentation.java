@@ -8,14 +8,18 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserRepresentation {
 
+    private String userId;
     private String username;
     private String firstname;
     private String lastname;
     private StatusType statusType;
+    private OffsetDateTime dateOfBirth;
 
     @Email(message = "invalid email format")
     @NotEmpty(message = "email can not be empty")

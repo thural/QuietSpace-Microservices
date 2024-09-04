@@ -18,6 +18,6 @@ public class CommentService {
     }
 
     public String getUserIdByCommentId(String postId) {
-        return getCommentById(postId).getUserId(); // TODO: use kafka instead
+        return getCommentById(postId).getUserId();
     }
 }

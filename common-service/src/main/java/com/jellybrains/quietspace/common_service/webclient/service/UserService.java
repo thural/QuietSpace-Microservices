@@ -1,6 +1,8 @@
 package com.jellybrains.quietspace.common_service.webclient.service;
 
 import com.jellybrains.quietspace.common_service.enums.StatusType;
+import com.jellybrains.quietspace.common_service.exception.UserNotFoundException;
+import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.common_service.webclient.client.UserClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,8 @@ public class UserService {
     }
 
     public String getUsernameById(String userId) {
-        return ""; // TODO: implement kafka method
+        return userClient.getUserById(userId).map(UserResponse::getUsername)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public String getAuthorizedUserId() {

@@ -20,17 +20,16 @@ public class UserClientImpl implements UserClient {
     private final String USER_API_URI = "/api/v1/users/";
 
     @Override
-    public Boolean validateUserId(String userId){
+    public Boolean validateUserId(String userId) {
         return webClient.get()
                 .uri(USER_API_URI + "validate/" + userId)
                 .retrieve()
                 .bodyToMono(Boolean.class)
                 .block();
-        // TODO: use AOP logic if you can
     }
 
     @Override
-    public Optional<UserResponse> getLoggedUser(){
+    public Optional<UserResponse> getLoggedUser() {
         return webClient.get()
                 .uri(USER_API_URI + "user")
                 .retrieve()
@@ -59,7 +58,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public List<UserResponse> getUsersFromIdList(List<String> userIds){
+    public List<UserResponse> getUsersFromIdList(List<String> userIds) {
         return webClient.get()
                 .uri(USER_API_URI + "getUsersFromList")
                 .retrieve()

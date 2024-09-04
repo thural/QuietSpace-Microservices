@@ -18,6 +18,6 @@ public class PostService {
     }
 
     public String getUserIdByPostId(String postId) {
-        return getPostById(postId).getUserId(); // TODO: use kafka instead
+        return getPostById(postId).getUserId();
     }
 }

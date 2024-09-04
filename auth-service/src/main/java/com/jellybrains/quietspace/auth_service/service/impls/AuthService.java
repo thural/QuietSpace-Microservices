@@ -5,6 +5,7 @@ import com.jellybrains.quietspace.auth_service.entity.Token;
 import com.jellybrains.quietspace.auth_service.entity.User;
 import com.jellybrains.quietspace.auth_service.exception.ActivationTokenException;
 import com.jellybrains.quietspace.auth_service.exception.UserNotFoundException;
+import com.jellybrains.quietspace.auth_service.kafka.producer.UserProducer;
 import com.jellybrains.quietspace.auth_service.model.AuthRequest;
 import com.jellybrains.quietspace.auth_service.model.AuthResponse;
 import com.jellybrains.quietspace.auth_service.model.RegistrationRequest;
@@ -15,14 +16,14 @@ import com.jellybrains.quietspace.auth_service.security.JwtUtil;
 import com.jellybrains.quietspace.common_service.enums.EmailTemplateName;
 import com.jellybrains.quietspace.common_service.enums.RoleType;
 import com.jellybrains.quietspace.common_service.enums.StatusType;
-import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileDeletionEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEvent;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserProfileEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionEvent;
+import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -52,11 +53,7 @@ public class AuthService {
     private final EmailService emailService;
     private final TokenRepository tokenRepository;
     private final UserDetailsService userDetailsService;
-
-    private final KafkaTemplate<String, UserProfileEvent> kafkaProducerTemplate;
-
-    @Value("${kafka.topics.user-profile}")
-    private String userProfileTopic;
+    private final UserProducer userProducer;
 
     @Value("${spring.application.mailing.frontend.activation-url}")
     private String activationUrl;
@@ -79,7 +76,6 @@ public class AuthService {
                 .build();
 
         return userRepository.save(user);
-//        sendValidationEmail(savedUser);
     }
 
     public AuthResponse authenticate(AuthRequest request) {
@@ -259,22 +255,14 @@ public class AuthService {
     }
 
     public void requestUserDeletionById(String userId) {
-        kafkaProducerTemplate.send(
-                userProfileTopic,
-                ProfileDeletionEvent.builder().userId(userId).build()
-        );
+        userProducer.userDeletion(UserDeletionEvent.builder().userId(userId).build());
     }
 
-    public void requestUserCreation(RegistrationRequest request) {
+    public void requestUserRegistration(RegistrationRequest request) {
         User savedUser = register(request);
-
-        kafkaProducerTemplate.send(
-                userProfileTopic,
-                UserCreationEvent.builder()
-                        .userId(savedUser.getId())
-                        .eventBody(request)
-                        .build()
-        );
+        UserRepresentation user = new UserRepresentation();
+        BeanUtils.copyProperties(savedUser, user);
+        userProducer.userCreation(UserCreationEvent.builder().eventBody(user).build());
     }
 
 }

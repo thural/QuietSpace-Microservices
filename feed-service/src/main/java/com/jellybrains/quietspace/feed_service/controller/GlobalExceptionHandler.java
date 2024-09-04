@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.nio.file.AccessDeniedException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -100,7 +103,6 @@ public class GlobalExceptionHandler {
                         .status(status.name())
                         .message(e.getMessage())
                         .timestamp(new Date())
-                        .stackTrace(Arrays.toString(e.getStackTrace())) // TODO: marked for removal
                         .build());
     }
 

@@ -1,10 +1,8 @@
 package com.jellybrains.quietspace.auth_service.kafka.producer;
 
 import com.jellybrains.quietspace.common_service.message.kafka.KafkaBaseEvent;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEvent;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEventFailed;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionEvent;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionFailedEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileDeletionEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -17,31 +15,23 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserProducer {
+public class ProfileProducer {
 
-    private final NewTopic userTopic;
+    private final NewTopic profileTopic;
     private final KafkaTemplate<String, KafkaBaseEvent> kafkaTemplate;
 
     private <T> Message<T> prepareMessage(T payload) {
         return MessageBuilder
                 .withPayload(payload)
-                .setHeader(KafkaHeaders.TOPIC, userTopic)
+                .setHeader(KafkaHeaders.TOPIC, profileTopic)
                 .build();
     }
 
-    public void userCreationFailed(UserCreationEventFailed event) {
+    public void profileCreation(ProfileCreationEvent event) {
         kafkaTemplate.send(prepareMessage(event));
     }
 
-    public void userDeletionFailed(UserDeletionFailedEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
-    }
-
-    public void userCreation(UserCreationEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
-    }
-
-    public void userDeletion(UserDeletionEvent event) {
+    public void profileDeletion(ProfileDeletionEvent event) {
         kafkaTemplate.send(prepareMessage(event));
     }
 

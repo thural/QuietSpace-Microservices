@@ -26,7 +26,6 @@ public class UserClientImpl implements UserClient {
                 .retrieve()
                 .bodyToMono(Boolean.class)
                 .block();
-        // TODO: use AOP logic if you can
     }
 
     @Override

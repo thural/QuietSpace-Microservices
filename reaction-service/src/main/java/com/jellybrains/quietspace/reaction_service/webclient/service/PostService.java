@@ -12,12 +12,12 @@ public class PostService {
 
     private final PostClient postClient;
 
-    public PostResponse getPostById(String postId){
+    public PostResponse getPostById(String postId) {
         return postClient.getPostById(postId)
                 .orElseThrow(CustomNotFoundException::new);
     }
 
-    public String getUserIdByPostId(String postId){
-        return getPostById(postId).getUserId(); // TODO: use kafka instead
+    public String getUserIdByPostId(String postId) {
+        return getPostById(postId).getUserId();
     }
 }

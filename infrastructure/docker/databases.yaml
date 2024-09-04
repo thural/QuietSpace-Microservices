@@ -16,8 +16,6 @@ services:
       - microservices-net
     ports:
       - ${AUTH_DB_PORT}:3306
-    expose:
-      - 3306
 
   user-service-db:
     container_name: user-service-db
@@ -34,8 +32,6 @@ services:
       - microservices-net
     ports:
       - ${USER_DB_PORT}:3306
-    expose:
-      - 3306
 
   chat-service-db:
     container_name: chat-service-db
@@ -110,5 +106,5 @@ volumes:
   feed-data:
   chat-data:
   user-data:
-  notification-data:
   reaction-data:
+  notification-data:
