@@ -1,6 +1,6 @@
 package com.jellybrains.quietspace.common_service.controller;
 
-import com.jellybrains.quietspace.common_service.message.kafka.chat.producer.ChatProducer;
+import com.jellybrains.quietspace.common_service.kafka.producer.ChatProducer;
 import com.jellybrains.quietspace.common_service.message.kafka.chat.request.*;
 import com.jellybrains.quietspace.common_service.message.websocket.ChatEvent;
 import com.jellybrains.quietspace.common_service.model.request.MessageRequest;

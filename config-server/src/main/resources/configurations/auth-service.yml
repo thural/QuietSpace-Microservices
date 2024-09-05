@@ -1,0 +1,32 @@
+spring:
+  mail:
+    host: ${MAILDEV_HOST}
+    port: ${MAILDEV_PORT}
+    username: thural
+    password: thural
+    properties:
+      mail:
+        smtp.trust: "*"
+        auth: true
+        starttls.enabled: true
+        connectiontimeout: 5000
+        timeout: 3000
+        writetimeout: 5000
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:${AUTH_DB_PORT}/${DB_NAME}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop
+    database: mysql
+    open-in-view: true
+    show-sql: true
+
+server.port: ${AUTH_SERVICE_PORT}

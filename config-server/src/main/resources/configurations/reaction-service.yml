@@ -1,0 +1,21 @@
+spring:
+
+  data:
+    mongodb:
+      uri: mongodb://${DB_USERNAME}:${DB_PASSWORD}@localhost:${REACTION_DB_PORT}/${DB_NAME}
+  #      database: ${DB_NAME}
+  #      host: localhost
+  #      port: ${REACTION_DB_PORT}
+  #      username: ${DB_ROOT_USERNAME}
+  #      password: ${DB_ROOT_PASSWORD}
+  #      auto-index-creation: true
+
+mongodb:
+  transactionEnabled: true
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
+
+server.port: ${REACTION_SERVICE_PORT}

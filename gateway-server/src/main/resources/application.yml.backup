@@ -1,0 +1,103 @@
+spring:
+  application:
+    name: gateway-server
+    urls:
+      frontend: http://${FRONTEND_HOST}:${FRONTEND_PORT}
+    mailing:
+      frontend:
+        activation-url: ${ACTIVATION_URL}
+    security:
+      jwt:
+        secret-key: ${JWT_SECRET_KEY}
+        expiration: 6000000 # 10 minutes
+        refresh-token:
+          expiration: 86400000 # one day
+  config:
+    import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
+  profiles:
+    default: default
+    active:
+      - default
+  cloud:
+    gateway:
+      routes:
+        - id: discovery-server
+          uri: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+        - id: discovery-server-static
+          uri: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}
+          predicates:
+            - Path=/eureka/**
+
+        - id: auth-service
+          uri: lb://${AUTH_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: user-service
+          uri: lb://${USER_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/users/**, /api/v1/profiles/**
+          filters:
+            - AuthenticationFilter
+
+        - id: feed-service
+          uri: lb://${FEED_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/posts/**, /api/v1/comments/**
+          filters:
+            - AuthenticationFilter
+
+        - id: chat-service
+          uri: lb://${CHAT_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/chat/**
+          filters:
+            - AuthenticationFilter
+
+        - id: dummy-service
+          uri: lb://${DUMMY_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/dummy/**
+          filters:
+            - AuthenticationFilter
+
+        - id: reaction-service
+          uri: lb://${REACTION_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/reactions/**
+          filters:
+            - AuthenticationFilter
+
+        - id: common-service
+          uri: lb://${COMMON_SERVICE_HOST}
+          predicates:
+            - Path=/api/v1/notifications/**, /ws, /ws/**, api/v1/ws/**
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
+
+server:
+  port: ${GATEWAY_SERVER_PORT}

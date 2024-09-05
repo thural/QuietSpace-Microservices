@@ -6,12 +6,10 @@ services:
     image: confluentinc/cp-zookeeper:latest
     restart: on-failure
     environment:
-      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+      ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - microservices-net
-    ports:
-      - ${ZOOKEEPER_CLIENT_PORT}:2181
 
   broker:
     container_name: broker
@@ -19,16 +17,16 @@ services:
     restart: on-failure
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_CLIENT_PORT}
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:${KAFKA_PORT}
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT, PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:${KAFKA_PORT},PLAINTEXT_INTERNAL://localhost:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     networks:
       - microservices-net
     ports:
-      - ${KAFKA_PORT}:29092
+      - ${KAFKA_PORT}:9092
     depends_on:
       - zookeeper
 

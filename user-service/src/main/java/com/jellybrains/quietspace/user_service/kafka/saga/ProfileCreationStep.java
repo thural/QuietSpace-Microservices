@@ -25,6 +25,7 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
     @KafkaListener(topics = "#{'${kafka.topics.user}'}")
     public void process(UserCreationEvent event) {
         try {
+            log.info("running profile creation event");
             Profile profile = new Profile();
             BeanUtils.copyProperties(event.getEventBody(), profile);
             profileRepository.save(profile);

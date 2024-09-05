@@ -4,7 +4,7 @@ import com.jellybrains.quietspace.common_service.message.kafka.KafkaBaseEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.chat.event.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatProducer {
 
-    private final NewTopic chatTopic;
+    @Value("${kafka.topics.chat}")
+    private String chatTopic;
+
     private final KafkaTemplate<String, KafkaBaseEvent> kafkaTemplate;
 
     private <T> Message<T> prepareMessage(T payload) {

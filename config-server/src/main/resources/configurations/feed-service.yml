@@ -1,0 +1,30 @@
+spring:
+
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${FEED_DB_URI}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    root: TRACE
+    org.springframework.messaging: TRACE
+    org.springframework.web.socket: TRACE
+    org.hibernate.orm.jdbc.bind: ERROR
+    dev.thural.quietspace.service: TRACE
+    org.springframework.security: TRACE
+    org.hibernate.sql: ERROR
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: TRACE
+
+server.port: ${FEED_SERVICE_PORT}

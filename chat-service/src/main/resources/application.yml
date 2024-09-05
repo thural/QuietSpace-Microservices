@@ -1,58 +1,5 @@
 spring:
-
   application:
     name: chat-service
-    urls:
-      gateway: ${GATEWAY_URL}
-      frontend: http://${FRONTEND_HOST}:${FRONTEND_PORT}
-
   config:
-    import: optional:configserver:${CONFIG_URI:http://localhost:8899/config-server}
-  profiles:
-    active:
-      - ${CONFIG_ACTIVE_PROFILE}
-
-  r2dbc:
-    url: ${CHAT_DB_URI}
-    username: ${DB_USER_USERNAME}
-    password: ${DB_USER_PASSWORD}
-
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  kafka:
-    consumer:
-      bootstrap-servers: ${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: saga-user-group-id
-      auto-offset-reset: latest
-      properties:
-        spring.json.trusted.packages: '*'
-
-    producer:
-      bootstrap-servers: ${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        enable.idempotence: false
-
-kafka:
-  topics:
-    notification: notification-topic
-    reaction: reaction-topic
-    profile: profile-topic
-    chat: chat-topic
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${DISCOVERY_SERVER_URI:http://localhost:8761/eureka}
-
-server:
-  port: ${CHAT_SERVICE_PORT}
+    import: configserver:${CONFIG_URI:http://localhost:8899}
