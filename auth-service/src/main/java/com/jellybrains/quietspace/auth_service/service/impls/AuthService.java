@@ -262,6 +262,8 @@ public class AuthService {
         User savedUser = register(request);
         UserRepresentation user = new UserRepresentation();
         BeanUtils.copyProperties(savedUser, user);
+        user.setUserId(savedUser.getId());
+        log.info("calling userCreation producer with user as event body: {}", user);
         userProducer.userCreation(UserCreationEvent.builder().eventBody(user).build());
     }
 

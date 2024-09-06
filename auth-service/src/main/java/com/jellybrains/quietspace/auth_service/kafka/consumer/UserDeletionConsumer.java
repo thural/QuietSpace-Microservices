@@ -20,8 +20,9 @@ public class UserDeletionConsumer {
     @KafkaListener(topics = "#{'${kafka.topics.profile.deletion}'}")
     public void deleteProfileUser(ProfileDeletionEvent event) {
         try {
+            log.info("deleting user on profileDeletionEvent: {}", event);
             userRepository.deleteById(event.getUserId());
-            // TODO: send event to websocket event subscriber
+            // TODO: send event to websocket subscriber
             log.info("user deletion successful for userId: {}", event.getUserId());
         } catch (Exception e) {
             log.info("user deletion failed for userId: {} due to: {}", event.getUserId(), e.getMessage());

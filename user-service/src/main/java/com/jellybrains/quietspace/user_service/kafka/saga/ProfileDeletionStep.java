@@ -34,11 +34,7 @@ public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDele
         try {
             redisTemplate.opsForValue().set(USER_PROFILE, foundProfile);
             profileRepository.deleteByUserId(event.getUserId());
-            profileProducer.profileDeleted(ProfileDeletionEvent
-                    .builder()
-                    .userId(event.getUserId())
-                    .build());
-
+            profileProducer.profileDeleted(ProfileDeletionEvent.builder().userId(event.getUserId()).build());
         } catch (Exception e) {
             throw new RuntimeException("profile deletion step was failed");
         }
@@ -47,6 +43,7 @@ public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDele
     @Override
     @KafkaListener(topics = "#{'${kafka.topics.user.deletion-failed}'}")
     public void rollback(UserDeletionFailedEvent event) {
+        log.info("rolling back deleted profile on userDeletionFailedEvent: {}", event);
         Profile cachedProfile = redisTemplate.opsForValue().get(USER_PROFILE);
         if (Objects.isNull(cachedProfile)) throw new RuntimeException("cached profile not found");
         try {

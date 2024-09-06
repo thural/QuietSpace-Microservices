@@ -40,6 +40,7 @@ public class UserCreationStep implements SagaStep<ProfileCreationEvent, ProfileC
     @KafkaListener(topics = "#{'${kafka.topics.profile.creation-failed}'}")
     public void rollback(ProfileCreationEventFailed event) {
         try {
+            log.info("rolling back user registration on profileCreationEventFailed: {}", event);
             userRepository.deleteById(event.getUserId());
             // TODO: send event to public websocket subscriber
             log.info("user registration rollback successful for userId: {}", event.getUserId());

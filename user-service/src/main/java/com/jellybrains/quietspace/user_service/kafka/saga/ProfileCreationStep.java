@@ -25,17 +25,17 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
     @KafkaListener(topics = "#{'${kafka.topics.user.creation}'}")
     public void process(UserCreationEvent event) {
         try {
-            log.info("event body at profile creation step: {}", event.getEventBody());
+            log.info("userCreationEvent body at profile creation step: {}", event.getEventBody());
             Profile profile = new Profile();
             BeanUtils.copyProperties(event.getEventBody(), profile);
+            log.info("new profile entity before saving: {}", profile);
             profileRepository.save(profile);
-            profileProducer.profileCreation(ProfileCreationEvent.builder().userId(event.getUserId()).build());
+            profileProducer.profileCreation(ProfileCreationEvent.builder().userId(profile.getUserId()).build());
         } catch (Exception e) {
-            profileProducer.profileCreationFailed(ProfileCreationEventFailed
-                    .builder()
-                    .userId(event.getUserId())
-                    .build());
-            throw new RuntimeException("profile creation step was failed");
+            var failEvent = ProfileCreationEventFailed.builder().userId(event.getUserId()).build();
+            profileProducer.profileCreationFailed(failEvent);
+            log.info("profile creation step was failed: {}", e.getMessage());
+            log.info("produced profileCreationFailed event: {}", failEvent);
         }
     }
 
@@ -49,7 +49,7 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
         try {
             profileRepository.deleteByUserId(event.getUserId());
         } catch (Exception e) {
-            throw new RuntimeException("profile creation rollback step was failed");
+            log.info("profile creation rollback step was failed: {}", e.getMessage());
         }
     }
 
