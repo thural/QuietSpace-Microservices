@@ -23,7 +23,6 @@ public class JwtUtil {
     private String secretKey;
     @Value("${spring.application.security.jwt.expiration}")
     private long jwtExpiration;
-
     @Value("${spring.application.security.jwt.refresh-token.expiration}")
     private long jwtRefreshExpiration;
 
@@ -42,11 +41,11 @@ public class JwtUtil {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    public  String extractFullName(String token) {
+    public String extractFullName(String token) {
         return extractClaim(token, claims -> claims.get("fullName", String.class));
     }
 
-    public  String extractUserId(String token) {
+    public String extractUserId(String token) {
         return extractClaim(token, claims -> claims.get("userId", String.class));
     }
 

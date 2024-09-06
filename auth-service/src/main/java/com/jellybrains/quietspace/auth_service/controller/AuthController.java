@@ -1,9 +1,12 @@
 package com.jellybrains.quietspace.auth_service.controller;
 
+import com.jellybrains.quietspace.auth_service.kafka.producer.UserProducer;
 import com.jellybrains.quietspace.auth_service.model.AuthRequest;
 import com.jellybrains.quietspace.auth_service.model.AuthResponse;
 import com.jellybrains.quietspace.auth_service.model.RegistrationRequest;
 import com.jellybrains.quietspace.auth_service.service.impls.AuthService;
+import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEvent;
+import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,12 +14,31 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+    private final UserProducer userProducer;
+
+    @PostMapping("/test-kafka")
+    public void sendSampleUser() {
+        var user = UserRepresentation.builder()
+                .username("tommy")
+                .lastname("shelby")
+                .email("thommmy@email.com")
+                .build();
+        userProducer.userCreation(
+                UserCreationEvent.builder()
+                        .userId(UUID.randomUUID().toString())
+                        .eventBody(user)
+                        .message("created a test user")
+                        .build()
+        );
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Validated RegistrationRequest request) throws MessagingException {

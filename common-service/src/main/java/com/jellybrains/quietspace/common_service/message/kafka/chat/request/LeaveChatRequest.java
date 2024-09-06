@@ -11,6 +11,5 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class LeaveChatRequest extends KafkaBaseEvent {
-    String userId;
     ChatEvent eventBody;
 }

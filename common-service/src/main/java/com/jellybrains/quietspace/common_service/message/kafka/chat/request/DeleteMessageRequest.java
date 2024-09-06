@@ -10,6 +10,5 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class DeleteMessageRequest extends KafkaBaseEvent {
-    String userId;
     String messageId;
 }

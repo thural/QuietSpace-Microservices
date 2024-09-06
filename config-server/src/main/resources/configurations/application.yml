@@ -42,6 +42,7 @@ kafka:
     reaction: reaction-topic
     profile: profile-topic
     user: user-topic
+    chat: chat-topic
 
 eureka:
   instance:

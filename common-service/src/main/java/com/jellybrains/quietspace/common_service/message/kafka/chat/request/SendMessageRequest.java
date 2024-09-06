@@ -11,6 +11,5 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class SendMessageRequest extends KafkaBaseEvent {
-    String userId;
     MessageRequest eventBody;
 }

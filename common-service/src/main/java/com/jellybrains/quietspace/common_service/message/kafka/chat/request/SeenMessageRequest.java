@@ -10,6 +10,5 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class SeenMessageRequest extends KafkaBaseEvent {
-    String userId;
     String messageId;
 }
