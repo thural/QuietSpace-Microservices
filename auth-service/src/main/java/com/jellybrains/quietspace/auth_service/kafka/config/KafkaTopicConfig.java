@@ -8,20 +8,36 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaTopicConfig {
 
-    @Value("${kafka.topics.profile}")
-    private String profileTopic;
+    @Value("${kafka.topics.user.creation}")
+    private String userCreationTopic;
 
-    @Value("${kafka.topics.user}")
-    private String userTopic;
+    @Value("${kafka.topics.user.creation-failed}")
+    private String userCreationFailedTopic;
+
+    @Value("${kafka.topics.user.deletion}")
+    private String userDeletionTopic;
+
+    @Value("${kafka.topics.user.deletion-failed}")
+    private String userDeletionFailedTopic;
 
     @Bean
-    NewTopic profileTopic() {
-        return new NewTopic(profileTopic, 1, (short) 1);
+    public NewTopic userCreationTopic() {
+        return new NewTopic(userCreationTopic, 1, (short) 1);
     }
 
     @Bean
-    NewTopic userTopic() {
-        return new NewTopic(userTopic, 1, (short) 1);
+    public NewTopic userCreationFailedTopic() {
+        return new NewTopic(userCreationFailedTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic userDeletionTopic() {
+        return new NewTopic(userDeletionTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic userDeletionFailedTopic() {
+        return new NewTopic(userDeletionFailedTopic, 1, (short) 1);
     }
 
 }

@@ -17,7 +17,7 @@ spring:
       - ${CONFIG_ACTIVE_PROFILE}
   cloud:
     config:
-      override-system-properties: true
+      override-system-properties: false
 
   kafka:
     consumer:
@@ -40,8 +40,16 @@ kafka:
   topics:
     notification: notification-topic
     reaction: reaction-topic
-    profile: profile-topic
-    user: user-topic
+    profile:
+      creation: profile-creation-topic
+      creation-failed: profile-creation-failed-topic
+      deletion: profile-deletion-topic
+      deletion-failed: profile-deletion-failed-topic
+    user:
+      creation: user-creation-topic
+      creation-failed: user-creation-failed-topic
+      deletion: user-deletion-topic
+      deletion-failed: user-deletion-failed-topic
     chat: chat-topic
 
 eureka:

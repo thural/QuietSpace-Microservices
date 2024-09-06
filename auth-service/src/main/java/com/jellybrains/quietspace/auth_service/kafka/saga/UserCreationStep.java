@@ -23,9 +23,10 @@ public class UserCreationStep implements SagaStep<ProfileCreationEvent, ProfileC
     private final UserRepository userRepository;
 
 
-    @KafkaListener(topics = "#{'${kafka.topics.profile}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.profile.creation}'}")
     public void process(ProfileCreationEvent event) {
         try {
+            log.info("userId at user creation step: {}", event.getUserId());
             User savedUser = userRepository.findById(event.getUserId())
                     .orElseThrow(UserNotFoundException::new);
             authService.sendValidationEmail(savedUser);
@@ -36,7 +37,7 @@ public class UserCreationStep implements SagaStep<ProfileCreationEvent, ProfileC
         }
     }
 
-    @KafkaListener(topics = "#{'${kafka.topics.profile}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.profile.creation-failed}'}")
     public void rollback(ProfileCreationEventFailed event) {
         try {
             userRepository.deleteById(event.getUserId());

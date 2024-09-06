@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 public class UserDeletionEvent extends KafkaBaseEvent {
     @Builder.Default
     EventType type = EventType.USER_DELETED;
+    String userId;
 }

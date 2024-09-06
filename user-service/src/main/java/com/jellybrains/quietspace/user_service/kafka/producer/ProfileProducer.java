@@ -19,31 +19,42 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileProducer {
 
-    @Value("${kafka.topics.profile}")
-    private String profileTopic;
+    @Value("${kafka.topics.profile.creation}")
+    private String profileCreationTopic;
 
+    @Value("${kafka.topics.profile.creation-failed}")
+    private String profileCreationFailedTopic;
+
+    @Value("${kafka.topics.profile.deletion}")
+    private String profileDeletionTopic;
+
+    @Value("${kafka.topics.profile.deletion-failed}")
+    private String profileDeletionFailedTopic;
+
+    
     private final KafkaTemplate<String, KafkaBaseEvent> kafkaTemplate;
 
-    private <T> Message<T> prepareMessage(T payload) {
+    private <T> Message<T> prepareMessage(T payload, String topic) {
         return MessageBuilder
                 .withPayload(payload)
-                .setHeader(KafkaHeaders.TOPIC, profileTopic)
+                .setHeader(KafkaHeaders.TOPIC, topic)
                 .build();
     }
 
-    public void profileDeletionFailed(ProfileDeletionFailedEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
-    }
 
     public void profileCreation(ProfileCreationEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, profileCreationTopic));
     }
 
     public void profileCreationFailed(ProfileCreationEventFailed event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, profileCreationFailedTopic));
     }
 
     public void profileDeleted(ProfileDeletionEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, profileDeletionTopic));
+    }
+
+    public void profileDeletionFailed(ProfileDeletionFailedEvent event) {
+        kafkaTemplate.send(prepareMessage(event, profileDeletionFailedTopic));
     }
 }

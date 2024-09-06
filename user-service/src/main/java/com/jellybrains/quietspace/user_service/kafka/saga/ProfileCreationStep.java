@@ -22,10 +22,10 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
     private final ProfileRepository profileRepository;
 
     @Override
-    @KafkaListener(topics = "#{'${kafka.topics.user}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.user.creation}'}")
     public void process(UserCreationEvent event) {
         try {
-            log.info("running profile creation event");
+            log.info("event body at profile creation step: {}", event.getEventBody());
             Profile profile = new Profile();
             BeanUtils.copyProperties(event.getEventBody(), profile);
             profileRepository.save(profile);
@@ -40,7 +40,7 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
     }
 
     @Override
-    @KafkaListener(topics = "#{'${kafka.topics.user}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.user.creation-failed}'}")
     public void rollback(UserCreationEventFailed event) {
         profileProducer.profileCreationFailed(ProfileCreationEventFailed
                 .builder()

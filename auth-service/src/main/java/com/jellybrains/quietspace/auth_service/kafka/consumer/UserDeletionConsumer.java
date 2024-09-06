@@ -17,7 +17,7 @@ public class UserDeletionConsumer {
     private final UserProducer userProducer;
     private final UserRepository userRepository;
 
-    @KafkaListener(topics = "#{'${kafka.topics.profile}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.profile.deletion}'}")
     public void deleteProfileUser(ProfileDeletionEvent event) {
         try {
             userRepository.deleteById(event.getUserId());

@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.auth_service.kafka.producer;
+package com.jellybrains.quietspace.dummy_service.kafka.producer;
 
 import com.jellybrains.quietspace.common_service.message.kafka.KafkaBaseEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEvent;
@@ -19,41 +19,32 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserProducer {
 
-    @Value("${kafka.topics.user.creation}")
-    private String userCreationTopic;
-
-    @Value("${kafka.topics.user.creation-failed}")
-    private String userCreationFailedTopic;
-
-    @Value("${kafka.topics.user.deletion}")
-    private String userDeletionTopic;
-
-    @Value("${kafka.topics.user.deletion-failed}")
-    private String userDeletionFailedTopic;
+    @Value("${kafka.topics.user}")
+    private String userTopic;
 
     private final KafkaTemplate<String, KafkaBaseEvent> kafkaTemplate;
 
-    private <T> Message<T> prepareMessage(T payload, String topic) {
+    private <T> Message<T> prepareMessage(T payload) {
         return MessageBuilder
                 .withPayload(payload)
-                .setHeader(KafkaHeaders.TOPIC, topic)
+                .setHeader(KafkaHeaders.TOPIC, userTopic)
                 .build();
     }
 
-    public void userCreation(UserCreationEvent event) {
-        kafkaTemplate.send(prepareMessage(event, userCreationTopic));
-    }
-
     public void userCreationFailed(UserCreationEventFailed event) {
-        kafkaTemplate.send(prepareMessage(event, userCreationFailedTopic));
-    }
-
-    public void userDeletion(UserDeletionEvent event) {
-        kafkaTemplate.send(prepareMessage(event, userDeletionTopic));
+        kafkaTemplate.send(prepareMessage(event));
     }
 
     public void userDeletionFailed(UserDeletionFailedEvent event) {
-        kafkaTemplate.send(prepareMessage(event, userDeletionFailedTopic));
+        kafkaTemplate.send(prepareMessage(event));
+    }
+
+    public void userCreation(UserCreationEvent event) {
+        kafkaTemplate.send(prepareMessage(event));
+    }
+
+    public void userDeletion(UserDeletionEvent event) {
+        kafkaTemplate.send(prepareMessage(event));
     }
 
 }

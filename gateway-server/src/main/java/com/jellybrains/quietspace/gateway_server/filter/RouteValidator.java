@@ -14,6 +14,7 @@ public class RouteValidator {
             "/ws/**",
             "/api/v1/ws/**",
             "/api/v1/auth/**",
+            "/api/v1/dummy/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",

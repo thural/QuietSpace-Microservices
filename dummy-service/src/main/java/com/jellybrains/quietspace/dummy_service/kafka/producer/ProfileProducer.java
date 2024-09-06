@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.auth_service.kafka.producer;
+package com.jellybrains.quietspace.dummy_service.kafka.producer;
 
 import com.jellybrains.quietspace.common_service.message.kafka.KafkaBaseEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEvent;

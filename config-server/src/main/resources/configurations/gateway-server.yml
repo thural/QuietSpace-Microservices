@@ -43,8 +43,6 @@ spring:
           uri: lb://${DUMMY_SERVICE_HOST}
           predicates:
             - Path=/api/v1/dummy/**
-          filters:
-            - AuthenticationFilter
 
         - id: reaction-service
           uri: lb://${REACTION_SERVICE_HOST}
