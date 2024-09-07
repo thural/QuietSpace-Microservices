@@ -7,11 +7,11 @@ import com.jellybrains.quietspace.common_service.model.response.OptionResponse;
 import com.jellybrains.quietspace.common_service.model.response.PollResponse;
 import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
+import com.jellybrains.quietspace.common_service.webclient.service.ReactionService;
+import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.feed_service.entity.Poll;
 import com.jellybrains.quietspace.feed_service.entity.PollOption;
 import com.jellybrains.quietspace.feed_service.entity.Post;
-import com.jellybrains.quietspace.feed_service.webclient.service.ReactionService;
-import com.jellybrains.quietspace.feed_service.webclient.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

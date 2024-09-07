@@ -2,6 +2,7 @@ package com.jellybrains.quietspace.feed_service.service.impls;
 
 import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
+import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.feed_service.entity.Comment;
 import com.jellybrains.quietspace.feed_service.entity.Post;
 import com.jellybrains.quietspace.feed_service.exception.CustomErrorException;
@@ -10,7 +11,6 @@ import com.jellybrains.quietspace.feed_service.mapper.custom.CommentMapper;
 import com.jellybrains.quietspace.feed_service.repository.CommentRepository;
 import com.jellybrains.quietspace.feed_service.repository.PostRepository;
 import com.jellybrains.quietspace.feed_service.service.CommentService;
-import com.jellybrains.quietspace.feed_service.webclient.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

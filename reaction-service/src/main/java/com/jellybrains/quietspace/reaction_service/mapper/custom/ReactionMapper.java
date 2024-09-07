@@ -2,8 +2,8 @@ package com.jellybrains.quietspace.reaction_service.mapper.custom;
 
 import com.jellybrains.quietspace.common_service.model.request.ReactionRequest;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
+import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.reaction_service.model.Reaction;
-import com.jellybrains.quietspace.reaction_service.webclient.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

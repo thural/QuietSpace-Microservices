@@ -2,9 +2,9 @@ package com.jellybrains.quietspace.reaction_service.controller;
 
 import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
+import com.jellybrains.quietspace.common_service.webclient.client.NotificationClient;
 import com.jellybrains.quietspace.reaction_service.model.Reaction;
 import com.jellybrains.quietspace.reaction_service.service.ReactionService;
-import com.jellybrains.quietspace.reaction_service.webclient.client.NotificationClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ public class ReactionController {
     private final NotificationClient notificationClient;
 
     @GetMapping("/hello")
-    String sayHello(){
+    String sayHello() {
         return "hello from reaction service";
     }
 

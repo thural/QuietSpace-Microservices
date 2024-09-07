@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.user_service.controller;
 
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
-import com.jellybrains.quietspace.user_service.webclient.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -73,7 +73,7 @@ public class UserController {
         return ResponseEntity.ok(profileService.validateUsersByIdList(userIds));
     }
 
-    
+
     @GetMapping("/claims")
     Map<String, String> getClaims() {
         Map<String, String> claims = new HashMap<>();

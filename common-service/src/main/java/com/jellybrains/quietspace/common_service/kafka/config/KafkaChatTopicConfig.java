@@ -8,45 +8,45 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaChatTopicConfig {
 
-    @Value("${kafka.topics.chat.request.send}")
-    private String chatRequestSendTopic;
+    @Value("${kafka.topics.chat.event.send}")
+    private String chatEventSendTopic;
 
-    @Value("${kafka.topics.chat.request.delete}")
-    private String chatRequestDeleteTopic;
+    @Value("${kafka.topics.chat.event.delete}")
+    private String chatEventDeleteTopic;
 
-    @Value("${kafka.topics.chat.request.seen}")
-    private String chatRequestSeenTopic;
+    @Value("${kafka.topics.chat.event.seen}")
+    private String chatEventSeenTopic;
 
-    @Value("${kafka.topics.chat.request.leave}")
-    private String chatRequestLeaveTopic;
+    @Value("${kafka.topics.chat.event.leave}")
+    private String chatEventLeaveTopic;
 
-    @Value("${kafka.topics.chat.request.join}")
-    private String chatRequestJoinTopic;
+    @Value("${kafka.topics.chat.event.join}")
+    private String chatEventJoinTopic;
 
 
     @Bean
-    public NewTopic chatRequestSendTopic() {
-        return new NewTopic(chatRequestSendTopic, 1, (short) 1);
+    public NewTopic chatEventSendTopic() {
+        return new NewTopic(chatEventSendTopic, 1, (short) 1);
     }
 
     @Bean
-    public NewTopic chatRequestDeleteTopic() {
-        return new NewTopic(chatRequestDeleteTopic, 1, (short) 1);
+    public NewTopic chatEventDeleteTopic() {
+        return new NewTopic(chatEventDeleteTopic, 1, (short) 1);
     }
 
     @Bean
-    public NewTopic chatRequestSeenTopic() {
-        return new NewTopic(chatRequestSeenTopic, 1, (short) 1);
+    public NewTopic chatEventSeenTopic() {
+        return new NewTopic(chatEventSeenTopic, 1, (short) 1);
     }
 
     @Bean
-    public NewTopic chatRequestLeaveTopic() {
-        return new NewTopic(chatRequestLeaveTopic, 1, (short) 1);
+    public NewTopic chatEventLeaveTopic() {
+        return new NewTopic(chatEventLeaveTopic, 1, (short) 1);
     }
 
     @Bean
-    public NewTopic chatRequestJoinTopic() {
-        return new NewTopic(chatRequestJoinTopic, 1, (short) 1);
+    public NewTopic chatEventJoinTopic() {
+        return new NewTopic(chatEventJoinTopic, 1, (short) 1);
     }
 
 }

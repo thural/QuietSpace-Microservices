@@ -1,17 +1,17 @@
 package com.jellybrains.quietspace.user_service.service.impls;
 
 import com.jellybrains.quietspace.common_service.enums.StatusType;
+import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
+import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
+import com.jellybrains.quietspace.common_service.exception.UserNotFoundException;
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
 import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.user_service.entity.Profile;
-import com.jellybrains.quietspace.user_service.exception.CustomErrorException;
-import com.jellybrains.quietspace.user_service.exception.UnauthorizedException;
-import com.jellybrains.quietspace.user_service.exception.UserNotFoundException;
 import com.jellybrains.quietspace.user_service.mapper.custom.ProfileMapper;
 import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
-import com.jellybrains.quietspace.user_service.webclient.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;

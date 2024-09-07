@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace.common_service.webclient.service;
 
+import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.exception.CustomNotFoundException;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
@@ -20,12 +21,12 @@ public class ReactionService {
     }
 
     public Integer getDislikeCount(String contentId) {
-        return reactionClient.countByContentIdAndReactionType(contentId, ReactionType.LIKE)
+        return reactionClient.countByContentIdAndReactionType(contentId, ReactionType.DISLIKE)
                 .orElseThrow(CustomNotFoundException::new);
     }
 
-    public ReactionResponse getUserReactionByContentId(String contentId) {
-        return reactionClient.getUserReactionByContentId(contentId)
+    public ReactionResponse getUserReactionByContentId(String contentId, ContentType type) {
+        return reactionClient.getUserReactionByContentId(contentId, type)
                 .orElseThrow(CustomNotFoundException::new);
     }
 }

@@ -1,12 +1,12 @@
 package com.jellybrains.quietspace.chat_service.mapper.custom;
 
-import com.jellybrains.quietspace.chat_service.client.UserClient;
 import com.jellybrains.quietspace.chat_service.entity.Chat;
 import com.jellybrains.quietspace.chat_service.service.MessageService;
 import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
 import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.webclient.client.UserClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

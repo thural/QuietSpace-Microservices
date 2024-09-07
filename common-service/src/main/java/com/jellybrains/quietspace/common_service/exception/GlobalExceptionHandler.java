@@ -1,12 +1,11 @@
-package com.jellybrains.quietspace.feed_service.controller;
+package com.jellybrains.quietspace.common_service.exception;
 
 import com.jellybrains.quietspace.common_service.model.response.ErrorResponse;
-import com.jellybrains.quietspace.feed_service.exception.*;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessagingException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,19 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> handleNotFoundException(RuntimeException e) {
-        HttpStatus status = HttpStatus.NOT_FOUND;
-        return ResponseEntity.status(status)
-                .body(ErrorResponse.builder()
-                        .status(status.name())
-                        .message(e.getMessage())
-                        .timestamp(new Date())
-                        .build());
-    }
 
     @ExceptionHandler(TransactionSystemException.class)
     ResponseEntity<?> handleJPAViolations(TransactionSystemException exception) {
@@ -73,6 +63,7 @@ public class GlobalExceptionHandler {
                 .build(), status);
     }
 
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(RuntimeException e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
@@ -95,7 +86,7 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(CustomNotFoundException.class)
+    @ExceptionHandler(CustomDataNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCustomDataNotFoundExceptions(RuntimeException e) {
         HttpStatus status = HttpStatus.NOT_FOUND;
         return ResponseEntity.status(status)
@@ -131,6 +122,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomErrorException.class)
     public ResponseEntity<ErrorResponse> handleCustomErrorExceptions(CustomErrorException e) {
         HttpStatus status = e.getStatus();
+        return ResponseEntity.status(status)
+                .body(ErrorResponse.builder()
+                        .status(status.name())
+                        .message(e.getMessage())
+                        .timestamp(new Date())
+                        .build());
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ErrorResponse> handleMailingException(RuntimeException e) {
+        HttpStatus status = INTERNAL_SERVER_ERROR;
         return ResponseEntity.status(status)
                 .body(ErrorResponse.builder()
                         .status(status.name())

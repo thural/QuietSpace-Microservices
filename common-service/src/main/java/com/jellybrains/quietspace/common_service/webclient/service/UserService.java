@@ -6,7 +6,6 @@ import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.common_service.webclient.client.UserClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +16,7 @@ public class UserService {
     private final HttpServletRequest request;
 
     public void validateUserId(String userId) {
-        if (userClient.validateUserId(userId)) throw new UsernameNotFoundException("user with username not found");
+        if (userClient.validateUserId(userId)) throw new UserNotFoundException();
     }
 
     public String getUsernameById(String userId) {

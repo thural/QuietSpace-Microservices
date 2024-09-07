@@ -2,11 +2,11 @@ package com.jellybrains.quietspace.reaction_service.service.impls;
 
 import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
+import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.reaction_service.mapper.custom.ReactionMapper;
 import com.jellybrains.quietspace.reaction_service.model.Reaction;
 import com.jellybrains.quietspace.reaction_service.repository.ReactionRepository;
 import com.jellybrains.quietspace.reaction_service.service.ReactionService;
-import com.jellybrains.quietspace.reaction_service.webclient.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
