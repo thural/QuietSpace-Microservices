@@ -18,13 +18,12 @@ spring:
 
 logging:
   level:
-    root: TRACE
-    org.springframework.messaging: TRACE
-    org.springframework.web.socket: TRACE
+    root: INFO
+    org.springframework.messaging: INFO
     org.hibernate.orm.jdbc.bind: ERROR
-    dev.thural.quietspace.service: TRACE
-    org.springframework.security: TRACE
+    org.springframework.security: ERROR
+    org.springframework.web: TRACE
     org.hibernate.sql: ERROR
-    org.springframework.web.servlet.handler.HandlerMappingIntrospector: TRACE
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: INFO
 
 server.port: ${FEED_SERVICE_PORT}

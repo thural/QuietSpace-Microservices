@@ -8,7 +8,7 @@ mongodb:
 
 logging:
   level:
-    root: DEBUG
-    org.springframework.web: DEBUG
+    root: INFO
+    org.springframework.web: TRACE
 
 server.port: ${REACTION_SERVICE_PORT}

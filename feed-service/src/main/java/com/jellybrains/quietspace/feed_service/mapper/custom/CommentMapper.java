@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace.feed_service.mapper.custom;
 
+import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import com.jellybrains.quietspace.feed_service.entity.Comment;
@@ -40,7 +41,7 @@ public class CommentMapper {
                 .userId(comment.getUserId())
                 .username(userService.getUsernameById(comment.getUserId()))
                 .text(comment.getText())
-                .userReaction(reactionService.getUserReactionByContentId(comment.getId()))
+                .userReaction(reactionService.getUserReactionByContentId(comment.getId(), ContentType.COMMENT))
                 .createDate(comment.getCreateDate())
                 .updateDate(comment.getUpdateDate())
                 .likeCount(reactionService.getLikeCount(comment.getId()))

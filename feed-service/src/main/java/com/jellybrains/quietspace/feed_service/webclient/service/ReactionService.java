@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace.feed_service.webclient.service;
 
+import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
 import com.jellybrains.quietspace.feed_service.exception.CustomNotFoundException;
@@ -24,8 +25,8 @@ public class ReactionService {
                 .orElseThrow(CustomNotFoundException::new);
     }
 
-    public ReactionResponse getUserReactionByContentId(String contentId){
-        return reactionClient.getUserReactionByContentId(contentId)
+    public ReactionResponse getUserReactionByContentId(String contentId, ContentType type) {
+        return reactionClient.getUserReactionByContentId(contentId, type)
                 .orElseThrow(CustomNotFoundException::new);
     }
 }

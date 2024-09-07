@@ -1,5 +1,6 @@
 package com.jellybrains.quietspace.feed_service.mapper.custom;
 
+import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.model.request.PollRequest;
 import com.jellybrains.quietspace.common_service.model.request.PostRequest;
 import com.jellybrains.quietspace.common_service.model.response.OptionResponse;
@@ -59,7 +60,7 @@ public class PostMapper {
         Integer likeCount = reactionService.getLikeCount(post.getId());
         Integer dislikeCount = reactionService.getDislikeCount(post.getId());
         String username = userService.getUsernameById(post.getUserId());
-        ReactionResponse userReaction = reactionService.getUserReactionByContentId(post.getId());
+        ReactionResponse userReaction = reactionService.getUserReactionByContentId(post.getId(), ContentType.POST);
 
         PostResponse postResponse = PostResponse.builder()
                 .id(post.getId())
