@@ -39,7 +39,6 @@ spring:
 kafka:
   topics:
     notification: notification-topic
-    reaction: reaction-topic
     profile:
       creation: profile-creation-topic
       creation-failed: profile-creation-failed-topic

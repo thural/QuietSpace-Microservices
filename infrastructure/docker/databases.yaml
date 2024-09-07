@@ -71,30 +71,33 @@ services:
   notification-service-db:
     container_name: notification-service-db
     image: mongo:latest
-    restart: on-failure
     environment:
-      MONGO_USERNAME: ${DB_USERNAME}
-      MONGO_PASSWORD: ${DB_PASSWORD}
-    networks:
-      - microservices-net
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_REPLICA_SET_NAME: rs0
     ports:
       - ${NOTIFICATION_DB_PORT}:27017
+
     volumes:
       - notification-data:/data/db
+    networks:
+      - microservices-net
 
   reaction-service-db:
     container_name: reaction-service-db
     image: mongo:latest
-    restart: on-failure
     environment:
-      MONGO_USERNAME: ${DB_USERNAME}
-      MONGO_PASSWORD: ${DB_PASSWORD}
-    networks:
-      - microservices-net
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_REPLICA_SET_NAME: rs0
     ports:
       - ${REACTION_DB_PORT}:27017
     volumes:
       - reaction-data:/data/db
+    networks:
+      - microservices-net
 
 networks:
   microservices-net:
