@@ -26,11 +26,10 @@ public class ChatConsumer {
     private final MessageRepository messageRepository;
 
 
-    @KafkaListener(topics = "#{'${kafka.topics.chat}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.chat.event.send}'}")
     void sendMessageToUser(SendMessageRequest event) {
         MessageRequest message = event.getEventBody();
         log.info("saving received message: {} sent by: {}", message.getText(), message.getSenderId());
-
         try {
             MessageResponse savedMessage = messageService.addMessage(message);
             chatProducer.chatMessage(SendMessageEvent.builder().eventBody(savedMessage).build());
@@ -46,12 +45,11 @@ public class ChatConsumer {
     }
 
 
-    @KafkaListener(topics = "#{'${kafka.topics.chat}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.chat.event.delete}'}")
     void deleteMessageById(DeleteMessageRequest event) {
         log.info("deleting message with id {} ...", event.getMessageId());
         Message foundMessage = messageRepository.findById(event.getMessageId())
                 .orElseThrow(EntityNotFoundException::new);
-
         var chatevent = ChatEvent.builder()
                 .chatId(foundMessage.getChat().getId())
                 .actorId(foundMessage.getSenderId())
@@ -72,12 +70,11 @@ public class ChatConsumer {
     }
 
 
-    @KafkaListener(topics = "#{'${kafka.topics.chat}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.chat.event.seen}'}")
     void markMessageSeen(SeenMessageRequest event) {
         log.info("setting message with id {} as seen ...", event.getMessageId());
         MessageResponse message = messageService.setMessageSeen(event.getMessageId())
                 .orElseThrow(EntityNotFoundException::new);
-
         var chatEvent = ChatEvent.builder()
                 .chatId(message.getChatId())
                 .messageId(message.getId())
@@ -87,7 +84,7 @@ public class ChatConsumer {
     }
 
 
-    @KafkaListener(topics = "#{'${kafka.topics.chat}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.chat.event.leave}'}")
     void processLeftChat(LeaveChatRequest event) {
         ChatEvent eventBody = event.getEventBody();
         log.info("user {} is leaving chat {} ...", eventBody.getActorId(), eventBody.getChatId());
@@ -109,7 +106,7 @@ public class ChatConsumer {
     }
 
 
-    @KafkaListener(topics = "#{'${kafka.topics.chat}'}")
+    @KafkaListener(topics = "#{'${kafka.topics.chat.event.join}'}")
     void processJoinChat(JoinChatRequest event) {
         ChatEvent eventBody = event.getEventBody();
         log.info("user {} is being added to chat {} ...", eventBody.getRecipientId(), eventBody.getChatId());
@@ -127,7 +124,6 @@ public class ChatConsumer {
                     eventBody.getChatId()
             ));
             chatProducer.joinedChatEvent(JoinedChatEvent.builder().eventBody(chatEvent).build());
-
         } catch (Exception e) {
             chatEvent.setMessage(e.getMessage());
             chatEvent.setType(EventType.EXCEPTION);

@@ -32,7 +32,7 @@ public class ChatController {
     @MessageMapping(SOCKET_CHAT_PATH)
     void sendMessageToUser(@Payload MessageRequest message) {
         log.info("received topic: {}, sent by: {}", message.getText(), message.getSenderId());
-        chatProducer.chatMessageRequest(SendMessageRequest.builder().eventBody(message).build());
+        chatProducer.sendChatMessageRequest(SendMessageRequest.builder().eventBody(message).build());
     }
 
     @MessageMapping(DELETE_MESSAGE_PATH)

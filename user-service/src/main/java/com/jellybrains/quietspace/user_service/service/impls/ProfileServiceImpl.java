@@ -94,7 +94,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     public ProfileResponse patchProfile(CreateProfileRequest request) {
-
         Profile profile = getUserProfile();
         boolean hasAdminRole = isHasAdminRole(profile);
 
@@ -132,8 +131,7 @@ public class ProfileServiceImpl implements ProfileService {
         String profileUserId = profile.getUserId();
 
         if (profile.getUserId().equals(followedUserId))
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST,
-                    "users can't unfollow themselves");
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "users can't unfollow themselves");
 
         Profile followedProfile = profileRepository.findByUserId(followedUserId)
                 .orElseThrow(UserNotFoundException::new);
@@ -149,21 +147,38 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void removeFollower(String followingUserId) {
+    public void removeFollower(String followerUserId) {
+        Profile profile = getUserProfile();
+        String profileUserId = profile.getUserId();
+
+        if (profile.getUserId().equals(followerUserId))
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "users can't unfollow themselves");
+
+        Profile followerProfile = profileRepository.findByUserId(followerUserId)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (profile.getFollowerUserIds().contains(followerUserId)) {
+            profile.getFollowerUserIds().remove(followerUserId);
+            followerProfile.getFollowingUserIds().remove(profileUserId);
+        } else throw new CustomErrorException(HttpStatus.BAD_REQUEST, "follower profile is not found in followers");
+    }
+
+    @Override
+    @Transactional
+    public void removeFollowing(String followingUserId) {
         Profile profile = getUserProfile();
         String profileUserId = profile.getUserId();
 
         if (profile.getUserId().equals(followingUserId))
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST,
-                    "users can't unfollow themselves");
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "users can't unfollow themselves");
 
         Profile followingProfile = profileRepository.findByUserId(followingUserId)
                 .orElseThrow(UserNotFoundException::new);
 
-        if (profile.getFollowerUserIds().contains(followingUserId)) {
-            profile.getFollowerUserIds().remove(followingUserId);
-            followingProfile.getFollowingUserIds().remove(profileUserId);
-        } else throw new CustomErrorException("profile is not found in followers");
+        if (profile.getFollowingUserIds().contains(followingUserId)) {
+            profile.getFollowingUserIds().remove(followingUserId);
+            followingProfile.getFollowerUserIds().remove(profileUserId);
+        } else throw new CustomErrorException(HttpStatus.BAD_REQUEST, "following profile is not found in followings");
     }
 
     @Override

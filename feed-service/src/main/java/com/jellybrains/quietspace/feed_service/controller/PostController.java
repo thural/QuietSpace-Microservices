@@ -23,11 +23,10 @@ public class PostController {
     public static final String POST_PATH_ID = "/{postId}";
 
     private final PostService postService;
-
     private final ReactionClient reactionClient;
 
     @GetMapping("hello-reactions")
-    public String helloFromReactionService(){
+    public String helloFromReactionService() {
         return reactionClient.sayHello()
                 .orElseGet(() -> "failed to receive hello from reaction service");
     }

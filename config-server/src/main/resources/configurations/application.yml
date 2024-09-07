@@ -50,7 +50,20 @@ kafka:
       creation-failed: user-creation-failed-topic
       deletion: user-deletion-topic
       deletion-failed: user-deletion-failed-topic
-    chat: chat-topic
+    chat:
+      request:
+        send: chat-request-send-topic
+        delete: chat-request-delete-topic
+        seen: chat-request-seen-topic
+        leave: chat-request-leave-topic
+        join: chat-request-join-topic
+      event:
+        send: chat-event-send-topic
+        delete: chat-event-delete-topic
+        seen: chat-event-seen-topic
+        leave: chat-event-leave-topic
+        join: chat-event-join-topic
+        error: chat-event-error-topic
 
 eureka:
   instance:

@@ -23,11 +23,6 @@ public class ProfileController {
     private final ProfileService profileService;
     private final NotificationClient notificationClient;
 
-    @PostMapping
-    private ResponseEntity<UserResponse> createProfile(@RequestBody CreateProfileRequest userRequest) {
-        return ResponseEntity.ok(profileService.createProfile(userRequest));
-    }
-
 
     @PatchMapping
     private ResponseEntity<ProfileResponse> patchProfile(@RequestBody CreateProfileRequest userRequest) {
@@ -60,7 +55,7 @@ public class ProfileController {
     }
 
 
-    @PostMapping(FOLLOW_USER_TOGGLE_PATH)
+    @PostMapping("/follow/{userId}/toggle-follow")
     ResponseEntity<Void> toggleFollow(@PathVariable String userId) {
         profileService.toggleFollow(userId);
         notificationClient.processNotification(NotificationType.FOLLOW_REQUEST, userId);
@@ -71,6 +66,13 @@ public class ProfileController {
     @PostMapping("/followers/remove/{userId}")
     ResponseEntity<Void> removeFollower(@PathVariable String userId) {
         profileService.removeFollower(userId);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/followings/remove/{userId}")
+    ResponseEntity<Void> removeFollowing(@PathVariable String userId) {
+        profileService.removeFollowing(userId);
         return ResponseEntity.ok().build();
     }
 

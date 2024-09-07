@@ -16,40 +16,55 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatProducer {
 
-    @Value("${kafka.topics.chat}")
-    private String chatTopic;
+    @Value("${kafka.topics.chat.event.send}")
+    private String chatEventSendTopic;
+
+    @Value("${kafka.topics.chat.event.delete}")
+    private String chatEventDeleteTopic;
+
+    @Value("${kafka.topics.chat.event.seen}")
+    private String chatEventSeenTopic;
+
+    @Value("${kafka.topics.chat.event.leave}")
+    private String chatEventLeaveTopic;
+
+    @Value("${kafka.topics.chat.event.join}")
+    private String chatEventJoinTopic;
+
+    @Value("${kafka.topics.chat.event.error}")
+    private String chatEventErrorTopic;
 
     private final KafkaTemplate<String, KafkaBaseEvent> kafkaTemplate;
 
-    private <T> Message<T> prepareMessage(T payload) {
+    private <T> Message<T> prepareMessage(T payload, String topic) {
         return MessageBuilder
                 .withPayload(payload)
-                .setHeader(KafkaHeaders.TOPIC, chatTopic)
+                .setHeader(KafkaHeaders.TOPIC, topic)
                 .build();
     }
 
     public void chatMessage(SendMessageEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, chatEventSendTopic));
     }
 
     public void chatError(ChatErrorEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, chatEventErrorTopic));
     }
 
     public void deleteChatMessage(DeleteMessageEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, chatEventDeleteTopic));
     }
 
     public void seenChatMessage(SeenMessageEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, chatEventSeenTopic));
     }
 
     public void leftChatEvent(LeftChatEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, chatEventLeaveTopic));
     }
 
     public void joinedChatEvent(JoinedChatEvent event) {
-        kafkaTemplate.send(prepareMessage(event));
+        kafkaTemplate.send(prepareMessage(event, chatEventJoinTopic));
     }
 
 }

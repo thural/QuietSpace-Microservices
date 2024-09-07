@@ -36,7 +36,7 @@ public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDele
             profileRepository.deleteByUserId(event.getUserId());
             profileProducer.profileDeleted(ProfileDeletionEvent.builder().userId(event.getUserId()).build());
         } catch (Exception e) {
-            throw new RuntimeException("profile deletion step was failed");
+            log.info("profile deletion step was failed: {}", e.getMessage());
         }
     }
 
@@ -50,7 +50,7 @@ public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDele
             profileRepository.save(cachedProfile);
             redisTemplate.delete(USER_PROFILE);
         } catch (Exception e) {
-            throw new RuntimeException("profile deletion rollback step was failed");
+            log.info("profile deletion rollback step was failed: {}", e.getMessage());
         }
     }
 

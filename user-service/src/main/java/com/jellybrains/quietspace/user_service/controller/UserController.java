@@ -56,7 +56,6 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<UserResponse> getAuthenticatedUser() {
-        log.info("get authenticated user was requested at controller");
         return profileService.getSignedUserResponse()
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -74,6 +73,7 @@ public class UserController {
         return ResponseEntity.ok(profileService.validateUsersByIdList(userIds));
     }
 
+    
     @GetMapping("/claims")
     Map<String, String> getClaims() {
         Map<String, String> claims = new HashMap<>();

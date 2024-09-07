@@ -46,4 +46,6 @@ public interface ProfileService {
     Boolean validateUsersByIdList(List<String> userIds);
 
     UserResponse createProfile(CreateProfileRequest userRequest);
+
+    void removeFollowing(String userId);
 }

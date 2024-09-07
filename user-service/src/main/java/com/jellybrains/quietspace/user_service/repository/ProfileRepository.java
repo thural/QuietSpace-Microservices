@@ -27,5 +27,5 @@ public interface ProfileRepository extends JpaRepository<Profile, String> {
     @Query("SELECT p FROM Profile p WHERE p.userId IN :userIds")
     Page<Profile> findAllByUserIdIn(@Param("userIds") List<String> userIds, PageRequest pageRequest);
 
-    Void deleteByUserId(String userId);
+    void deleteByUserId(String userId);
 }
