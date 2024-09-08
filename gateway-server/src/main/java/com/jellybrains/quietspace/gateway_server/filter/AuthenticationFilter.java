@@ -32,8 +32,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             ServerHttpRequest request = null;
             if (validator.isSecured.test(exchange.getRequest())) {
 
-                log.info("********A REQUEST MATCHED THE GATEWAY FILTER*********");
-
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION))
                     throw new RuntimeException("missing authorization header");
 
@@ -43,7 +41,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                 String jwtToken = authHeader.substring(7);
 
-                if(!jwtUtil.isTokenValid(jwtToken))
+                if (!jwtUtil.isTokenValid(jwtToken))
                     throw new RuntimeException("unauthorized access to application");
 
                 request = exchange.getRequest()

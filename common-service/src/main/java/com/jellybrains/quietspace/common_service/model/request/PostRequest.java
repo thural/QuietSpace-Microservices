@@ -16,6 +16,8 @@ public class PostRequest {
     @NotNull(message = "user id can not be null")
     private String userId;
 
+    private String postId;
+
     private String title;
 
     @NotNull(message = "text content can not be null")

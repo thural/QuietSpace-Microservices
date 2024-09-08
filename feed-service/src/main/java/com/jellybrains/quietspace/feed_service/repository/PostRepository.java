@@ -9,8 +9,10 @@ import org.springframework.data.jpa.repository.Query;
 
 
 public interface PostRepository extends JpaRepository<Post, String> {
+
     Page<Post> findAllByUserId(String userId, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.title LIKE %:query% OR p.text LIKE %:query%")
     Page<Post> findAllByQuery(String query, PageRequest pageRequest);
+
 }

@@ -33,14 +33,15 @@ public class CommentController {
         return commentService.getCommentsByPostId(postId, pageNumber, pageSize);
     }
 
-    @GetMapping("/user/{userId}")
+
+    @GetMapping("/user")
     Page<CommentResponse> getCommentsByUserId(
-            @PathVariable String userId,
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize
     ) {
-        return commentService.getCommentsByUserId(userId, pageNumber, pageSize);
+        return commentService.getCommentsByUser(pageNumber, pageSize);
     }
+
 
     @GetMapping(COMMENT_PATH_ID + "/replies")
     Page<CommentResponse> getCommentRepliesById(
@@ -51,12 +52,14 @@ public class CommentController {
         return commentService.getRepliesByParentId(commentId, pageNumber, pageSize);
     }
 
+
     @GetMapping(COMMENT_PATH_ID)
     ResponseEntity<CommentResponse> getCommentById(@PathVariable String commentId) {
         return commentService.getCommentById(commentId)
                 .map(comment -> ResponseEntity.ok().body(comment))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
 
     @PostMapping
     ResponseEntity<CommentResponse> createComment(@RequestBody @Validated CommentRequest comment) {
@@ -65,13 +68,11 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(COMMENT_PATH_ID)
-    ResponseEntity<CommentResponse> putComment(
-            @PathVariable String commentId,
-            @RequestBody @Validated CommentRequest comment
-    ) {
+
+    @PatchMapping
+    ResponseEntity<CommentResponse> patchComment(@RequestBody CommentRequest comment) {
         // TODO: broadcast the update over socket
-        return ResponseEntity.ok(commentService.updateComment(commentId, comment));
+        return ResponseEntity.ok(commentService.patchComment(comment));
     }
 
     @DeleteMapping(COMMENT_PATH_ID)
@@ -79,11 +80,6 @@ public class CommentController {
         // TODO: broadcast the update over socket
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping(COMMENT_PATH_ID)
-    ResponseEntity<CommentResponse> patchComment(@PathVariable String commentId, @RequestBody CommentRequest comment) {
-        return ResponseEntity.ok(commentService.patchComment(commentId, comment));
     }
 
 }

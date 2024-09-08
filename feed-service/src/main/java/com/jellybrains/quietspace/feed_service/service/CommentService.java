@@ -14,13 +14,12 @@ public interface CommentService {
 
     Optional<CommentResponse> getCommentById(String id);
 
-    CommentResponse updateComment(String commentId, CommentRequest comment);
-
     void deleteComment(String id);
 
     Page<CommentResponse> getRepliesByParentId(String commentId, Integer pageNumber, Integer pageSize);
 
-    CommentResponse patchComment(String id, CommentRequest comment);
+    CommentResponse patchComment(CommentRequest comment);
 
-    Page<CommentResponse> getCommentsByUserId(String userId, Integer pageNumber, Integer pageSize);
+    Page<CommentResponse> getCommentsByUser(Integer pageNumber, Integer pageSize);
+    
 }

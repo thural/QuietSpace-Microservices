@@ -8,9 +8,9 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CommentRequest {
 
     @NotNull(message = "user id can not be null")
@@ -20,6 +20,8 @@ public class CommentRequest {
     private String postId;
 
     private String parentId;
+
+    private String commentId;
 
     @NotBlank(message = "comment text can not be blank")
     @Size(min = 1, max = 255, message = "at least 1 and max 255 characters expected")
