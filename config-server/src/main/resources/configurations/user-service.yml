@@ -17,7 +17,11 @@ spring:
     show-sql: true
 
 logging:
-  root: INFO
-  org.springframework.web: TRACE
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.transaction: INFO
+    org.springframework.orm.jpa: INFO
+    org.hibernate.engine.transaction.internal.TransactionImpl: INFO
 
 server.port: ${USER_SERVICE_PORT}

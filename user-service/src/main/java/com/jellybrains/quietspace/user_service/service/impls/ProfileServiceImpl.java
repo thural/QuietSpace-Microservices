@@ -1,5 +1,7 @@
 package com.jellybrains.quietspace.user_service.service.impls;
 
+import com.jellybrains.quietspace.common_service.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.enums.RoleType;
 import com.jellybrains.quietspace.common_service.enums.StatusType;
 import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
@@ -7,6 +9,7 @@ import com.jellybrains.quietspace.common_service.exception.UserNotFoundException
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
 import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.webclient.service.NotificationService;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.mapper.custom.ProfileMapper;
@@ -17,11 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,18 +42,15 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileMapper profileMapper;
     private final ProfileRepository profileRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     @Override
     public Page<UserResponse> listUsersByQuery(String query, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        Page<Profile> profilePage;
-
-        if (StringUtils.hasText(query)) {
-            profilePage = profileRepository.findAllByQuery(query, pageRequest);
-        } else {
-            profilePage = profileRepository.findAll(pageRequest);
-        }
-        return profilePage.map(profileMapper::toUserResponse);
+        if (StringUtils.hasText(query)) return profileRepository.findAllByQuery(query, pageRequest)
+                .map(profileMapper::toUserResponse);
+        return profileRepository.findAll(pageRequest)
+                .map(profileMapper::toUserResponse);
     }
 
     @Override
@@ -59,7 +62,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile getUserProfile() {
         String userId = userService.getAuthorizedUserId();
-        log.info("authorized user id: {}", userId);
         return profileRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
     }
 
@@ -85,27 +87,27 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void deleteProfileById(String userId) {
         Profile userProfile = getUserProfile();
-        boolean hasAdminRole = isHasAdminRole(userProfile);
-
-        if (!hasAdminRole && !userProfile.getId().equals(userId))
-            throw new UnauthorizedException("profile denied access to delete the resource");
-
+        validateResourceAccess(userId, userProfile);
         profileRepository.deleteById(userId);
     }
 
     public ProfileResponse patchProfile(CreateProfileRequest request) {
         Profile profile = getUserProfile();
-        boolean hasAdminRole = isHasAdminRole(profile);
-
-        if (!hasAdminRole && !request.getEmail().equals(profile.getEmail()))
-            throw new UnauthorizedException("signed profile has no access to requested resource");
-
-        BeanUtils.copyProperties(profile, request);
+        validateResourceAccess(request.getUserId(), profile);
+        BeanUtils.copyProperties(request, profile);
         return profileMapper.toProfileResponse(profileRepository.save(profile));
     }
 
+    private static void validateResourceAccess(String userId, Profile profile) {
+        boolean hasAdminRole = isHasAdminRole(profile);
+        if (!hasAdminRole && !userId.equals(profile.getUserId()))
+            throw new UnauthorizedException("signed user has no access to requested resource");
+    }
+
     private static boolean isHasAdminRole(Profile userProfile) {
-        return true; // TODO get from authorization service using kafka or webclient
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        return authorities.stream().anyMatch(a -> a.getAuthority().equals(RoleType.ADMIN.toString()));
     }
 
     @Override
@@ -129,13 +131,10 @@ public class ProfileServiceImpl implements ProfileService {
     public void toggleFollow(String followedUserId) {
         Profile profile = getUserProfile();
         String profileUserId = profile.getUserId();
-
         if (profile.getUserId().equals(followedUserId))
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "users can't unfollow themselves");
-
+            throw new CustomErrorException("users can't unfollow themselves");
         Profile followedProfile = profileRepository.findByUserId(followedUserId)
                 .orElseThrow(UserNotFoundException::new);
-
         if (profile.getFollowingUserIds().contains(followedUserId)) {
             profile.getFollowingUserIds().remove(followedUserId);
             followedProfile.getFollowerUserIds().remove(profileUserId);
@@ -143,6 +142,7 @@ public class ProfileServiceImpl implements ProfileService {
             profile.getFollowingUserIds().add(followedUserId);
             followedProfile.getFollowerUserIds().add(profileUserId);
         }
+        notificationService.processNotification(NotificationType.FOLLOW_REQUEST, followedUserId);
     }
 
     @Override
@@ -150,17 +150,14 @@ public class ProfileServiceImpl implements ProfileService {
     public void removeFollower(String followerUserId) {
         Profile profile = getUserProfile();
         String profileUserId = profile.getUserId();
-
         if (profile.getUserId().equals(followerUserId))
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "users can't unfollow themselves");
-
+            throw new CustomErrorException("users can't unfollow themselves");
         Profile followerProfile = profileRepository.findByUserId(followerUserId)
                 .orElseThrow(UserNotFoundException::new);
-
-        if (profile.getFollowerUserIds().contains(followerUserId)) {
-            profile.getFollowerUserIds().remove(followerUserId);
-            followerProfile.getFollowingUserIds().remove(profileUserId);
-        } else throw new CustomErrorException(HttpStatus.BAD_REQUEST, "follower profile is not found in followers");
+        if (!profile.getFollowerUserIds().contains(followerUserId))
+            throw new CustomErrorException("follower profile is not found in followers");
+        profile.getFollowerUserIds().remove(followerUserId);
+        followerProfile.getFollowingUserIds().remove(profileUserId);
     }
 
     @Override
@@ -168,17 +165,14 @@ public class ProfileServiceImpl implements ProfileService {
     public void removeFollowing(String followingUserId) {
         Profile profile = getUserProfile();
         String profileUserId = profile.getUserId();
-
         if (profile.getUserId().equals(followingUserId))
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "users can't unfollow themselves");
-
+            throw new CustomErrorException("users can't unfollow themselves");
         Profile followingProfile = profileRepository.findByUserId(followingUserId)
                 .orElseThrow(UserNotFoundException::new);
-
-        if (profile.getFollowingUserIds().contains(followingUserId)) {
-            profile.getFollowingUserIds().remove(followingUserId);
-            followingProfile.getFollowerUserIds().remove(profileUserId);
-        } else throw new CustomErrorException(HttpStatus.BAD_REQUEST, "following profile is not found in followings");
+        if (!profile.getFollowingUserIds().contains(followingUserId))
+            throw new CustomErrorException("following profile is not found in followings");
+        profile.getFollowingUserIds().remove(followingUserId);
+        followingProfile.getFollowerUserIds().remove(profileUserId);
     }
 
     @Override
@@ -214,7 +208,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void setOnlineStatus(String userEmail, StatusType type) {
         profileRepository.findByEmail(userEmail)
-                .ifPresent((storedUser) -> {
+                .ifPresent(storedUser -> {
                     storedUser.setStatusType(StatusType.OFFLINE);
                     profileRepository.save(storedUser);
                 });

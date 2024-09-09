@@ -8,6 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 @RequiredArgsConstructor
 public class UserService {
@@ -38,4 +41,13 @@ public class UserService {
 
     public void setOnlineStatus(String username, StatusType statusType) {
     }
+
+    public Map<String, String> getUserClaims() {
+        Map<String, String> claims = new HashMap<>();
+        claims.put("userId", getAuthorizedUserId());
+        claims.put("username", getAuthorizedUsername());
+        claims.put("userFullName", getAuthorizedUserFullName());
+        return claims;
+    }
+
 }

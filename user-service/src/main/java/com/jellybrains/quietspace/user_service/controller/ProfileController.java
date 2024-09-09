@@ -1,10 +1,8 @@
 package com.jellybrains.quietspace.user_service.controller;
 
-import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
 import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
-import com.jellybrains.quietspace.common_service.webclient.client.NotificationClient;
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,6 @@ public class ProfileController {
     public static final String FOLLOW_USER_TOGGLE_PATH = FOLLOW_PATH_ID + "/toggle-follow";
 
     private final ProfileService profileService;
-    private final NotificationClient notificationClient;
 
 
     @PatchMapping
@@ -58,7 +55,6 @@ public class ProfileController {
     @PostMapping("/follow/{userId}/toggle-follow")
     ResponseEntity<Void> toggleFollow(@PathVariable String userId) {
         profileService.toggleFollow(userId);
-        notificationClient.processNotification(NotificationType.FOLLOW_REQUEST, userId);
         return ResponseEntity.ok().build();
     }
 

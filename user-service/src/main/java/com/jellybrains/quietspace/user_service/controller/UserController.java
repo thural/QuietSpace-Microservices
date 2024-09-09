@@ -10,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,15 +74,8 @@ public class UserController {
 
 
     @GetMapping("/claims")
-    Map<String, String> getClaims() {
-        Map<String, String> claims = new HashMap<>();
-        String userId = userService.getAuthorizedUserId();
-        String username = userService.getAuthorizedUsername();
-        String userFullName = userService.getAuthorizedUserFullName();
-        claims.put("userId", userId);
-        claims.put("username", username);
-        claims.put("userFullName", userFullName);
-        return claims;
+    ResponseEntity<Map<String, String>> getClaims() {
+        return ResponseEntity.ok(userService.getUserClaims());
     }
 
 }

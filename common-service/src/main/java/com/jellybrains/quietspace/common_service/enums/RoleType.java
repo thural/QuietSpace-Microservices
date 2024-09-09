@@ -4,5 +4,18 @@ import lombok.Getter;
 
 @Getter
 public enum RoleType {
-    GUEST, USER, ADMIN
+    GUEST("GUEST"),
+    USER("USER"),
+    ADMIN("ADMIN");
+
+    private final String displayName;
+
+    RoleType(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }

@@ -20,7 +20,7 @@ public class CommentResponse {
     private Integer likeCount;
     private Integer replyCount;
     private ReactionResponse userReaction;
-    private OffsetDateTime createDate = OffsetDateTime.now();
-    private OffsetDateTime updateDate = OffsetDateTime.now();
+    private OffsetDateTime createDate;
+    private OffsetDateTime updateDate;
 
 }
