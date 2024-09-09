@@ -7,11 +7,16 @@ import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreation
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.kafka.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -21,25 +26,36 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
     private final ProfileProducer profileProducer;
     private final ProfileRepository profileRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Override
+    @Transactional(
+            noRollbackFor = {Throwable.class},
+            propagation = Propagation.REQUIRES_NEW,
+            isolation = Isolation.REPEATABLE_READ
+    )
     @KafkaListener(topics = "#{'${kafka.topics.user.creation}'}")
     public void process(UserCreationEvent event) {
         try {
-            log.info("userCreationEvent body at profile creation step: {}", event.getEventBody());
-            Profile profile = new Profile();
+            log.info("event body at profile creation step: {}", event.getEventBody());
+            var profile = new Profile();
             BeanUtils.copyProperties(event.getEventBody(), profile);
-            log.info("new profile entity before saving: {}", profile);
-            profileRepository.save(profile);
-            profileProducer.profileCreation(ProfileCreationEvent.builder().userId(profile.getUserId()).build());
+            Profile savedProfile = profileRepository.save(profile);
+            log.info("saved profile id: {}", savedProfile);
+            profileProducer.profileCreation(ProfileCreationEvent.builder()
+                    .userId(profile.getUserId()).build());
         } catch (Exception e) {
-            var failEvent = ProfileCreationEventFailed.builder().userId(event.getUserId()).build();
-            profileProducer.profileCreationFailed(failEvent);
             log.info("profile creation step was failed: {}", e.getMessage());
+            var failEvent = ProfileCreationEventFailed.builder()
+                    .userId(event.getEventBody().getUserId()).build();
+            profileProducer.profileCreationFailed(failEvent);
             log.info("produced profileCreationFailed event: {}", failEvent);
         }
     }
 
     @Override
+    @Transactional
     @KafkaListener(topics = "#{'${kafka.topics.user.creation-failed}'}")
     public void rollback(UserCreationEventFailed event) {
         profileProducer.profileCreationFailed(ProfileCreationEventFailed

@@ -4,6 +4,7 @@ import com.jellybrains.quietspace.auth_service.entity.Role;
 import com.jellybrains.quietspace.auth_service.entity.Token;
 import com.jellybrains.quietspace.auth_service.entity.User;
 import com.jellybrains.quietspace.auth_service.exception.ActivationTokenException;
+import com.jellybrains.quietspace.auth_service.exception.UnauthorizedException;
 import com.jellybrains.quietspace.auth_service.exception.UserNotFoundException;
 import com.jellybrains.quietspace.auth_service.kafka.producer.UserProducer;
 import com.jellybrains.quietspace.auth_service.model.AuthRequest;
@@ -264,7 +265,26 @@ public class AuthService {
         BeanUtils.copyProperties(savedUser, user);
         user.setUserId(savedUser.getId());
         log.info("calling userCreation producer with user as event body: {}", user);
-        userProducer.userCreation(UserCreationEvent.builder().eventBody(user).build());
+        try {
+            userProducer.userCreation(UserCreationEvent.builder().eventBody(user).build());
+        } catch (Exception e) {
+            log.info("failed to produce userCreation event due to: {}, rolling back user", e.getMessage());
+            userRepository.deleteById(savedUser.getId());
+        }
     }
+
+    public void deleteUserById(Authentication auth, String userId) {
+        try {
+            if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(RoleType.ADMIN.toString())))
+                throw new UnauthorizedException("access denied, insufficient user credentials");
+            userRepository.deleteById(userId);
+            userProducer.userDeletion(UserDeletionEvent.builder()
+                    .build());
+            log.info("user with id {} was deleted successfully", userId);
+        } catch (Exception e) {
+            log.info("user deletion failed due to: {}", e.getMessage());
+        }
+    }
+    
 
 }

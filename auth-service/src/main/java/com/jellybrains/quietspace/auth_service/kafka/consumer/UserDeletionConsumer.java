@@ -21,7 +21,8 @@ public class UserDeletionConsumer {
     public void deleteProfileUser(ProfileDeletionEvent event) {
         try {
             log.info("deleting user on profileDeletionEvent: {}", event);
-            userRepository.deleteById(event.getUserId());
+            if (userRepository.existsById(event.getUserId()))
+                userRepository.deleteById(event.getUserId());
             // TODO: send event to websocket subscriber
             log.info("user deletion successful for userId: {}", event.getUserId());
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,12 @@ public class AuthController {
     ResponseEntity<?> resendActivationEmail(@RequestParam String email) throws MessagingException {
         authService.resendActivationToken(email);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> getCurrentUser(Authentication auth, @PathVariable String userId) {
+        authService.deleteUserById(auth, userId);
+        return ResponseEntity.accepted().build();
     }
 
 }

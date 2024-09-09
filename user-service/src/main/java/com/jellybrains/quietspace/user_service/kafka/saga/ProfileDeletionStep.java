@@ -29,6 +29,7 @@ public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDele
     @Override
     @KafkaListener(topics = "#{'${kafka.topics.user.deletion}'}")
     public void process(UserDeletionEvent event) {
+        log.info("processing profile deletion step by userId: {}", event.getUserId());
         Profile foundProfile = profileRepository.findByUserId(event.getUserId())
                 .orElseThrow(EntityNotFoundException::new);
         try {
