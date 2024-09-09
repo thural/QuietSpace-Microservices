@@ -1,17 +1,20 @@
 package com.jellybrains.quietspace.user_service.service.impls;
 
+import com.jellybrains.quietspace.common_service.enums.EventType;
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.enums.RoleType;
 import com.jellybrains.quietspace.common_service.enums.StatusType;
 import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
 import com.jellybrains.quietspace.common_service.exception.UserNotFoundException;
+import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileUpdateEvent;
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
-import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.common_service.webclient.service.NotificationService;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import com.jellybrains.quietspace.user_service.entity.Profile;
+import com.jellybrains.quietspace.user_service.kafka.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.mapper.custom.ProfileMapper;
 import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
@@ -41,6 +44,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileMapper profileMapper;
     private final ProfileRepository profileRepository;
+    private final ProfileProducer profileProducer;
     private final UserService userService;
     private final NotificationService notificationService;
 
@@ -91,11 +95,13 @@ public class ProfileServiceImpl implements ProfileService {
         profileRepository.deleteById(userId);
     }
 
-    public ProfileResponse patchProfile(CreateProfileRequest request) {
+    public void requestProfileUpdate(UserRepresentation request) {
         Profile profile = getUserProfile();
         validateResourceAccess(request.getUserId(), profile);
-        BeanUtils.copyProperties(request, profile);
-        return profileMapper.toProfileResponse(profileRepository.save(profile));
+        profileProducer.profileUpdate(ProfileUpdateEvent.builder()
+                .type(EventType.PROFILE_UPDATE_REQUEST_EVENT)
+                .eventBody(request).build()
+        );
     }
 
     private static void validateResourceAccess(String userId, Profile profile) {

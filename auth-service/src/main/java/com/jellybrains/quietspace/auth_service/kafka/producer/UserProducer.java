@@ -1,10 +1,7 @@
 package com.jellybrains.quietspace.auth_service.kafka.producer;
 
 import com.jellybrains.quietspace.common_service.message.kafka.KafkaBaseEvent;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEvent;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEventFailed;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionEvent;
-import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionFailedEvent;
+import com.jellybrains.quietspace.common_service.message.kafka.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +21,9 @@ public class UserProducer {
 
     @Value("${kafka.topics.user.creation-failed}")
     private String userCreationFailedTopic;
+
+    @Value("${kafka.topics.user.update-failed}")
+    private String userUpdateFailedTopic;
 
     @Value("${kafka.topics.user.deletion}")
     private String userDeletionTopic;
@@ -54,6 +54,10 @@ public class UserProducer {
 
     public void userDeletionFailed(UserDeletionFailedEvent event) {
         kafkaTemplate.send(prepareMessage(event, userDeletionFailedTopic));
+    }
+
+    public void userUpdateFailed(UserUpdateFailedEvent event) {
+        kafkaTemplate.send(prepareMessage(event, userUpdateFailedTopic));
     }
 
 }

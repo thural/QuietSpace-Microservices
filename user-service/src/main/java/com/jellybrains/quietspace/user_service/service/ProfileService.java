@@ -3,8 +3,8 @@ package com.jellybrains.quietspace.user_service.service;
 
 import com.jellybrains.quietspace.common_service.enums.StatusType;
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
-import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import org.springframework.data.domain.Page;
 
@@ -23,7 +23,7 @@ public interface ProfileService {
 
     void deleteProfileById(String userId);
 
-    ProfileResponse patchProfile(CreateProfileRequest request);
+    void requestProfileUpdate(UserRepresentation request);
 
     Optional<UserResponse> getSignedUserResponse();
 

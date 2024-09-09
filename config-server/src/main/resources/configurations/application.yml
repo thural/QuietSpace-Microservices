@@ -44,11 +44,15 @@ kafka:
       creation-failed: profile-creation-failed-topic
       deletion: profile-deletion-topic
       deletion-failed: profile-deletion-failed-topic
+      update: profile-update-topic
+      update-failed: profile-update-failed-topic
     user:
       creation: user-creation-topic
       creation-failed: user-creation-failed-topic
       deletion: user-deletion-topic
       deletion-failed: user-deletion-failed-topic
+      update: user-update-event
+      update-failed: user-update-failed-topic
     chat:
       request:
         send: chat-request-send-topic

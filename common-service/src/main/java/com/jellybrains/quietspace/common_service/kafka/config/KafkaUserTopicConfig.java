@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.auth_service.kafka.config;
+package com.jellybrains.quietspace.common_service.kafka.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,13 +6,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class KafkaTopicConfig {
+public class KafkaUserTopicConfig {
 
     @Value("${kafka.topics.user.creation}")
     private String userCreationTopic;
 
     @Value("${kafka.topics.user.creation-failed}")
     private String userCreationFailedTopic;
+
+    @Value("${kafka.topics.user.update-failed}")
+    private String userUpdateFailedTopic;
 
     @Value("${kafka.topics.user.deletion}")
     private String userDeletionTopic;
@@ -38,6 +41,11 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic userDeletionFailedTopic() {
         return new NewTopic(userDeletionFailedTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic userUpdateFailedTopic() {
+        return new NewTopic(userUpdateFailedTopic, 1, (short) 1);
     }
 
 }

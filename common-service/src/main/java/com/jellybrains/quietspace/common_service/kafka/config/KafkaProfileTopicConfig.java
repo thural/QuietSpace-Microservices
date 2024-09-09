@@ -11,6 +11,9 @@ public class KafkaProfileTopicConfig {
     @Value("${kafka.topics.profile.creation}")
     private String profileCreationTopic;
 
+    @Value("${kafka.topics.profile.update}")
+    private String profileUpdateTopic;
+
     @Value("${kafka.topics.profile.creation-failed}")
     private String profileCreationFailedTopic;
 
@@ -38,6 +41,11 @@ public class KafkaProfileTopicConfig {
     @Bean
     public NewTopic profileDeletionFailedTopic() {
         return new NewTopic(profileDeletionFailedTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic profileUpdateTopic() {
+        return new NewTopic(profileUpdateTopic, 1, (short) 1);
     }
 
 }

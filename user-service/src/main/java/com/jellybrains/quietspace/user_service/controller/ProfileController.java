@@ -1,8 +1,8 @@
 package com.jellybrains.quietspace.user_service.controller;
 
-import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
 import com.jellybrains.quietspace.common_service.model.response.ProfileResponse;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,9 @@ public class ProfileController {
 
 
     @PatchMapping
-    private ResponseEntity<ProfileResponse> patchProfile(@RequestBody CreateProfileRequest userRequest) {
-        ProfileResponse patchedUser = profileService.patchProfile(userRequest);
-        return ResponseEntity.ok(patchedUser);
+    private ResponseEntity<ProfileResponse> patchProfile(@RequestBody UserRepresentation userRequest) {
+        profileService.requestProfileUpdate(userRequest);
+        return ResponseEntity.accepted().build();
     }
 
 
