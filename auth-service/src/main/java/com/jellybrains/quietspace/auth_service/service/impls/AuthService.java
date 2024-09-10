@@ -255,10 +255,6 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void requestUserDeletionById(String userId) {
-        userProducer.userDeletion(UserDeletionEvent.builder().userId(userId).build());
-    }
-
     public void requestUserRegistration(RegistrationRequest request) {
         User savedUser = register(request);
         UserRepresentation user = new UserRepresentation();
@@ -273,18 +269,17 @@ public class AuthService {
         }
     }
 
-    public void deleteUserById(Authentication auth, String userId) {
+    public void requestUserDeletionById(Authentication auth, String userId) {
         try {
             if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(RoleType.ADMIN.toString())))
                 throw new UnauthorizedException("access denied, insufficient user credentials");
             userRepository.deleteById(userId);
-            userProducer.userDeletion(UserDeletionEvent.builder()
-                    .build());
+            userProducer.userDeletion(UserDeletionEvent.builder().userId(userId).build());
             log.info("user with id {} was deleted successfully", userId);
         } catch (Exception e) {
             log.info("user deletion failed due to: {}", e.getMessage());
         }
     }
-    
+
 
 }

@@ -56,7 +56,7 @@ public class AuthController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> getCurrentUser(Authentication auth, @PathVariable String userId) {
-        authService.deleteUserById(auth, userId);
+        authService.requestUserDeletionById(auth, userId);
         return ResponseEntity.accepted().build();
     }
 

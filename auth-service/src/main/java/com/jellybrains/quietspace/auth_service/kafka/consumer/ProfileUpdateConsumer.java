@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class UserUpdateConsumer {
+public class ProfileUpdateConsumer {
 
     private final UserProducer userProducer;
     private final UserRepository userRepository;

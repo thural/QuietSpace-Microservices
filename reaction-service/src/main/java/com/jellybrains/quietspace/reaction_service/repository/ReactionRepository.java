@@ -29,4 +29,5 @@ public interface ReactionRepository extends MongoRepository<Reaction, String> {
 
     Page<Reaction> findAllByContentIdAndReactionType(String contentId, ReactionType reactionType, PageRequest pageRequest);
 
+    void deleteReactionsByUserId(String userId);
 }

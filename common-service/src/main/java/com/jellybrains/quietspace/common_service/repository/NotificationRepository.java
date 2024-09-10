@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface NotificationRepository extends MongoRepository<Notification, String> {
     Page<Notification> findAllByUserId(String signedUserId, PageRequest pageRequest);
 
+    void deleteNotificationsByUserId(String userId);
+
 //    Page<Notification> findAllByUserId(String userId, Pageable pageable);
 
 //    Page<Notification> findAllByUserIdAndNotificationType(String userId, NotificationType type, Pageable pageable);
