@@ -13,9 +13,9 @@ public interface ReactionService {
 
     Optional<Reaction> getUserReactionByContentId(String contentId);
 
-    Page<Reaction> getReactionsByContentIdAndReactionType(String contentId, ReactionType reactionType, Integer pageNumber, Integer pageSize);
+    Page<Reaction> getReactionsByContentIdAndType(String contentId, ReactionType reactionType, Integer pageNumber, Integer pageSize);
 
-    Integer countByContentIdAndReactionType(String contentId, ReactionType reactionType);
+    Integer countByContentIdAndType(String contentId, ReactionType reactionType);
 
     Page<Reaction> getReactionsByContentIdAndContentType(String contentId, ContentType type, Integer pageNumber, Integer pageSize);
 

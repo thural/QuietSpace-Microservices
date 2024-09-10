@@ -1,7 +1,6 @@
 package com.jellybrains.quietspace.common_service.controller;
 
 import com.jellybrains.quietspace.common_service.document.Notification;
-import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +27,6 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/hello")
-    String sayHello() {
-        return "hello from notification service";
-    }
-
 
     @PostMapping("/seen/{contentId}")
     ResponseEntity<?> handleSeen(@PathVariable String contentId) {
@@ -41,7 +35,7 @@ public class NotificationController {
     }
 
     @MessageMapping(NOTIFICATION_SEEN_PATH)
-    void markMessageSeen(@DestinationVariable String notificationId) {
+    void markNotificationSeen(@DestinationVariable String notificationId) {
         notificationService.handleSeen(notificationId);
     }
 
@@ -70,12 +64,6 @@ public class NotificationController {
     @PostMapping("/process")
     ResponseEntity<?> processNotification(@RequestParam NotificationType type, @RequestParam String contentId) {
         notificationService.processNotification(type, contentId);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/process-reaction")
-    ResponseEntity<?> processNotificationByReaction(@RequestParam ContentType type, @RequestParam String contentId) {
-        notificationService.processNotificationByReaction(type, contentId);
         return ResponseEntity.ok().build();
     }
 

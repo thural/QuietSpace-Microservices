@@ -7,10 +7,11 @@ import com.jellybrains.quietspace.common_service.enums.StatusType;
 import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
 import com.jellybrains.quietspace.common_service.exception.UserNotFoundException;
+import com.jellybrains.quietspace.common_service.kafka.producer.NotificationProducer;
+import com.jellybrains.quietspace.common_service.message.kafka.notification.NotificationEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileUpdateEvent;
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
-import com.jellybrains.quietspace.common_service.webclient.service.NotificationService;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import com.jellybrains.quietspace.user_service.entity.Profile;
@@ -46,7 +47,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final ProfileProducer profileProducer;
     private final UserService userService;
-    private final NotificationService notificationService;
+    private final NotificationProducer notificationProducer;
 
     @Override
     public Page<UserResponse> listUsersByQuery(String query, Integer pageNumber, Integer pageSize) {
@@ -139,16 +140,23 @@ public class ProfileServiceImpl implements ProfileService {
         String profileUserId = profile.getUserId();
         if (profile.getUserId().equals(followedUserId))
             throw new CustomErrorException("users can't unfollow themselves");
-        Profile followedProfile = profileRepository.findByUserId(followedUserId)
-                .orElseThrow(UserNotFoundException::new);
-        if (profile.getFollowingUserIds().contains(followedUserId)) {
-            profile.getFollowingUserIds().remove(followedUserId);
-            followedProfile.getFollowerUserIds().remove(profileUserId);
-        } else {
-            profile.getFollowingUserIds().add(followedUserId);
-            followedProfile.getFollowerUserIds().add(profileUserId);
-        }
-        notificationService.processNotification(NotificationType.FOLLOW_REQUEST, followedUserId);
+
+        profileRepository.findByUserId(followedUserId)
+                .ifPresent(found -> {
+                    if (profile.getFollowingUserIds().contains(followedUserId)) {
+                        profile.getFollowingUserIds().remove(followedUserId);
+                        found.getFollowerUserIds().remove(profileUserId);
+                    } else {
+                        profile.getFollowingUserIds().add(followedUserId);
+                        found.getFollowerUserIds().add(profileUserId);
+                        notificationProducer.sendNotification(NotificationEvent
+                                .builder()
+                                .contentId(profile.getUserId())
+                                .notificationType(NotificationType.FOLLOW_REQUEST)
+                                .build()
+                        );
+                    }
+                });
     }
 
     @Override

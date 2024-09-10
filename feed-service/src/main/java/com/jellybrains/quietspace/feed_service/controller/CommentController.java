@@ -1,9 +1,7 @@
 package com.jellybrains.quietspace.feed_service.controller;
 
-import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
-import com.jellybrains.quietspace.common_service.webclient.service.NotificationService;
 import com.jellybrains.quietspace.feed_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +19,6 @@ public class CommentController {
     public static final String COMMENT_PATH_ID = "/{commentId}";
 
     private final CommentService commentService;
-    private final NotificationService notificationService;
 
 
     @GetMapping("/post/{postId}")
@@ -64,7 +61,6 @@ public class CommentController {
     @PostMapping
     ResponseEntity<CommentResponse> createComment(@RequestBody @Validated CommentRequest comment) {
         CommentResponse response = commentService.createComment(comment);
-        notificationService.processNotification(NotificationType.COMMENT, comment.getPostId());
         return ResponseEntity.ok(response);
     }
 

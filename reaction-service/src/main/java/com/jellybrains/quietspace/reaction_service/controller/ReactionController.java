@@ -50,14 +50,13 @@ public class ReactionController {
     ResponseEntity<?> toggleReaction(@RequestBody Reaction reaction) {
         log.info("reactions toggle controller received a request");
         reactionService.handleReaction(reaction);
-        notificationClient.processNotificationByReaction(reaction.getContentType(), reaction.getContentId());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/count")
     ResponseEntity<Integer> countByContentIdAndReactionType(@RequestParam String contentId, @RequestParam ReactionType type) {
         log.info("reactions count controller received a request");
-        return ResponseEntity.ok(reactionService.countByContentIdAndReactionType(contentId, type));
+        return ResponseEntity.ok(reactionService.countByContentIdAndType(contentId, type));
     }
 
 }

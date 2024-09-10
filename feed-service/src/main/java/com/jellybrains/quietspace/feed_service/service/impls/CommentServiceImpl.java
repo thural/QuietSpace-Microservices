@@ -1,14 +1,15 @@
 package com.jellybrains.quietspace.feed_service.service.impls;
 
+import com.jellybrains.quietspace.common_service.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.kafka.producer.NotificationProducer;
+import com.jellybrains.quietspace.common_service.message.kafka.notification.NotificationEvent;
 import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.feed_service.entity.Comment;
-import com.jellybrains.quietspace.feed_service.entity.Post;
 import com.jellybrains.quietspace.feed_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.feed_service.mapper.custom.CommentMapper;
 import com.jellybrains.quietspace.feed_service.repository.CommentRepository;
-import com.jellybrains.quietspace.feed_service.repository.PostRepository;
 import com.jellybrains.quietspace.feed_service.service.CommentService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -33,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final UserService userService;
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+    private final NotificationProducer notificationProducer;
 
     @Override
     public Page<CommentResponse> getCommentsByPostId(String postId, Integer pageNumber, Integer pageSize) {
@@ -50,9 +51,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponse createComment(CommentRequest comment) {
-        Optional<Post> foundPost = postRepository.findById(comment.getPostId());
-        if (foundPost.isEmpty()) throw new EntityNotFoundException("post does not exist");
         Comment commentEntity = commentMapper.commentRequestToEntity(comment);
+        notificationProducer.sendNotification(NotificationEvent.builder()
+                .contentId(comment.getPostId())
+                .notificationType(NotificationType.COMMENT)
+                .build());
         return commentMapper.commentEntityToResponse(commentRepository.save(commentEntity));
     }
 
@@ -92,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
 
     private void validateOwnership(String userId) {
         if (!userId.equals(userService.getAuthorizedUserId()))
-            throw new CustomErrorException("requested resource does not belong to user in request");
+            throw new CustomErrorException("current user has no ownership over the requested resource");
     }
 
 }

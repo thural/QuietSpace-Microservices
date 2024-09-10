@@ -31,7 +31,7 @@ public class ProfileUpdateStep implements SagaStep<ProfileUpdateEvent, UserUpdat
     @Override
     @KafkaListener(topics = "#{'${kafka.topics.profile.update}'}")
     public void process(ProfileUpdateEvent event) {
-        if (!event.getType().equals(EventType.PROFILE_UPDATE_REQUEST_EVENT)) return;
+        if (!event.getNotificationType().equals(EventType.PROFILE_UPDATE_REQUEST_EVENT)) return;
         UserRepresentation user = event.getEventBody();
         log.info("processing profile update step by userId: {}", user.getUserId());
         Profile foundProfile = profileRepository.findByUserId(user.getUserId())

@@ -1,7 +1,6 @@
 package com.jellybrains.quietspace.common_service.service.impl;
 
 import com.jellybrains.quietspace.common_service.document.Notification;
-import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.EventType;
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.exception.CustomNotFoundException;
@@ -95,17 +94,10 @@ public class NotificationServiceImpl implements NotificationService {
                 .userId(recipientId)
                 .build());
         try {
-            log.info("notified {} user {}", notification.getNotificationType(), notification.getActorId());
+            log.info("notifying {} user {}", notification.getNotificationType(), recipientId);
             template.convertAndSendToUser(recipientId, NOTIFICATION_SUBJECT_PATH, notification);
         } catch (MessagingException exception) {
-            log.info("failed to notify {} user {}", notification.getNotificationType(), notification.getActorId());
-        }
-    }
-
-    public void processNotificationByReaction(ContentType type, String contentId) {
-        switch (type) {
-            case COMMENT -> processNotification(NotificationType.COMMENT_REACTION, contentId);
-            case POST -> processNotification(NotificationType.POST_REACTION, contentId);
+            log.info("failed to notify {} to user {}", type, notification.getActorId());
         }
     }
 
