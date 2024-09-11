@@ -2,21 +2,22 @@ package com.jellybrains.quietspace.chat_service.service;
 
 import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
 import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 public interface ChatService {
 
-    List<ChatResponse> getChatsByUserId(String userId);
+    Flux<ChatResponse> getChatsByUserId(String userId);
 
-    void deleteChatById(String chatId);
+    Mono<Void> deleteChatById(String chatId);
 
-    List<String> addMemberWithId(String memberId, String chatId);
+    Flux<String> addMemberWithId(String memberId, String chatId);
 
-    List<String> removeMemberWithId(String memberId, String chatId);
+    Flux<String> removeMemberWithId(String memberId, String chatId);
 
-    ChatResponse createChat(ChatRequest chatRequest);
+    Mono<ChatResponse> createChat(ChatRequest chatRequest);
 
-    ChatResponse getChatById(String chatId);
+    Mono<ChatResponse> getChatById(String chatId);
 
 }

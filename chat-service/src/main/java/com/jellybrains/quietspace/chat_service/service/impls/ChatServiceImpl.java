@@ -4,15 +4,15 @@ import com.jellybrains.quietspace.chat_service.entity.Chat;
 import com.jellybrains.quietspace.chat_service.mapper.custom.ChatMapper;
 import com.jellybrains.quietspace.chat_service.repository.ChatRepository;
 import com.jellybrains.quietspace.chat_service.service.ChatService;
+import com.jellybrains.quietspace.common_service.exception.CustomNotFoundException;
 import com.jellybrains.quietspace.common_service.exception.UnauthorizedException;
 import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
 import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -24,85 +24,70 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public List<ChatResponse> getChatsByUserId(String memberId) {
-
+    public Flux<ChatResponse> getChatsByUserId(String memberId) {
         if (!userService.getAuthorizedUserId().equals(memberId))
             throw new UnauthorizedException("user mismatch with the chat member");
-
-//        return chatRepository.findByUsersContainingUserId(memberId)
-//                .stream()
-//                .map(chatMapper::chatEntityToResponse)
-//                .toList();
-        return List.of();
+        return chatRepository.findChatsContainingUserId(memberId)
+                .map(chatMapper::chatEntityToResponse);
     }
 
 
     @Override
-    public void deleteChatById(String chatId) {
-        findChatEntityById(chatId);
-        chatRepository.deleteById(chatId);
+    public Mono<Void> deleteChatById(String chatId) {
+        return findChatEntityById(chatId)
+                .doOnSuccess(chat -> chatRepository.deleteById(chatId)).then();
     }
 
 
     @Override
-    public List<String> addMemberWithId(String memberId, String chatId) {
+    public Flux<String> addMemberWithId(String memberId, String chatId) {
+        return findChatEntityById(chatId)
+                .doOnNext(chat -> userService.validateUserId(memberId))
+                .doOnNext(chat -> {
+                    chat.getMemberIds().add(memberId);
+                })
+                .flatMapMany(chat -> Flux.fromIterable(chat.getMemberIds()));
+    }
 
-        Chat foundChat = findChatEntityById(chatId);
 
+    @Override
+    public Flux<String> removeMemberWithId(String memberId, String chatId) {
         userService.validateUserId(memberId);
-        List<String> users = foundChat.getMemberIds();
-        users.add(memberId);
-        foundChat.setMemberIds(users);
-
-        chatRepository.save(foundChat);
-        return users;
+        return findChatEntityById(chatId)
+                .flatMapMany(chat -> {
+                    chat.getMemberIds().remove(memberId);
+                    return Flux.fromIterable(chat.getMemberIds());
+                });
     }
 
 
     @Override
-    public List<String> removeMemberWithId(String memberId, String chatId) {
-        Chat foundChat = findChatEntityById(chatId);
-        List<String> members = foundChat.getMemberIds();
-        userService.validateUserId(memberId);
-        members.remove(memberId);
-        foundChat.setMemberIds(members);
-        chatRepository.save(foundChat);
-        return members;
-    }
-
-
-    @Override
-    public ChatResponse createChat(ChatRequest chatRequest) {
-
-        List<String> userList = chatRequest.getUserIds();
+    public Mono<ChatResponse> createChat(ChatRequest chatRequest) {
         String userId = userService.getAuthorizedUserId();
-
-        if (!userList.contains(userId))
-            throw new UnauthorizedException("requesting user is not member of requested chat");
-
-        Chat createdChat = chatRepository.save(chatMapper.chatRequestToEntity(chatRequest));
-        return chatMapper.chatEntityToResponse(createdChat);
-
+        if (!chatRequest.getUserIds().contains(userId))
+            throw new UnauthorizedException("user is not a chat member");
+        return chatRepository.save(chatMapper.chatRequestToEntity(chatRequest))
+                .map(chatMapper::chatEntityToResponse);
     }
 
 
     @Override
-    public ChatResponse getChatById(String chatId) {
-        Chat foundChat = findChatEntityById(chatId);
-        return chatMapper.chatEntityToResponse(foundChat);
+    public Mono<ChatResponse> getChatById(String chatId) {
+        return findChatEntityById(chatId)
+                .switchIfEmpty(Mono.error(CustomNotFoundException::new))
+                .map(chatMapper::chatEntityToResponse);
     }
 
 
-    private Chat findChatEntityById(String chatId) {
-        String loggedUser = userService.getAuthorizedUserId();
-
-        Chat foundChat = chatRepository.findById(chatId)
-                .orElseThrow(EntityNotFoundException::new);
-
-        if (!foundChat.getMemberIds().contains(loggedUser))
-            throw new UnauthorizedException("chat does not belong to logged user");
-
-        return foundChat;
+    private Mono<Chat> findChatEntityById(String chatId) {
+        String authorizedUserId = userService.getAuthorizedUserId();
+        return chatRepository.findById(chatId)
+                .switchIfEmpty(Mono.error(CustomNotFoundException::new))
+                .doOnNext(chat -> {
+                    if (!chat.getMemberIds().contains(authorizedUserId))
+                        throw new UnauthorizedException("user is not a chat member");
+                });
     }
+
 
 }

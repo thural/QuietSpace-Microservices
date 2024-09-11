@@ -8,6 +8,7 @@ import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 
 @Component
@@ -40,6 +41,6 @@ public class MessageMapper {
 
     private Chat findChatById(String chatId) {
         return chatRepository.findById(chatId)
-                .orElseThrow(EntityNotFoundException::new);
+                .switchIfEmpty(Mono.error(EntityNotFoundException::new)).block();
     }
 }

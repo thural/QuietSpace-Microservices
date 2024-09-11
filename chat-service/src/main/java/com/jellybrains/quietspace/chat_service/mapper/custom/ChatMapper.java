@@ -37,7 +37,7 @@ public class ChatMapper {
     }
 
     private MessageResponse getLastMessage(Chat chat) {
-        return messageService.getLastMessageByChat(chat).orElse(null);
+        return messageService.getLastMessageByChat(chat).block();
     }
 
 

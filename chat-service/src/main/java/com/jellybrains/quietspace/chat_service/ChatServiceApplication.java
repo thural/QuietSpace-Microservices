@@ -10,8 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
         "com.jellybrains.quietspace.common_service.security",
         "com.jellybrains.quietspace.common_service.exception",
         "com.jellybrains.quietspace.common_service.kafka.config",
-        "com.jellybrains.quietspace.common_service.config",
-        "com.jellybrains.quietspace.user_service"
+        "com.jellybrains.quietspace.chat_service"
 })
 public class ChatServiceApplication {
 

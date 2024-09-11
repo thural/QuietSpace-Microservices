@@ -1,17 +1,14 @@
 package com.jellybrains.quietspace.chat_service.controller;
 
-import com.jellybrains.quietspace.chat_service.repository.MessageRepository;
 import com.jellybrains.quietspace.chat_service.service.ChatService;
-import com.jellybrains.quietspace.chat_service.service.MessageService;
 import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
 import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -20,40 +17,40 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final MessageRepository messageRepository;
-    private final SimpMessagingTemplate template;
-    private final MessageService messageService;
 
     @GetMapping("/{chatId}")
-    ResponseEntity<ChatResponse> getSingleChatById(@PathVariable String chatId) {
-        return ResponseEntity.ok(chatService.getChatById(chatId));
+    Mono<ResponseEntity<ChatResponse>> getSingleChatById(@PathVariable String chatId) {
+        return chatService.getChatById(chatId).map(ResponseEntity::ok);
     }
 
+
     @GetMapping("/members/{userId}")
-    ResponseEntity<List<ChatResponse>> getChatsByMemberId(@PathVariable String userId) {
+    ResponseEntity<Flux<ChatResponse>> getChatsByMemberId(@PathVariable String userId) {
         return ResponseEntity.ok(chatService.getChatsByUserId(userId));
     }
 
+
     @PostMapping
-    ResponseEntity<ChatResponse> createChat(@RequestBody ChatRequest chat) {
-        return ResponseEntity.ok(chatService.createChat(chat));
+    Mono<ResponseEntity<ChatResponse>> createChat(@RequestBody ChatRequest chat) {
+        return chatService.createChat(chat).map(ResponseEntity::ok);
     }
+
 
     @PatchMapping("/{chatId}/members/add/{userId}")
-    ResponseEntity<?> addMemberWithId(@PathVariable String userId, @PathVariable String chatId) {
-        return ResponseEntity.ok().build();
+    ResponseEntity<Flux<String>> addMemberWithId(@PathVariable String userId, @PathVariable String chatId) {
+        return ResponseEntity.ok(chatService.addMemberWithId(userId, chatId));
     }
+
 
     @PatchMapping("/{chatId}/members/remove/{userId}")
-    ResponseEntity<?> removeMemberWithId(@PathVariable String chatId, @PathVariable String userId) {
-        chatService.removeMemberWithId(userId, chatId);
-        return ResponseEntity.noContent().build();
+    ResponseEntity<Flux<String>> removeMemberWithId(@PathVariable String chatId, @PathVariable String userId) {
+        return ResponseEntity.ok(chatService.removeMemberWithId(userId, chatId));
     }
 
+    
     @DeleteMapping("/{chatId}")
-    ResponseEntity<?> deleteChatWithId(@PathVariable("chatId") String chatId) {
-        chatService.deleteChatById(chatId);
-        return ResponseEntity.noContent().build();
+    Mono<ResponseEntity<Void>> deleteChatWithId(@PathVariable("chatId") String chatId) {
+        return chatService.deleteChatById(chatId).map(ResponseEntity::ok);
     }
 
 }

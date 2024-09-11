@@ -7,17 +7,16 @@ import com.jellybrains.quietspace.chat_service.repository.ChatRepository;
 import com.jellybrains.quietspace.chat_service.repository.MessageRepository;
 import com.jellybrains.quietspace.chat_service.service.MessageService;
 import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
+import com.jellybrains.quietspace.common_service.exception.CustomNotFoundException;
 import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
 import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
 
@@ -32,32 +31,30 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
 
     @Override
-    public MessageResponse addMessage(MessageRequest messageRequest) {
-        log.info("message at addMessage method: {}", messageRequest.getText());
-        String loggedUser = userService.getAuthorizedUserId();
-
-        Chat parentChat = chatRepository.findById(messageRequest.getChatId())
-                .orElseThrow(EntityNotFoundException::new);
-
-        Message newMessage = messageMapper.toEntity(messageRequest);
-        newMessage.setSenderId(loggedUser);
-        newMessage.setChat(parentChat);
-
-        return messageMapper.toResponse(messageRepository.save(newMessage));
+    public Mono<MessageResponse> addMessage(MessageRequest messageRequest) {
+        String authorizedUserId = userService.getAuthorizedUserId();
+        return chatRepository.findById(messageRequest.getChatId())
+                .switchIfEmpty(Mono.error(CustomNotFoundException::new))
+                .flatMap(chat -> {
+                    Message message = messageMapper.toEntity(messageRequest);
+                    message.setSenderId(authorizedUserId);
+                    message.setChat(chat);
+                    return messageRepository.save(message);
+                }).map(messageMapper::toResponse);
     }
 
     @Override
-    public Optional<MessageResponse> deleteMessage(String messageId) {
-        Message existingMessage = findMessageOrElseThrow(messageId);
-        checkResourceAccess(existingMessage.getSenderId());
-
-        messageRepository.deleteById(messageId);
-        return Optional.of(messageMapper.toResponse(existingMessage));
+    public Mono<MessageResponse> deleteMessage(String messageId) {
+        return findMessageOrElseThrow(messageId)
+                .switchIfEmpty(Mono.error(CustomNotFoundException::new))
+                .doOnNext(message -> checkResourceAccess(message.getSenderId()))
+                .doOnNext(message -> messageRepository.deleteById(messageId))
+                .map(messageMapper::toResponse);
     }
 
-    private Message findMessageOrElseThrow(String messageId) {
+    private Mono<Message> findMessageOrElseThrow(String messageId) {
         return messageRepository.findById(messageId)
-                .orElseThrow(EntityNotFoundException::new);
+                .switchIfEmpty(Mono.error(CustomNotFoundException::new));
     }
 
     private void checkResourceAccess(String userId) {
@@ -67,25 +64,22 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public Page<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, String chatId) {
+    public Flux<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, String chatId) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
-        Page<Message> messagePage = messageRepository.findAllByChatId(chatId, pageRequest);
-        return messagePage.map(messageMapper::toResponse);
+        return messageRepository.findAllByChatId(chatId, pageRequest).map(messageMapper::toResponse);
     }
 
     @Override
-    public Optional<MessageResponse> getLastMessageByChat(Chat chat) {
+    public Mono<MessageResponse> getLastMessageByChat(Chat chat) {
         return messageRepository.findFirstByChatOrderByCreateDateDesc(chat)
                 .map(messageMapper::toResponse);
     }
 
     @Override
-    public Optional<MessageResponse> setMessageSeen(String messageId) {
-        Message existingMessage = findMessageOrElseThrow(messageId);
-        existingMessage.setIsSeen(true);
-
-        Message savedMessage = messageRepository.save(existingMessage);
-        return Optional.ofNullable(messageMapper.toResponse(savedMessage));
+    public Mono<MessageResponse> setMessageSeen(String messageId) {
+        return findMessageOrElseThrow(messageId)
+                .doOnNext(message -> message.setIsSeen(true))
+                .map(messageMapper::toResponse);
     }
 
 }
