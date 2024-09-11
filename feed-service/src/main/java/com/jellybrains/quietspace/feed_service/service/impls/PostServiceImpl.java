@@ -13,11 +13,11 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
 import java.util.Set;
 
 import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
@@ -34,77 +34,83 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Page<PostResponse> getAllPosts(Integer pageNumber, Integer pageSize) {
+    public Flux<PostResponse> getAllPosts(Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return postRepository.findAll(pageRequest).map(postMapper::postEntityToResponse);
     }
 
     @Override
-    public PostResponse addPost(PostRequest post) {
+    public Mono<PostResponse> addPost(PostRequest post) {
         post.setUserId(userService.getAuthorizedUserId());
-        return postMapper.postEntityToResponse(
-                postRepository.save(postMapper.postRequestToEntity(post))
-        );
+        return postRepository.save(postMapper.postRequestToEntity(post))
+                .map(postMapper::postEntityToResponse);
     }
 
     @Override
-    public Optional<PostResponse> getPostById(String postId) {
-        Post post = findPostEntityById(postId);
-        return Optional.of(postMapper.postEntityToResponse(post));
+    public Mono<PostResponse> getPostById(String postId) {
+        Mono<Post> post = findPostEntityById(postId);
+        return post.map(postMapper::postEntityToResponse);
     }
 
     @Override
-    public PostResponse patchPost(PostRequest post) {
-        Post existingPost = findPostEntityById(post.getPostId());
+    public Mono<PostResponse> patchPost(PostRequest post) {
+        Mono<Post> existingPost = findPostEntityById(post.getPostId());
         validateResourceOwnership(existingPost);
         BeanUtils.copyProperties(post, existingPost);
-        return postMapper.postEntityToResponse(postRepository.save(existingPost));
+        return existingPost.map(postMapper::postEntityToResponse);
     }
 
     @Override
-    public void votePoll(VoteRequest voteRequest) {
-        Post foundPost = postRepository.findById(voteRequest.getPostId())
-                .orElseThrow(EntityNotFoundException::new);
-        if (foundPost.getPoll().getOptions().stream().anyMatch(option -> option.getVotes()
-                .contains(voteRequest.getUserId()))) throw new CustomErrorException("already voted");
-        foundPost.getPoll().getOptions().stream()
-                .filter(option -> option.getLabel().equals(voteRequest.getOption()))
-                .findFirst().ifPresent(option -> {
-                    Set<String> votes = option.getVotes();
-                    votes.add(voteRequest.getUserId());
-                    option.setVotes(votes);
-                });
-        postRepository.save(foundPost);
+    public Mono<Void> votePoll(VoteRequest voteRequest) {
+        return postRepository.findById(voteRequest.getPostId())
+                .switchIfEmpty(Mono.error(new EntityNotFoundException()))
+                .doOnNext(post -> {
+                    if (post.getPoll().getOptions().stream()
+                            .anyMatch(option -> option.getVotes()
+                                    .contains(voteRequest.getUserId())))
+                        throw new CustomErrorException("already voted");
+                })
+                .doOnNext(post -> {
+                    post.getPoll().getOptions().stream()
+                            .filter(option -> option.getLabel().equals(voteRequest.getOption()))
+                            .findFirst().ifPresent(option -> {
+                                Set<String> votes = option.getVotes();
+                                votes.add(voteRequest.getUserId());
+                                option.setVotes(votes);
+                            });
+                }).then();
     }
 
     @Override
-    public void deletePost(String postId) {
-        Post existingPost = findPostEntityById(postId);
+    public Mono<Void> deletePost(String postId) {
+        Mono<Post> existingPost = findPostEntityById(postId);
         validateResourceOwnership(existingPost);
-        postRepository.deleteById(postId);
+        return postRepository.deleteById(postId).then();
     }
 
     @Override
-    public Page<PostResponse> getPostsByUserId(String userId, Integer pageNumber, Integer pageSize) {
+    public Flux<PostResponse> getPostsByUserId(String userId, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return postRepository.findAllByUserId(userId, pageRequest).map(postMapper::postEntityToResponse);
     }
 
     @Override
-    public Page<PostResponse> getAllByQuery(String query, Integer pageNumber, Integer pageSize) {
+    public Flux<PostResponse> getAllByQuery(String query, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return postRepository.findAllByQuery(query, pageRequest).map(postMapper::postEntityToResponse);
     }
 
-    private void validateResourceOwnership(Post existingPost) {
+    private void validateResourceOwnership(Mono<Post> existingPost) {
         String loggedUserId = userService.getAuthorizedUserId();
-        if (!existingPost.getUserId().equals(loggedUserId))
-            throw new CustomErrorException("post author mismatch with current user");
+        existingPost.doOnNext(post -> {
+            if (!post.getUserId().equals(loggedUserId))
+                throw new CustomErrorException("post author mismatch with current user");
+        });
     }
 
-    private Post findPostEntityById(String postId) {
+    private Mono<Post> findPostEntityById(String postId) {
         return postRepository.findById(postId)
-                .orElseThrow(EntityNotFoundException::new);
+                .switchIfEmpty(Mono.error(EntityNotFoundException::new));
     }
 
 }

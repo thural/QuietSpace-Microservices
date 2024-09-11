@@ -2,23 +2,24 @@ package com.jellybrains.quietspace.feed_service.repository;
 
 import com.jellybrains.quietspace.feed_service.entity.Comment;
 import com.jellybrains.quietspace.feed_service.entity.Post;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
-public interface CommentRepository extends JpaRepository<Comment, String> {
+public interface CommentRepository extends R2dbcRepository<Comment, String> {
 
-    Page<Comment> findAllByPostId(String postId, Pageable pageable);
+    Flux<Comment> findAllByPostId(String postId, Pageable pageable);
 
-    Integer countByParentIdAndPost(String parentId, Post post);
+    Mono<Integer> countByParentIdAndPost(String parentId, Post post);
 
-    void deleteAllByParentId(String parentId);
+    Mono<Void> deleteAllByParentId(String parentId);
 
-    Page<Comment> findAllByParentId(String commentId, Pageable pageable);
+    Flux<Comment> findAllByParentId(String commentId, Pageable pageable);
 
-    Page<Comment> findAllByUserId(String userId, PageRequest pageRequest);
+    Flux<Comment> findAllByUserId(String userId, Pageable pageable);
 
-    void deleteCommentsByUserId(String userId);
+    Mono<Void> deleteCommentsByUserId(String userId);
+
 }

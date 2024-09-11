@@ -15,12 +15,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
+import java.util.Objects;
 
 import static com.jellybrains.quietspace.common_service.utils.PagingProvider.BY_CREATED_DATE_ASC;
 import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
@@ -37,60 +38,61 @@ public class CommentServiceImpl implements CommentService {
     private final NotificationProducer notificationProducer;
 
     @Override
-    public Page<CommentResponse> getCommentsByPostId(String postId, Integer pageNumber, Integer pageSize) {
+    public Flux<CommentResponse> getCommentsByPostId(String postId, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
-        return commentRepository.findAllByPostId(postId, pageRequest).map(commentMapper::commentEntityToResponse);
+        return commentRepository.findAllByPostId(postId, pageRequest).map(commentMapper::toResponse);
     }
 
     @Override
-    public Page<CommentResponse> getCommentsByUser(Integer pageNumber, Integer pageSize) {
+    public Flux<CommentResponse> getCommentsByUser(Integer pageNumber, Integer pageSize) {
         String userId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
-        return commentRepository.findAllByUserId(userId, pageRequest).map(commentMapper::commentEntityToResponse);
+        return commentRepository.findAllByUserId(userId, pageRequest).map(commentMapper::toResponse);
     }
 
     @Override
-    public CommentResponse createComment(CommentRequest comment) {
-        Comment commentEntity = commentMapper.commentRequestToEntity(comment);
+    public Mono<CommentResponse> createComment(CommentRequest request) {
+        Comment entity = commentMapper.toEntity(request);
         notificationProducer.sendNotification(NotificationEvent.builder()
-                .contentId(comment.getPostId())
-                .notificationType(NotificationType.COMMENT)
-                .build());
-        return commentMapper.commentEntityToResponse(commentRepository.save(commentEntity));
+                .contentId(request.getPostId())
+                .notificationType(NotificationType.COMMENT).build());
+        return commentRepository.save(entity).map(commentMapper::toResponse);
     }
 
     @Override
-    public Optional<CommentResponse> getCommentById(String commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(EntityNotFoundException::new);
-        CommentResponse commentResponse = commentMapper.commentEntityToResponse(comment);
-        return Optional.of(commentResponse);
+    public Mono<CommentResponse> getCommentById(String commentId) {
+        return commentRepository.findById(commentId)
+                .switchIfEmpty(Mono.error(EntityNotFoundException::new)).map(commentMapper::toResponse);
     }
 
     @Override
-    public Page<CommentResponse> getRepliesByParentId(String commentId, Integer pageNumber, Integer pageSize) {
+    public Flux<CommentResponse> getRepliesByParentId(String commentId, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
-        return commentRepository.findAllByParentId(commentId, pageRequest).map(commentMapper::commentEntityToResponse);
+        return commentRepository.findAllByParentId(commentId, pageRequest).map(commentMapper::toResponse);
     }
 
     @Override
     @Transactional
-    public void deleteComment(String commentId) {
-        Comment existingComment = commentRepository.findById(commentId)
-                .orElseThrow(EntityNotFoundException::new);
-        validateOwnership(existingComment.getUserId());
-        if (existingComment.getParentId() != null)
-            commentRepository.deleteAllByParentId(existingComment.getParentId());
-        commentRepository.deleteById(commentId);
+    public Mono<Void> deleteComment(String commentId) {
+        return commentRepository.findById(commentId)
+                .switchIfEmpty(Mono.error(EntityNotFoundException::new))
+                .doOnNext(comment -> validateOwnership(comment.getUserId()))
+                .doOnNext(comment -> {
+                    if (Objects.nonNull(comment.getParentId()))
+                        commentRepository.deleteAllByParentId(comment.getParentId());
+                })
+                .doOnSuccess(c -> commentRepository.deleteById(commentId)).then();
     }
 
     @Override
-    public CommentResponse patchComment(CommentRequest comment) {
-        Comment existingComment = commentRepository.findById(comment.getCommentId())
-                .orElseThrow(EntityNotFoundException::new);
-        validateOwnership(existingComment.getUserId());
-        if (StringUtils.hasText(comment.getText())) existingComment.setText(comment.getText());
-        return commentMapper.commentEntityToResponse(commentRepository.save(existingComment));
+    public Mono<CommentResponse> patchComment(CommentRequest request) {
+        return commentRepository.findById(request.getCommentId())
+                .switchIfEmpty(Mono.error(EntityNotFoundException::new))
+                .doOnNext(c -> validateOwnership(c.getUserId()))
+                .doOnNext(c -> {
+                    if (StringUtils.hasText(request.getText())) c.setText(request.getText());
+                })
+                .flatMap(commentRepository::save).map(commentMapper::toResponse);
     }
 
     private void validateOwnership(String userId) {

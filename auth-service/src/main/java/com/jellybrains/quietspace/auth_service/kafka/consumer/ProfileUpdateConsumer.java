@@ -23,7 +23,7 @@ public class ProfileUpdateConsumer {
 
     @KafkaListener(topics = "#{'${kafka.topics.profile.update}'}")
     public void updateProfileUser(ProfileUpdateEvent event) {
-        if (!event.getNotificationType().equals(EventType.PROFILE_UPDATED_EVENT)) return;
+        if (!event.getType().equals(EventType.PROFILE_UPDATED_EVENT)) return;
         String userId = event.getEventBody().getUserId();
         try {
             log.info("updating user on profileUpdateEvent: {}", event);

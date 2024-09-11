@@ -6,10 +6,11 @@ import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace.feed_service.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @Slf4j
@@ -22,51 +23,50 @@ public class PostController {
 
 
     @GetMapping
-    Page<PostResponse> getAllPosts(
+    ResponseEntity<Flux<PostResponse>> getAllPosts(
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
-            @RequestParam(name = "page-size", required = false) Integer pageSize
-    ) {
-        return postService.getAllPosts(pageNumber, pageSize);
+            @RequestParam(name = "page-size", required = false) Integer pageSize) {
+        return ResponseEntity.ok(postService.getAllPosts(pageNumber, pageSize));
     }
 
 
     @GetMapping("/user/{userId}")
-    Page<PostResponse> getPostsByUserId(
+    ResponseEntity<Flux<PostResponse>> getPostsByUserId(
             @PathVariable String userId,
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize
     ) {
-        return postService.getPostsByUserId(userId, pageNumber, pageSize);
+        return ResponseEntity.ok(postService.getPostsByUserId(userId, pageNumber, pageSize));
     }
 
 
     @GetMapping("/search")
-    Page<PostResponse> getPostsByQuery(
+    ResponseEntity<Flux<PostResponse>> getPostsByQuery(
             @RequestParam(name = "query", required = true) String query,
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize
     ) {
-        return postService.getAllByQuery(query, pageNumber, pageSize);
+        return ResponseEntity.ok(postService.getAllByQuery(query, pageNumber, pageSize));
     }
 
 
     @GetMapping("/{postId}")
-    ResponseEntity<PostResponse> getPostById(@PathVariable String postId) {
+    Mono<ResponseEntity<PostResponse>> getPostById(@PathVariable String postId) {
         return postService.getPostById(postId)
-                .map(post -> ResponseEntity.ok().body(post))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
 
     @PostMapping
-    ResponseEntity<PostResponse> createPost(@RequestBody @Validated PostRequest post) {
-        return ResponseEntity.ok(postService.addPost(post));
+    Mono<ResponseEntity<PostResponse>> createPost(@RequestBody @Validated PostRequest post) {
+        return postService.addPost(post).map(ResponseEntity::ok);
     }
 
 
     @PatchMapping
-    ResponseEntity<PostResponse> patchPost(@RequestBody @Validated PostRequest post) {
-        return ResponseEntity.ok(postService.patchPost(post));
+    Mono<ResponseEntity<PostResponse>> patchPost(@RequestBody @Validated PostRequest post) {
+        return postService.patchPost(post).map(ResponseEntity::ok);
     }
 
 
@@ -80,7 +80,7 @@ public class PostController {
     @PostMapping("/vote-poll")
     ResponseEntity<Void> votePoll(@RequestBody VoteRequest voteRequest) {
         postService.votePoll(voteRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 

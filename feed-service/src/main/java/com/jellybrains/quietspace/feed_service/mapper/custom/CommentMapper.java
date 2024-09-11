@@ -12,6 +12,7 @@ import com.jellybrains.quietspace.feed_service.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 
 @Component
@@ -24,16 +25,15 @@ public class CommentMapper {
     private final ReactionService reactionService;
 
 
-    public Comment commentRequestToEntity(CommentRequest comment) {
+    public Comment toEntity(CommentRequest comment) {
         return Comment.builder()
                 .parentId(comment.getParentId())
                 .text(comment.getText())
                 .userId(comment.getUserId())
-                .post(getPostById(comment.getPostId()))
-                .build();
+                .post(getPostById(comment.getPostId())).build();
     }
 
-    public CommentResponse commentEntityToResponse(Comment comment) {
+    public CommentResponse toResponse(Comment comment) {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .parentId(comment.getParentId())
@@ -45,17 +45,17 @@ public class CommentMapper {
                 .createDate(comment.getCreateDate())
                 .updateDate(comment.getUpdateDate())
                 .likeCount(reactionService.getLikeCount(comment.getId()))
-                .replyCount(getReplyCount(comment.getId(), comment.getPost()))
-                .build();
+                .replyCount(getReplyCount(comment.getId(), comment.getPost())).build();
     }
 
     private Post getPostById(String postId) {
         return postRepository.findById(postId)
-                .orElseThrow(EntityNotFoundException::new);
+                .switchIfEmpty(Mono.error(EntityNotFoundException::new)).block();
     }
 
     private Integer getReplyCount(String parentId, Post post) {
-        return commentRepository.countByParentIdAndPost(parentId, post);
+        return commentRepository.countByParentIdAndPost(parentId, post)
+                .switchIfEmpty(Mono.error(EntityNotFoundException::new)).block();
     }
 
 }

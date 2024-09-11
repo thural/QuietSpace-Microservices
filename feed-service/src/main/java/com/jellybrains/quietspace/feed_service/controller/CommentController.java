@@ -4,10 +4,11 @@ import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import com.jellybrains.quietspace.feed_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @RestController
@@ -22,7 +23,7 @@ public class CommentController {
 
 
     @GetMapping("/post/{postId}")
-    Page<CommentResponse> getCommentsByPostId(
+    Flux<CommentResponse> getCommentsByPostId(
             @PathVariable String postId,
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize
@@ -32,7 +33,7 @@ public class CommentController {
 
 
     @GetMapping("/user")
-    Page<CommentResponse> getCommentsByUserId(
+    Flux<CommentResponse> getCommentsByUserId(
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize
     ) {
@@ -41,7 +42,7 @@ public class CommentController {
 
 
     @GetMapping(COMMENT_PATH_ID + "/replies")
-    Page<CommentResponse> getCommentRepliesById(
+    Flux<CommentResponse> getCommentRepliesById(
             @PathVariable String commentId,
             @RequestParam(name = "page-number", required = false) Integer pageNumber,
             @RequestParam(name = "page-size", required = false) Integer pageSize
@@ -51,31 +52,32 @@ public class CommentController {
 
 
     @GetMapping(COMMENT_PATH_ID)
-    ResponseEntity<CommentResponse> getCommentById(@PathVariable String commentId) {
+    Mono<ResponseEntity<CommentResponse>> getCommentById(@PathVariable String commentId) {
         return commentService.getCommentById(commentId)
-                .map(comment -> ResponseEntity.ok().body(comment))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(comment -> ResponseEntity.ok().body(comment));
     }
 
 
     @PostMapping
-    ResponseEntity<CommentResponse> createComment(@RequestBody @Validated CommentRequest comment) {
-        CommentResponse response = commentService.createComment(comment);
-        return ResponseEntity.ok(response);
+    Mono<ResponseEntity<CommentResponse>> createComment(@RequestBody @Validated CommentRequest comment) {
+        return commentService.createComment(comment)
+                .map(response -> ResponseEntity.ok().body(response))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
 
     @PatchMapping
-    ResponseEntity<CommentResponse> patchComment(@RequestBody CommentRequest comment) {
+    Mono<ResponseEntity<CommentResponse>> patchComment(@RequestBody CommentRequest comment) {
         // TODO: broadcast the update over socket
-        return ResponseEntity.ok(commentService.patchComment(comment));
+        return commentService.patchComment(comment)
+                .map(response -> ResponseEntity.ok().body(response));
     }
 
     @DeleteMapping(COMMENT_PATH_ID)
-    ResponseEntity<?> deleteComment(@PathVariable String commentId) {
+    Mono<ResponseEntity<Void>> deleteComment(@PathVariable String commentId) {
         // TODO: broadcast the update over socket
         commentService.deleteComment(commentId);
-        return ResponseEntity.noContent().build();
+        return Mono.just(ResponseEntity.noContent().build());
     }
 
 }

@@ -3,26 +3,25 @@ package com.jellybrains.quietspace.feed_service.service;
 import com.jellybrains.quietspace.common_service.model.request.PostRequest;
 import com.jellybrains.quietspace.common_service.model.request.VoteRequest;
 import com.jellybrains.quietspace.common_service.model.response.PostResponse;
-import org.springframework.data.domain.Page;
-
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface PostService {
 
-    Page<PostResponse> getAllPosts(Integer pageNumber, Integer pageSize);
+    Flux<PostResponse> getAllPosts(Integer pageNumber, Integer pageSize);
 
-    PostResponse addPost(PostRequest post);
+    Mono<PostResponse> addPost(PostRequest post);
 
-    Optional<PostResponse> getPostById(String id);
+    Mono<PostResponse> getPostById(String id);
 
-    void deletePost(String id);
+    Mono<Void> deletePost(String id);
 
-    PostResponse patchPost(PostRequest post);
+    Mono<PostResponse> patchPost(PostRequest post);
 
-    void votePoll(VoteRequest voteRequest);
+    Mono<Void> votePoll(VoteRequest voteRequest);
 
-    Page<PostResponse> getPostsByUserId(String userId, Integer pageNumber, Integer pageSize);
+    Flux<PostResponse> getPostsByUserId(String userId, Integer pageNumber, Integer pageSize);
 
-    Page<PostResponse> getAllByQuery(String query, Integer pageNumber, Integer pageSize);
+    Flux<PostResponse> getAllByQuery(String query, Integer pageNumber, Integer pageSize);
 
 }

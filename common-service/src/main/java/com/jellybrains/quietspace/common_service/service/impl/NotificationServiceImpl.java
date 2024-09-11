@@ -64,7 +64,6 @@ public class NotificationServiceImpl implements NotificationService {
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return notificationRepository.findAllByUserId(signedUserId, pageRequest);
-//        return Page.empty();
     }
 
     @Override
@@ -72,15 +71,13 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationType type = NotificationType.valueOf(notificationType);
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-//        return notificationRepository.findAllByUserIdAndNotificationType(signedUserId, type, pageRequest);
-        return Page.empty();
+        return notificationRepository.findAllByUserIdAndNotificationType(signedUserId, type, pageRequest);
     }
 
     @Override
     public Integer getCountOfPendingNotifications() {
         String signedUserId = userService.getAuthorizedUserId();
-//        return notificationRepository.countByUserIdAndSeen(signedUserId, false);
-        return 0;
+        return notificationRepository.countByUserIdAndSeen(signedUserId, false);
     }
 
     public void processNotification(NotificationType type, String contentId) {
