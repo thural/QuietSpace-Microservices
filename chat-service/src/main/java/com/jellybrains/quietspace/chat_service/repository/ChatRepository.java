@@ -5,6 +5,7 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.query.Param;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -18,6 +19,6 @@ public interface ChatRepository extends R2dbcRepository<Chat, String> {
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END " +
             "FROM Chat c WHERE c.users = :userList")
-    boolean existsByUsersContainingAll(@Param("userList") List<String> userList);
+    Mono<Boolean> existsByUsersContainingAll(@Param("userList") List<String> userList);
 
 }

@@ -3,31 +3,30 @@ package com.jellybrains.quietspace.reaction_service.repository;
 import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.reaction_service.model.Reaction;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
+public interface ReactionRepository extends ReactiveMongoRepository<Reaction, String> {
 
-public interface ReactionRepository extends MongoRepository<Reaction, String> {
+    Flux<Reaction> findAllByContentId(String contentId, Pageable pageable);
 
-    Page<Reaction> findAllByContentId(String contentId, PageRequest pageRequest);
+    Flux<Reaction> findAllByUserId(String userId, Pageable pageable);
 
-    Page<Reaction> findAllByUserId(String userId, PageRequest pageRequest);
+    Mono<Boolean> existsByContentIdAndUserId(String contentId, String userId);
 
-    boolean existsByContentIdAndUserId(String contentId, String userId);
+    Mono<Reaction> findByContentIdAndUserId(String commentId, String id);
 
-    Optional<Reaction> findByContentIdAndUserId(String commentId, String id);
+    Flux<Reaction> findAllByContentTypeAndUserId(ContentType contentType, String userId, Pageable pageable);
 
-    Page<Reaction> findAllByContentTypeAndUserId(ContentType contentType, String userId, PageRequest pageRequest);
+    Flux<Reaction> findAllByContentIdAndContentType(String contentId, ContentType contentType, Pageable pageable);
 
-    Page<Reaction> findAllByContentIdAndContentType(String contentId, ContentType contentType, PageRequest pageRequest);
+    Flux<Reaction> findAllByUserIdAndContentType(String userId, ContentType contentType, Pageable pageable);
 
-    Page<Reaction> findAllByUserIdAndContentType(String userId, ContentType contentType, PageRequest pageRequest);
+    Mono<Integer> countByContentIdAndReactionType(String contentId, ReactionType reactionType);
 
-    Integer countByContentIdAndReactionType(String contentId, ReactionType reactionType);
+    Flux<Reaction> findAllByContentIdAndReactionType(String contentId, ReactionType reactionType, Pageable pageable);
 
-    Page<Reaction> findAllByContentIdAndReactionType(String contentId, ReactionType reactionType, PageRequest pageRequest);
-
-    void deleteReactionsByUserId(String userId);
+    Mono<Void> deleteReactionsByUserId(String userId);
 }

@@ -18,12 +18,11 @@ public class NotificationConsumer {
 
     @KafkaListener(topics = "#{'${kafka.topics.notification}'}")
     public void process(NotificationEvent event) {
-        try {
-            log.info("processing notification event for userId: {}", event.getUserId());
-            service.processNotification(event.getNotificationType(), event.getContentId());
-        } catch (Exception e) {
-            log.info("failed to process notification event, cause: {}", e.getMessage());
-        }
+        service.processNotification(event.getNotificationType(), event.getContentId())
+                .subscribe(
+                        signal -> log.info("processed notification event for userId: {}", event.getUserId()),
+                        error -> log.info("failed to process notification event, cause: {}", error.getMessage())
+                );
     }
 
 }

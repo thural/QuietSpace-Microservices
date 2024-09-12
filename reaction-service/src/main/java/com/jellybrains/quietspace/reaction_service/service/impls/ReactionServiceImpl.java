@@ -10,11 +10,10 @@ import com.jellybrains.quietspace.reaction_service.model.Reaction;
 import com.jellybrains.quietspace.reaction_service.repository.ReactionRepository;
 import com.jellybrains.quietspace.reaction_service.service.ReactionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static com.jellybrains.quietspace.common_service.utils.PagingProvider.DEFAULT_SORT_OPTION;
 import static com.jellybrains.quietspace.common_service.utils.PagingProvider.buildPageRequest;
@@ -29,26 +28,25 @@ public class ReactionServiceImpl implements ReactionService {
     private final UserService userService;
 
     @Override
-    public void handleReaction(Reaction reaction) {
+    public Mono<Void> handleReaction(Reaction request) {
         String userId = userService.getAuthorizedUserId();
 
-        Reaction foundReaction = reactionRepository
-                .findByContentIdAndUserId(reaction.getContentId(), userId)
-                .map(value -> {
-                    if (reaction.getReactionType().equals(value.getReactionType())) {
-                        reactionRepository.deleteById(value.getId());
-                        return null;
+        return reactionRepository
+                .findByContentIdAndUserId(request.getContentId(), userId)
+                .switchIfEmpty(reactionRepository.save(request))
+                .doOnNext(reaction -> {
+                    if (request.getReactionType().equals(reaction.getReactionType())) {
+                        reactionRepository.deleteById(reaction.getId());
                     }
-                    value.setReactionType(reaction.getReactionType());
-                    return value;
+                    reaction.setReactionType(request.getReactionType());
                 })
-                .orElseGet(() -> reactionRepository.save(reaction));
-
-        NotificationType type = getNotificationType(foundReaction.getContentType());
-        producer.sendNotification(NotificationEvent.builder()
-                .contentType(foundReaction.getContentType())
-                .contentId(foundReaction.getContentId())
-                .notificationType(type).build());
+                .doOnNext(reaction -> {
+                    NotificationType type = getNotificationType(reaction.getContentType());
+                    producer.sendNotification(NotificationEvent.builder()
+                            .contentType(reaction.getContentType())
+                            .contentId(reaction.getContentId())
+                            .notificationType(type).build());
+                }).then();
     }
 
     public NotificationType getNotificationType(ContentType type) {
@@ -60,30 +58,30 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
-    public Optional<Reaction> getUserReactionByContentId(String contentId) {
+    public Mono<Reaction> getUserReactionByContentId(String contentId) {
         String userId = userService.getAuthorizedUserId();
         return reactionRepository.findByContentIdAndUserId(contentId, userId);
     }
 
     @Override
-    public Page<Reaction> getReactionsByContentIdAndType(String contentId, ReactionType reactionType, Integer pageNumber, Integer pageSize) {
+    public Flux<Reaction> getReactionsByContentIdAndType(String contentId, ReactionType reactionType, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return reactionRepository.findAllByContentIdAndReactionType(contentId, ReactionType.LIKE, pageRequest);
     }
 
     @Override
-    public Integer countByContentIdAndType(String contentId, ReactionType reactionType) {
+    public Mono<Integer> countByContentIdAndType(String contentId, ReactionType reactionType) {
         return reactionRepository.countByContentIdAndReactionType(contentId, ReactionType.LIKE);
     }
 
     @Override
-    public Page<Reaction> getReactionsByContentIdAndContentType(String contentId, ContentType type, Integer pageNumber, Integer pageSize) {
+    public Flux<Reaction> getAllByContentIdAndContentType(String contentId, ContentType type, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return reactionRepository.findAllByContentIdAndContentType(contentId, type, pageRequest);
     }
 
     @Override
-    public Page<Reaction> getReactionsByUserIdAndContentType(String userId, ContentType contentType, Integer pageNumber, Integer pageSize) {
+    public Flux<Reaction> getReactionsByUserIdAndContentType(String userId, ContentType contentType, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return reactionRepository.findAllByUserIdAndContentType(userId, contentType, pageRequest);
     }

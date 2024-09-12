@@ -12,4 +12,5 @@ public interface MessageRepository extends R2dbcRepository<Message, String> {
     Flux<Message> findAllByChatId(String chatId, Pageable pageable);
 
     Mono<Message> findFirstByChatOrderByCreateDateDesc(Chat chat);
+    
 }

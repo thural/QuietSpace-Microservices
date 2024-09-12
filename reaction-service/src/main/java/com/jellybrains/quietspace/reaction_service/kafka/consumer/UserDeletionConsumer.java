@@ -18,12 +18,11 @@ public class UserDeletionConsumer {
 
     @KafkaListener(topics = "#{'${kafka.topics.user.deletion}'}")
     public void deleteReactionData(UserDeletionEvent event) {
-        try {
-            repository.deleteReactionsByUserId(event.getUserId());
-            log.info("reactions deleted for userId: {}", event.getUserId());
-        } catch (Exception e) {
-            log.info("reactions deletion failed for userId: {} cause: {}", event.getUserId(), e.getMessage());
-        }
+        repository.deleteReactionsByUserId(event.getUserId())
+                .subscribe(
+                        signal -> log.info("reactions deleted for userId: {}", event.getUserId()),
+                        error -> log.info("reactions deletion failed for userId: {} cause: {}",
+                                event.getUserId(), error.getMessage())
+                );
     }
-
 }

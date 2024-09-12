@@ -99,9 +99,8 @@ public class ChatConsumer {
                         .messageId(message.getId())
                         .type(EventType.SEEN_MESSAGE).build()
                 )
-                .subscribe(chatEvent -> chatProducer.seenChatMessage(
-                        SeenMessageEvent.builder()
-                                .eventBody(chatEvent).build())
+                .subscribe(chatEvent -> chatProducer.seenChatMessage(SeenMessageEvent.builder()
+                        .eventBody(chatEvent).build())
                 );
     }
 

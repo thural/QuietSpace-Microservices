@@ -12,12 +12,12 @@ import com.jellybrains.quietspace.common_service.webclient.service.PostService;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static com.jellybrains.quietspace.common_service.controller.NotificationController.NOTIFICATION_EVENT_PATH;
 import static com.jellybrains.quietspace.common_service.controller.NotificationController.NOTIFICATION_SUBJECT_PATH;
@@ -36,38 +36,37 @@ public class NotificationServiceImpl implements NotificationService {
     private final CommentService commentService;
 
     @Override
-    public void handleSeen(String notificationId) {
+    public Mono<Void> handleSeen(String notificationId) {
         log.info("setting notification with id {} as seen ...", notificationId);
         String userId = userService.getAuthorizedUserId();
-        var notification = notificationRepository.findById(notificationId)
-                .orElseThrow(CustomNotFoundException::new);
 
-        if (!notification.getUserId().equals(userId))
-            throw new ResourceAccessException("user is denied access for requested resource");
-
-        if (!notification.getSeen()) {
-            notification.setSeen(true);
-            notificationRepository.save(notification);
-        }
-
-        var event = NotificationEvent.builder()
-                .actorId(userId)
-                .notificationId(notificationId)
-                .type(EventType.SEEN_NOTIFICATION)
-                .build();
-
-        template.convertAndSendToUser(userId, NOTIFICATION_EVENT_PATH, event);
+        return notificationRepository.findById(notificationId)
+                .switchIfEmpty(Mono.error(CustomNotFoundException::new))
+                .doOnNext(notification -> {
+                    if (!notification.getSeen()) notification.setSeen(true);
+                })
+                .map(notification -> NotificationEvent.builder()
+                        .actorId(userId)
+                        .notificationId(notificationId)
+                        .type(EventType.SEEN_NOTIFICATION).build()
+                )
+                .doOnNext(event -> template.convertAndSendToUser(userId, NOTIFICATION_EVENT_PATH, event))
+                .onErrorContinue((error, message) -> {
+                    if (error instanceof MessagingException)
+                        log.info("failed to send seen event due to {}", message);
+                })
+                .then().doFinally(event -> log.info("set notification as seen and sent event:{}", event));
     }
 
     @Override
-    public Page<Notification> getAllNotifications(Integer pageNumber, Integer pageSize) {
+    public Flux<Notification> getAllNotifications(Integer pageNumber, Integer pageSize) {
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return notificationRepository.findAllByUserId(signedUserId, pageRequest);
     }
 
     @Override
-    public Page<Notification> getNotificationsByType(Integer pageNumber, Integer pageSize, String notificationType) {
+    public Flux<Notification> getNotificationsByType(Integer pageNumber, Integer pageSize, String notificationType) {
         NotificationType type = NotificationType.valueOf(notificationType);
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
@@ -75,27 +74,26 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Integer getCountOfPendingNotifications() {
+    public Mono<Integer> getCountOfPendingNotifications() {
         String signedUserId = userService.getAuthorizedUserId();
         return notificationRepository.countByUserIdAndSeen(signedUserId, false);
     }
 
-    public void processNotification(NotificationType type, String contentId) {
+    public Mono<Void> processNotification(NotificationType type, String contentId) {
         String signedUserId = userService.getAuthorizedUserId();
         String recipientId = getRecipientId(type, contentId);
-        var notification = notificationRepository.save(Notification
-                .builder()
+        return notificationRepository.save(Notification.builder()
                 .notificationType(type)
                 .contentId(contentId)
                 .actorId(signedUserId)
-                .userId(recipientId)
-                .build());
-        try {
+                .userId(recipientId).build()
+        ).doOnNext(notification -> {
             log.info("notifying {} user {}", notification.getNotificationType(), recipientId);
             template.convertAndSendToUser(recipientId, NOTIFICATION_SUBJECT_PATH, notification);
-        } catch (MessagingException exception) {
-            log.info("failed to notify {} to user {}", type, notification.getActorId());
-        }
+        }).onErrorContinue((error, message) -> {
+            if (error instanceof MessagingException)
+                log.info("failed to notify user due to {}", message);
+        }).then();
     }
 
     private String getRecipientId(NotificationType type, String contentId) {

@@ -2,18 +2,19 @@ package com.jellybrains.quietspace.common_service.service;
 
 import com.jellybrains.quietspace.common_service.document.Notification;
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
-import org.springframework.data.domain.Page;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface NotificationService {
 
-    void handleSeen(String notificationId);
+    Mono<Void> handleSeen(String notificationId);
 
-    void processNotification(NotificationType type, String contentId);
+    Mono<Void> processNotification(NotificationType type, String contentId);
 
-    Page<Notification> getAllNotifications(Integer pageNumber, Integer pageSize);
+    Flux<Notification> getAllNotifications(Integer pageNumber, Integer pageSize);
 
-    Page<Notification> getNotificationsByType(Integer pageNumber, Integer pageSize, String notificationType);
+    Flux<Notification> getNotificationsByType(Integer pageNumber, Integer pageSize, String notificationType);
 
-    Integer getCountOfPendingNotifications();
+    Mono<Integer> getCountOfPendingNotifications();
 
 }
