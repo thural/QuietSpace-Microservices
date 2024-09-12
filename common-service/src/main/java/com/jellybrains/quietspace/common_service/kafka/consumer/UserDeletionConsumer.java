@@ -18,12 +18,9 @@ public class UserDeletionConsumer {
 
     @KafkaListener(topics = "#{'${kafka.topics.user.deletion}'}")
     public void deleteNotificationData(UserDeletionEvent event) {
-        try {
-            repository.deleteNotificationsByUserId(event.getUserId());
-            log.info("notifications deleted for userId: {}", event.getUserId());
-        } catch (Exception e) {
-            log.info("notifications deletion failed for userId: {} cause: {}", event.getUserId(), e.getMessage());
-        }
+        repository.deleteNotificationsByUserId(event.getUserId()).subscribe(
+                signal -> log.info("notifications deleted for userId: {}", event.getUserId()),
+                error -> log.info("notifications deletion failed cause: {}", error.getMessage())
+        );
     }
-
 }

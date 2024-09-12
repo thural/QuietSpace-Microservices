@@ -79,9 +79,10 @@ public class CommentServiceImpl implements CommentService {
                 .doOnNext(comment -> validateOwnership(comment.getUserId()))
                 .doOnNext(comment -> {
                     if (Objects.nonNull(comment.getParentId()))
-                        commentRepository.deleteAllByParentId(comment.getParentId());
+                        commentRepository.deleteAllByParentId(comment.getParentId())
+                                .subscribe();
                 })
-                .doOnSuccess(c -> commentRepository.deleteById(commentId)).then();
+                .doOnNext(c -> commentRepository.deleteById(commentId)).then();
     }
 
     @Override

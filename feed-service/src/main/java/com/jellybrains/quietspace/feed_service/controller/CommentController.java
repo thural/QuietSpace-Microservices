@@ -76,8 +76,8 @@ public class CommentController {
     @DeleteMapping(COMMENT_PATH_ID)
     Mono<ResponseEntity<Void>> deleteComment(@PathVariable String commentId) {
         // TODO: broadcast the update over socket
-        commentService.deleteComment(commentId);
-        return Mono.just(ResponseEntity.noContent().build());
+        return commentService.deleteComment(commentId)
+                .map(ResponseEntity::ok);
     }
 
 }

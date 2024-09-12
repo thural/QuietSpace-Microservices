@@ -71,16 +71,14 @@ public class PostController {
 
 
     @DeleteMapping("/{postId}")
-    ResponseEntity<Void> deletePost(@PathVariable String postId) {
-        postService.deletePost(postId);
-        return ResponseEntity.noContent().build();
+    Mono<ResponseEntity<Void>> deletePost(@PathVariable String postId) {
+        return postService.deletePost(postId).map(ResponseEntity::ok);
     }
 
 
     @PostMapping("/vote-poll")
-    ResponseEntity<Void> votePoll(@RequestBody VoteRequest voteRequest) {
-        postService.votePoll(voteRequest);
-        return ResponseEntity.noContent().build();
+    Mono<ResponseEntity<Void>> votePoll(@RequestBody VoteRequest voteRequest) {
+        return postService.votePoll(voteRequest).map(ResponseEntity::ok);
     }
 
 

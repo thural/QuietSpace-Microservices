@@ -5,11 +5,12 @@ import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @Slf4j
@@ -29,18 +30,17 @@ public class NotificationController {
 
 
     @PostMapping("/seen/{contentId}")
-    ResponseEntity<?> handleSeen(@PathVariable String contentId) {
-        notificationService.handleSeen(contentId);
-        return ResponseEntity.accepted().build();
+    Mono<ResponseEntity<Void>> handleSeen(@PathVariable String contentId) {
+        return notificationService.handleSeen(contentId).map(ResponseEntity::ok);
     }
 
     @MessageMapping(NOTIFICATION_SEEN_PATH)
     void markNotificationSeen(@DestinationVariable String notificationId) {
-        notificationService.handleSeen(notificationId);
+        notificationService.handleSeen(notificationId).subscribe();
     }
 
     @GetMapping
-    Page<Notification> getAllNotifications(
+    Flux<Notification> getAllNotifications(
             @RequestParam(required = false) Integer pageNumber,
             @RequestParam(required = false) Integer pageSize
     ) {
@@ -48,7 +48,7 @@ public class NotificationController {
     }
 
     @GetMapping("/type/{notificationType}")
-    Page<Notification> getNotificationsByType(
+    Flux<Notification> getNotificationsByType(
             @RequestParam Integer pageNumber,
             @RequestParam Integer pageSize,
             @PathVariable String notificationType
@@ -57,14 +57,13 @@ public class NotificationController {
     }
 
     @GetMapping("/count-pending")
-    ResponseEntity<Integer> getCountOfPendingNotifications() {
-        return ResponseEntity.ok(notificationService.getCountOfPendingNotifications());
+    Mono<ResponseEntity<Integer>> getCountOfPendingNotifications() {
+        return notificationService.getCountOfPendingNotifications().map(ResponseEntity::ok);
     }
 
     @PostMapping("/process")
-    ResponseEntity<?> processNotification(@RequestParam NotificationType type, @RequestParam String contentId) {
-        notificationService.processNotification(type, contentId);
-        return ResponseEntity.ok().build();
+    Mono<ResponseEntity<Void>> processNotification(@RequestParam NotificationType type, @RequestParam String contentId) {
+        return notificationService.processNotification(type, contentId).map(ResponseEntity::ok);
     }
 
 }

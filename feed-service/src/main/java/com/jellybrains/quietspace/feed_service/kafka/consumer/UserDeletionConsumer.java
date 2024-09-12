@@ -21,9 +21,14 @@ public class UserDeletionConsumer {
     @KafkaListener(topics = "#{'${kafka.topics.user.deletion}'}")
     public void deleteFeedData(UserDeletionEvent event) {
         try {
-            postRepository.deletePostsByUserId(event.getUserId());
-            commentRepository.deleteCommentsByUserId(event.getUserId());
-            log.info("feed data deleted for userId: {}", event.getUserId());
+            postRepository.deletePostsByUserId(event.getUserId()).subscribe(
+                    signal -> log.info("post data deleted for userId: {}", event.getUserId()),
+                    error -> log.info("failed to delete post data: {}", error.getMessage())
+            );
+            commentRepository.deleteCommentsByUserId(event.getUserId()).subscribe(
+                    signal -> log.info("comment data deleted for userId: {}", event.getUserId()),
+                    error -> log.info("failed to delete comment data: {}", error.getMessage())
+            );
         } catch (Exception e) {
             log.info("feed data deletion failed for userId: {} cause: {}", event.getUserId(), e.getMessage());
         }
