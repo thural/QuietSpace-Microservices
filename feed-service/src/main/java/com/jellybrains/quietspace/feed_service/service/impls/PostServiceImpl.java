@@ -36,7 +36,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Flux<PostResponse> getAllPosts(Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
-        return postRepository.findAll(pageRequest).map(postMapper::postEntityToResponse);
+        return postRepository.findAllPaged(pageRequest).map(postMapper::postEntityToResponse);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Flux<PostResponse> getAllByQuery(String query, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
-        return postRepository.findAllByQuery(query, pageRequest).map(postMapper::postEntityToResponse);
+        return postRepository.searchByTitleOrText(query, pageRequest).map(postMapper::postEntityToResponse);
     }
 
     private void validateResourceOwnership(Mono<Post> existingPost) {

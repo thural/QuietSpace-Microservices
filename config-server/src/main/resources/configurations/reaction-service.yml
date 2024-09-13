@@ -1,8 +1,17 @@
 spring:
+  component-scan:
+    base-packages:
+      - com.jellybrains.quietspace.common_service.webclient
+      - com.jellybrains.quietspace.common_service.security
+      - com.jellybrains.quietspace.common_service.exception
+      - com.jellybrains.quietspace.common_service.kafka.config
+      - com.jellybrains.quietspace.common_service.config
+      - com.jellybrains.quietspace.reaction_service
+
   data:
     mongodb:
       uri: mongodb://${DB_USERNAME}:${DB_PASSWORD}@localhost:${REACTION_DB_PORT}/${DB_NAME}?authSource=admin
-
+      database: ${DB_NAME}
 mongodb:
   transactionEnabled: true
 

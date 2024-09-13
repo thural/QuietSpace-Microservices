@@ -7,10 +7,10 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {
         "com.jellybrains.quietspace.common_service.kafka.config",
+        "com.jellybrains.quietspace.common_service.kafka.producer",
         "com.jellybrains.quietspace.common_service.webclient",
         "com.jellybrains.quietspace.common_service.security",
         "com.jellybrains.quietspace.common_service.exception",
-        "com.jellybrains.quietspace.common_service.config",
         "com.jellybrains.quietspace.reaction_service"
 })
 public class ReactionServiceApplication {

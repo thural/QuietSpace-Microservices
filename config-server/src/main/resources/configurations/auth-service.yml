@@ -1,4 +1,10 @@
 spring:
+  components:
+    packages-to-scan:
+      - com.jellybrains.quietspace.common_service.kafka.config
+      - com.jellybrains.quietspace.auth_service
+    packages-to-exclude:
+      - com.jellybrains.quietspace.common_service.security
   mail:
     host: ${MAILDEV_HOST}
     port: ${MAILDEV_PORT}
@@ -28,5 +34,15 @@ spring:
     database: mysql
     open-in-view: true
     show-sql: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.messaging: INFO
+    org.hibernate.orm.jdbc.bind: ERROR
+    org.springframework.security: TRACE
+    org.springframework.web: INFO
+    org.hibernate.sql: ERROR
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: INFO
 
 server.port: ${AUTH_SERVICE_PORT}

@@ -2,6 +2,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://${DB_USERNAME}:${DB_PASSWORD}@localhost:${NOTIFICATION_DB_PORT}/${DB_NAME}?authSource=admin
+      database: ${DB_NAME}
 
 logging:
   level:

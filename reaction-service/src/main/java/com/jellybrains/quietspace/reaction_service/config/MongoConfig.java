@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.config;
+package com.jellybrains.quietspace.reaction_service.config;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;

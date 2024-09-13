@@ -54,19 +54,22 @@ services:
 
   feed-service-db:
     container_name: feed-service-db
-    image: mysql:8.0
-    restart: on-failure
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+    image: postgres
     volumes:
-      - feed-data:/var/lib/mysql
+      - feed-data:/data/postgres
+    environment:
+      POSTGRES_DB: ${FEED_DB_HOST}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /data/postgres
     networks:
       - microservices-net
     ports:
-      - ${FEED_DB_PORT}:3306
+      - ${FEED_DB_PORT}:5434
+    expose:
+      - 5434
+    command: -p ${FEED_DB_PORT}
+    restart: on-failure
 
   notification-service-db:
     container_name: notification-service-db

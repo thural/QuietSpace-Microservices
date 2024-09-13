@@ -1,4 +1,11 @@
 spring:
+  component-scan:
+    base-packages:
+      - com.jellybrains.quietspace.common_service.webclient
+      - com.jellybrains.quietspace.common_service.security
+      - com.jellybrains.quietspace.common_service.exception
+      - com.jellybrains.quietspace.common_service.kafka.config
+      - com.jellybrains.quietspace.chat_service
 
   r2dbc:
     url: ${CHAT_DB_URI}

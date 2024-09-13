@@ -1,16 +1,20 @@
 spring:
+  component-scan:
+    base-packages:
+      - com.jellybrains.quietspace.common_service.webclient
+      - com.jellybrains.quietspace.common_service.security
+      - com.jellybrains.quietspace.common_service.exception
+      - com.jellybrains.quietspace.common_service.kafka.config
+      - com.jellybrains.quietspace.feed_service
 
-  datasource:
+  r2dbc:
+    url: ${FEED_DB_URI}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    url: ${FEED_DB_URI}
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database: mysql
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
     hibernate:
       ddl-auto: update
