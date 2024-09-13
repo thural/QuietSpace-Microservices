@@ -10,8 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
         "com.jellybrains.quietspace.common_service.kafka.producer",
         "com.jellybrains.quietspace.common_service.webclient",
         "com.jellybrains.quietspace.common_service.security",
-        "com.jellybrains.quietspace.common_service.exception",
-        "com.jellybrains.quietspace.reaction_service"
+        "com.jellybrains.quietspace.common_service.exception"
 })
 public class ReactionServiceApplication {
 

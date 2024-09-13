@@ -15,6 +15,11 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+
+    configureEach {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-r2dbc'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-websocket'
+    }
 }
 
 repositories {

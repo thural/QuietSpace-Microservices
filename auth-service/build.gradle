@@ -17,11 +17,12 @@ configurations {
     }
 
     configureEach {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-r2dbc'
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-webflux'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-mongodb-reactive'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-mongodb'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-r2dbc'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-websocket'
-        exclude group: 'org.springframework', module: 'retry:spring-retry:2.0.6'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-webflux'
+        exclude group: 'org.springframework', module: 'retry:spring-retry'
     }
 }
 

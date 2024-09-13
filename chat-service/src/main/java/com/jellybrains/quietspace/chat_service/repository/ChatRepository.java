@@ -2,14 +2,14 @@ package com.jellybrains.quietspace.chat_service.repository;
 
 import com.jellybrains.quietspace.chat_service.entity.Chat;
 import org.springframework.data.r2dbc.repository.Query;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface ChatRepository extends R2dbcRepository<Chat, String> {
+public interface ChatRepository extends ReactiveCrudRepository<Chat, String> {
 
     @Query("SELECT c FROM Chat c WHERE :userId MEMBER OF c.users")
     Flux<Chat> findChatsContainingUserId(@Param("userId") String userId);

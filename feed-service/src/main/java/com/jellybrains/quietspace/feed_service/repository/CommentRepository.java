@@ -3,12 +3,12 @@ package com.jellybrains.quietspace.feed_service.repository;
 import com.jellybrains.quietspace.feed_service.entity.Comment;
 import com.jellybrains.quietspace.feed_service.entity.Post;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
-public interface CommentRepository extends R2dbcRepository<Comment, String> {
+public interface CommentRepository extends ReactiveCrudRepository<Comment, String> {
 
     Flux<Comment> findAllByPostId(String postId, Pageable pageable);
 
