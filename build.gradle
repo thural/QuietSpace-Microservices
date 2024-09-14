@@ -1,24 +1,44 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
 }
 
-group = 'com.jellybrains.quietspace'
-version = '0.0.1-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
-
 allprojects {
-    repositories {
-        mavenCentral()
+    group = 'com.jellybrains.quietspace'
+    version = '0.0.1-SNAPSHOT'
+
+    ext {
+        set('springCloudVersion', "2023.0.1")
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
     dependencies {
         implementation 'jakarta.validation:jakarta.validation-api:3.1.0'
         implementation 'me.paulschwarz:spring-dotenv:4.0.0'
@@ -36,29 +56,7 @@ subprojects {
     }
 }
 
-
-test {
-    useJUnitPlatform()
-}
-
-bootJar {
-    enabled = false
-}
-
-bootBuildImage {
-    enabled = false
-}
-
 subprojects {
-
-    bootJar {
-        enabled = false
-    }
-
-    jar {
-        enabled = true
-    }
-
     tasks.register('pushImage') {
         doLast {
             if (bootBuildImage.getEnabled()) {
@@ -75,4 +73,12 @@ subprojects {
     bootBuildImage {
         imageName = "${System.getenv('DOCKER_USERNAME')}/${project.name}"
     }
+}
+
+bootJar {
+    enabled = false
+}
+
+bootBuildImage {
+    enabled = false
 }

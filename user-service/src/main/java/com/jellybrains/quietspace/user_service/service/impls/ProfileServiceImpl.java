@@ -149,8 +149,7 @@ public class ProfileServiceImpl implements ProfileService {
                     } else {
                         profile.getFollowingUserIds().add(followedUserId);
                         found.getFollowerUserIds().add(profileUserId);
-                        notificationProducer.sendNotification(NotificationEvent
-                                .builder()
+                        notificationProducer.sendNotification(NotificationEvent.builder()
                                 .contentId(profile.getUserId())
                                 .notificationType(NotificationType.FOLLOW_REQUEST)
                                 .build()
