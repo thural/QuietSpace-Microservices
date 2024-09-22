@@ -17,7 +17,7 @@ import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentat
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.kafka.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.mapper.custom.ProfileMapper;
-import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
+import com.jellybrains.quietspace.user_service.repository.impl.ProfileRepositoryImpl;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,17 +44,17 @@ import static com.jellybrains.quietspace.common_service.utils.PagingProvider.bui
 public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileMapper profileMapper;
-    private final ProfileRepository profileRepository;
     private final ProfileProducer profileProducer;
     private final UserService userService;
     private final NotificationProducer notificationProducer;
+    private final ProfileRepositoryImpl profileDao;
 
     @Override
     public Page<UserResponse> listUsersByQuery(String query, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        if (StringUtils.hasText(query)) return profileRepository.findAllByQuery(query, pageRequest)
+        if (StringUtils.hasText(query)) return profileDao.findAllByQuery(query, pageRequest)
                 .map(profileMapper::toUserResponse);
-        return profileRepository.findAll(pageRequest)
+        return profileDao.findAll(pageRequest)
                 .map(profileMapper::toUserResponse);
     }
 
@@ -67,33 +67,33 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile getUserProfile() {
         String userId = userService.getAuthorizedUserId();
-        return profileRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
+        return profileDao.findByUserId(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public List<UserResponse> getUsersFromIdList(List<String> userIds) {
         return userIds.stream()
-                .map(userId -> profileRepository.findByUserId(userId)
+                .map(userId -> profileDao.findByUserId(userId)
                         .orElseThrow(UserNotFoundException::new))
                 .map(profileMapper::toUserResponse).toList();
     }
 
     @Override
     public Optional<UserResponse> getUserResponseById(String id) {
-        return profileRepository.findByUserId(id)
+        return profileDao.findByUserId(id)
                 .map(profileMapper::toUserResponse);
     }
 
     @Override
     public Optional<Profile> getProfileById(String userId) {
-        return profileRepository.findById(userId);
+        return profileDao.findById(userId);
     }
 
     @Override
     public void deleteProfileById(String userId) {
         Profile userProfile = getUserProfile();
         validateResourceAccess(userId, userProfile);
-        profileRepository.deleteById(userId);
+        profileDao.deleteById(userId);
     }
 
     public void requestProfileUpdate(UserRepresentation request) {
@@ -121,7 +121,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Page<UserResponse> listFollowings(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        Page<Profile> profilePage = profileRepository.findAllByUserIdIn(profile.getFollowingUserIds(), pageRequest);
+        Page<Profile> profilePage = profileDao.findAllByUserIdIn(profile.getFollowingUserIds(), pageRequest);
         return profilePage.map(profileMapper::toUserResponse);
     }
 
@@ -129,7 +129,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Page<UserResponse> listFollowers(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
-        Page<Profile> profilePage = profileRepository.findAllByUserIdIn(profile.getFollowerUserIds(), pageRequest);
+        Page<Profile> profilePage = profileDao.findAllByUserIdIn(profile.getFollowerUserIds(), pageRequest);
         return profilePage.map(profileMapper::toUserResponse);
     }
 
@@ -141,7 +141,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (profile.getUserId().equals(followedUserId))
             throw new CustomErrorException("users can't unfollow themselves");
 
-        profileRepository.findByUserId(followedUserId)
+        profileDao.findByUserId(followedUserId)
                 .ifPresent(found -> {
                     if (profile.getFollowingUserIds().contains(followedUserId)) {
                         profile.getFollowingUserIds().remove(followedUserId);
@@ -165,7 +165,7 @@ public class ProfileServiceImpl implements ProfileService {
         String profileUserId = profile.getUserId();
         if (profile.getUserId().equals(followerUserId))
             throw new CustomErrorException("users can't unfollow themselves");
-        Profile followerProfile = profileRepository.findByUserId(followerUserId)
+        Profile followerProfile = profileDao.findByUserId(followerUserId)
                 .orElseThrow(UserNotFoundException::new);
         if (!profile.getFollowerUserIds().contains(followerUserId))
             throw new CustomErrorException("follower profile is not found in followers");
@@ -180,7 +180,7 @@ public class ProfileServiceImpl implements ProfileService {
         String profileUserId = profile.getUserId();
         if (profile.getUserId().equals(followingUserId))
             throw new CustomErrorException("users can't unfollow themselves");
-        Profile followingProfile = profileRepository.findByUserId(followingUserId)
+        Profile followingProfile = profileDao.findByUserId(followingUserId)
                 .orElseThrow(UserNotFoundException::new);
         if (!profile.getFollowingUserIds().contains(followingUserId))
             throw new CustomErrorException("following profile is not found in followings");
@@ -193,7 +193,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile userProfile = getUserProfile();
         return userProfile.getFollowingUserIds().stream()
                 .filter(userId -> {
-                    Profile followingProfile = profileRepository.findByUserId(userId)
+                    Profile followingProfile = profileDao.findByUserId(userId)
                             .orElseThrow(UserNotFoundException::new);
                     return followingProfile.getStatusType().equals(StatusType.ONLINE);
                 }).toList();
@@ -201,29 +201,29 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Boolean validateUserInRequest(String userId) {
-        return profileRepository.findByUserId(userId).isPresent();
+        return profileDao.findByUserId(userId).isPresent();
     }
 
     @Override
     public Boolean validateUsersByIdList(List<String> userIds) {
         return userIds.stream()
-                .allMatch(userId -> profileRepository.findByUserId(userId).isPresent());
+                .allMatch(userId -> profileDao.findByUserId(userId).isPresent());
     }
 
     @Override
     public UserResponse createProfile(CreateProfileRequest userRequest) {
         Profile profile = new Profile();
         BeanUtils.copyProperties(userRequest, profile);
-        Profile createdProfile = profileRepository.save(profile);
+        Profile createdProfile = profileDao.save(profile);
         return profileMapper.toUserResponse(createdProfile);
     }
 
     @Override
     public void setOnlineStatus(String userEmail, StatusType type) {
-        profileRepository.findByEmail(userEmail)
+        profileDao.findByEmail(userEmail)
                 .ifPresent(storedUser -> {
                     storedUser.setStatusType(StatusType.OFFLINE);
-                    profileRepository.save(storedUser);
+                    profileDao.save(storedUser);
                 });
     }
 
