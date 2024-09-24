@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - ${RABBITMQ_PORT}:5672
+      - ${RABBITMQ_UI_PORT}:15672
+    volumes:
+      - rabbit:/var/lib/rabbitmq/
+    #      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    networks:
+      - microservices-net
+
+volumes:
+  rabbit:
+    driver: local
+
+networks:
+  microservices-net:
+    name: microservices-net
+    driver: bridge
+    external: true

@@ -68,6 +68,31 @@ kafka:
         join: chat-event-join-topic
         error: chat-event-error-topic
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+rabbitmq:
+  queue:
+    profile:
+      creation: profile-creation-queue
+      creation-failed: profile-creation-failed-queue
+      deletion: profile-deletion-queue
+      deletion-failed: profile-deletion-failed-queue
+      update: profile-update-queue
+      update-failed: profile-update-failed-queue
+    user:
+      creation: user-creation-queue
+      creation-failed: user-creation-failed-queue
+      deletion: user-deletion-queue
+      deletion-failed: user-deletion-failed-queue
+      update: user-update-event
+      update-failed: user-update-failed-queue
+  topic:
+    profile: profile-topic
+    user: user-topic
+
 eureka:
   instance:
     hostname: localhost
