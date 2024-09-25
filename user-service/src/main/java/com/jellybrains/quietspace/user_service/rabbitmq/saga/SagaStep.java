@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.user_service.kafka.saga;
+package com.jellybrains.quietspace.user_service.rabbitmq.saga;
 
 public interface SagaStep<T, U> {
 

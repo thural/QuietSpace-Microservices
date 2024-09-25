@@ -1,4 +1,11 @@
 spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+    queue:
+      profile-deletion: profile-deletion-queue
   application:
     urls:
       gateway: ${GATEWAY_URL}
@@ -67,12 +74,6 @@ kafka:
         leave: chat-event-leave-topic
         join: chat-event-join-topic
         error: chat-event-error-topic
-
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
 rabbitmq:
   queue:
     profile:

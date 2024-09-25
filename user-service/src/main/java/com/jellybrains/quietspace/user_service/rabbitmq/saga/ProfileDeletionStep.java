@@ -1,23 +1,23 @@
-package com.jellybrains.quietspace.user_service.kafka.saga;
+package com.jellybrains.quietspace.user_service.rabbitmq.saga;
 
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileDeletionEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionFailedEvent;
+import com.jellybrains.quietspace.common_service.rabbitmq.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.entity.Profile;
-import com.jellybrains.quietspace.user_service.kafka.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@RequiredArgsConstructor
-@Component
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDeletionFailedEvent> {
 
     public static final String USER_PROFILE = "user_profile";
@@ -27,7 +27,7 @@ public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDele
 
 
     @Override
-    @KafkaListener(topics = "#{'${kafka.topics.user.deletion}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.user.deletion}'}")
     public void process(UserDeletionEvent event) {
         log.info("processing profile deletion step by userId: {}", event.getUserId());
         Profile foundProfile = profileRepository.findByUserId(event.getUserId())
@@ -42,7 +42,7 @@ public class ProfileDeletionStep implements SagaStep<UserDeletionEvent, UserDele
     }
 
     @Override
-    @KafkaListener(topics = "#{'${kafka.topics.user.deletion-failed}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.user.deletion-failed}'}")
     public void rollback(UserDeletionFailedEvent event) {
         log.info("rolling back deleted profile on userDeletionFailedEvent: {}", event);
         Profile cachedProfile = redisTemplate.opsForValue().get(USER_PROFILE);

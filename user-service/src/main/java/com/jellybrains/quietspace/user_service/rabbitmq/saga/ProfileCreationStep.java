@@ -1,18 +1,18 @@
-package com.jellybrains.quietspace.user_service.kafka.saga;
+package com.jellybrains.quietspace.user_service.rabbitmq.saga;
 
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEventFailed;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEventFailed;
+import com.jellybrains.quietspace.common_service.rabbitmq.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.entity.Profile;
-import com.jellybrains.quietspace.user_service.kafka.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,7 +35,7 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.REPEATABLE_READ
     )
-    @KafkaListener(topics = "#{'${kafka.topics.user.creation}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.user.creation}'}")
     public void process(UserCreationEvent event) {
         try {
             log.info("event body at profile creation step: {}", event.getEventBody());
@@ -56,7 +56,7 @@ public class ProfileCreationStep implements SagaStep<UserCreationEvent, UserCrea
 
     @Override
     @Transactional
-    @KafkaListener(topics = "#{'${kafka.topics.user.creation-failed}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.user.creation-failed}'}")
     public void rollback(UserCreationEventFailed event) {
         profileProducer.profileCreationFailed(ProfileCreationEventFailed
                 .builder()

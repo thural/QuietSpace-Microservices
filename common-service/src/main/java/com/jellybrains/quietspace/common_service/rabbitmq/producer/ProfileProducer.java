@@ -15,22 +15,22 @@ public class ProfileProducer {
     @Value("${rabbitmq.topic.profile}")
     String profileTopicExchange;
 
-    @Value("$[rabbitmq.queue.profile.creation}")
+    @Value("${rabbitmq.queue.profile.creation}")
     String profileCreation;
 
-    @Value("$[rabbitmq.queue.profile.creation-failed}")
+    @Value("${rabbitmq.queue.profile.creation-failed}")
     String profileCreationFailed;
 
-    @Value("$[rabbitmq.queue.profile.deletion}")
+    @Value("${rabbitmq.queue.profile.deletion}")
     String profileDeletion;
 
-    @Value("$[rabbitmq.queue.profile.deletion-failed}")
+    @Value("${rabbitmq.queue.profile.deletion-failed}")
     String profileDeletionFailed;
 
-    @Value("$[rabbitmq.queue.profile.update}")
+    @Value("${rabbitmq.queue.profile.update}")
     String profileUpdate;
 
-    @Value("$[rabbitmq.queue.profile.update-failed}")
+    @Value("${rabbitmq.queue.profile.update-failed}")
     String profileUpdateFailed;
 
     private final RabbitTemplate rabbitTemplate;

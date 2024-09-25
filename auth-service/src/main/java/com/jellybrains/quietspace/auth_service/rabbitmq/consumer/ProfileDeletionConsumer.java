@@ -1,14 +1,14 @@
-package com.jellybrains.quietspace.auth_service.kafka.consumer;
+package com.jellybrains.quietspace.auth_service.rabbitmq.consumer;
 
-import com.jellybrains.quietspace.auth_service.kafka.producer.UserProducer;
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileDeletionEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserDeletionFailedEvent;
+import com.jellybrains.quietspace.common_service.rabbitmq.producer.UserProducer;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -19,7 +19,8 @@ public class ProfileDeletionConsumer {
     private final UserProducer userProducer;
     private final UserRepository userRepository;
 
-    @KafkaListener(topics = "#{'${kafka.topics.profile.deletion}'}")
+
+    @RabbitListener(queues = "#{'${rabbitmq.queue.profile.deletion}'}")
     public void deleteProfileUser(ProfileDeletionEvent event) {
         try {
             log.info("deleting user on profileDeletionEvent: {}", event);

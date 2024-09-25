@@ -1,18 +1,18 @@
-package com.jellybrains.quietspace.user_service.kafka.saga;
+package com.jellybrains.quietspace.user_service.rabbitmq.saga;
 
 import com.jellybrains.quietspace.common_service.enums.EventType;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileUpdateEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserUpdateFailedEvent;
+import com.jellybrains.quietspace.common_service.rabbitmq.producer.ProfileProducer;
 import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import com.jellybrains.quietspace.user_service.entity.Profile;
-import com.jellybrains.quietspace.user_service.kafka.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.repository.ProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class ProfileUpdateStep implements SagaStep<ProfileUpdateEvent, UserUpdat
 
 
     @Override
-    @KafkaListener(topics = "#{'${kafka.topics.profile.update}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.profile.update}'}")
     public void process(ProfileUpdateEvent event) {
         if (!event.getType().equals(EventType.PROFILE_UPDATE_REQUEST_EVENT)) return;
         UserRepresentation user = event.getEventBody();
@@ -48,7 +48,7 @@ public class ProfileUpdateStep implements SagaStep<ProfileUpdateEvent, UserUpdat
     }
 
     @Override
-    @KafkaListener(topics = "#{'${kafka.topics.user.update-failed}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.user.update-failed}'}")
     public void rollback(UserUpdateFailedEvent event) {
         log.info("rolling back profile update on userUpdateFailedEvent: {}", event);
         Profile cachedProfile = redisTemplate.opsForValue().get(CACHED_PROFILE);

@@ -1,16 +1,16 @@
-package com.jellybrains.quietspace.auth_service.kafka.saga;
+package com.jellybrains.quietspace.auth_service.rabbitmq.saga;
 
 import com.jellybrains.quietspace.auth_service.entity.User;
 import com.jellybrains.quietspace.auth_service.exception.UserNotFoundException;
-import com.jellybrains.quietspace.auth_service.kafka.producer.UserProducer;
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
 import com.jellybrains.quietspace.auth_service.service.impls.AuthService;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileCreationEventFailed;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserCreationEventFailed;
+import com.jellybrains.quietspace.common_service.rabbitmq.producer.UserProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -23,7 +23,7 @@ public class UserCreationStep implements SagaStep<ProfileCreationEvent, ProfileC
     private final UserRepository userRepository;
 
 
-    @KafkaListener(topics = "#{'${kafka.topics.profile.creation}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.profile.creation}'}")
     public void process(ProfileCreationEvent event) {
         try {
             log.info("userId at user creation step: {}", event.getUserId());
@@ -37,7 +37,7 @@ public class UserCreationStep implements SagaStep<ProfileCreationEvent, ProfileC
         }
     }
 
-    @KafkaListener(topics = "#{'${kafka.topics.profile.creation-failed}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.profile.creation-failed}'}")
     public void rollback(ProfileCreationEventFailed event) {
         try {
             log.info("rolling back user registration on profileCreationEventFailed: {}", event);

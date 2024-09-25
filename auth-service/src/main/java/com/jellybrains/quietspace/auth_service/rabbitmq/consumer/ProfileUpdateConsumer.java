@@ -1,16 +1,16 @@
-package com.jellybrains.quietspace.auth_service.kafka.consumer;
+package com.jellybrains.quietspace.auth_service.rabbitmq.consumer;
 
 import com.jellybrains.quietspace.auth_service.entity.User;
-import com.jellybrains.quietspace.auth_service.kafka.producer.UserProducer;
 import com.jellybrains.quietspace.auth_service.repository.UserRepository;
 import com.jellybrains.quietspace.common_service.enums.EventType;
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileUpdateEvent;
 import com.jellybrains.quietspace.common_service.message.kafka.user.UserUpdateFailedEvent;
+import com.jellybrains.quietspace.common_service.rabbitmq.producer.UserProducer;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -21,7 +21,7 @@ public class ProfileUpdateConsumer {
     private final UserProducer userProducer;
     private final UserRepository userRepository;
 
-    @KafkaListener(topics = "#{'${kafka.topics.profile.update}'}")
+    @RabbitListener(queues = "#{'${rabbitmq.queue.profile.update}'}")
     public void updateProfileUser(ProfileUpdateEvent event) {
         if (!event.getType().equals(EventType.PROFILE_UPDATED_EVENT)) return;
         String userId = event.getEventBody().getUserId();

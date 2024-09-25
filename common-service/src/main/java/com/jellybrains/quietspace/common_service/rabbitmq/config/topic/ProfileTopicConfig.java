@@ -6,28 +6,30 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class ProfileTopicConfig {
 
     @Value("${rabbitmq.topic.profile}")
     String profileTopicExchange;
 
-    @Value("$[rabbitmq.queue.profile.creation}")
+    @Value("${rabbitmq.queue.profile.creation}")
     String profileCreation;
 
-    @Value("$[rabbitmq.queue.profile.creation-failed}")
+    @Value("${rabbitmq.queue.profile.creation-failed}")
     String profileCreationFailed;
 
-    @Value("$[rabbitmq.queue.profile.deletion}")
+    @Value("${rabbitmq.queue.profile.deletion}")
     String profileDeletion;
 
-    @Value("$[rabbitmq.queue.profile.deletion-failed}")
+    @Value("${rabbitmq.queue.profile.deletion-failed}")
     String profileDeletionFailed;
 
-    @Value("$[rabbitmq.queue.profile.update}")
+    @Value("${rabbitmq.queue.profile.update}")
     String profileUpdate;
 
-    @Value("$[rabbitmq.queue.profile.update-failed}")
+    @Value("${rabbitmq.queue.profile.update-failed}")
     String profileUpdateFailed;
 
 
@@ -85,7 +87,7 @@ public class ProfileTopicConfig {
     public Binding profileDeletionBinding() {
         return BindingBuilder.bind(profileDeletionQueue())
                 .to(profileTopicExchange())
-                .with(profileDeletionFailed);
+                .with(profileDeletion);
     }
 
     @Bean

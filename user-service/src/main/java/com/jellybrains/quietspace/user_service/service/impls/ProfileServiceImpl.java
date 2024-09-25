@@ -12,10 +12,10 @@ import com.jellybrains.quietspace.common_service.message.kafka.notification.Noti
 import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileUpdateEvent;
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
+import com.jellybrains.quietspace.common_service.rabbitmq.producer.ProfileProducer;
 import com.jellybrains.quietspace.common_service.webclient.service.UserService;
 import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import com.jellybrains.quietspace.user_service.entity.Profile;
-import com.jellybrains.quietspace.user_service.kafka.producer.ProfileProducer;
 import com.jellybrains.quietspace.user_service.mapper.custom.ProfileMapper;
 import com.jellybrains.quietspace.user_service.repository.impl.ProfileRepositoryImpl;
 import com.jellybrains.quietspace.user_service.service.ProfileService;

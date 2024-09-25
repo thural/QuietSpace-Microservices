@@ -1,11 +1,11 @@
 package com.jellybrains.quietspace.common_service.rabbitmq.config;
 
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,18 +37,12 @@ public class RabbitMQConfig {
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        return new RabbitTemplate(connectionFactory);
-    }
-
-    @Bean
-    public MessageConverter converter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
-    @Bean
-    public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(converter());
+        ContentTypeDelegatingMessageConverter converter = new ContentTypeDelegatingMessageConverter();
+        converter.addDelegate("application/json", new Jackson2JsonMessageConverter());
+        converter.addDelegate("text/plain", new SimpleMessageConverter());
+        rabbitTemplate.setMessageConverter(converter);
         return rabbitTemplate;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.auth_service.kafka.saga;
+package com.jellybrains.quietspace.auth_service.rabbitmq.saga;
 
 public interface SagaStep<T, U> {
     void process(T event);

@@ -15,22 +15,22 @@ public class UserProducer {
     @Value("${rabbitmq.topic.user}")
     String userTopicExchange;
 
-    @Value("$[rabbitmq.queue.user.creation}")
+    @Value("${rabbitmq.queue.user.creation}")
     String userCreation;
 
-    @Value("$[rabbitmq.queue.user.creation-failed}")
+    @Value("${rabbitmq.queue.user.creation-failed}")
     String userCreationFailed;
 
-    @Value("$[rabbitmq.queue.user.deletion}")
+    @Value("${rabbitmq.queue.user.deletion}")
     String userDeletion;
 
-    @Value("$[rabbitmq.queue.user.deletion-failed}")
+    @Value("${rabbitmq.queue.user.deletion-failed}")
     String userDeletionFailed;
 
-    @Value("$[rabbitmq.queue.user.update}")
+    @Value("${rabbitmq.queue.user.update}")
     String userUpdate;
 
-    @Value("$[rabbitmq.queue.user.update-failed}")
+    @Value("${rabbitmq.queue.user.update-failed}")
     String userUpdateFailed;
 
     private final RabbitTemplate rabbitTemplate;
