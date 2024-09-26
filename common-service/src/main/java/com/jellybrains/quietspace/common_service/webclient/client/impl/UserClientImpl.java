@@ -2,6 +2,7 @@ package com.jellybrains.quietspace.common_service.webclient.client.impl;
 
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.common_service.webclient.client.UserClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.retry.annotation.Backoff;
@@ -20,6 +21,8 @@ public class UserClientImpl implements UserClient {
     private final String USER_API_URI = "/api/v1/users/";
 
     @Override
+    @CircuitBreaker(name = "user-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     public Boolean validateUserId(String userId) {
         return webClient.get()
                 .uri(USER_API_URI + "validate/" + userId)
@@ -29,6 +32,8 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
+    @CircuitBreaker(name = "user-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     public Optional<UserResponse> getLoggedUser() {
         return webClient.get()
                 .uri(USER_API_URI + "user")
@@ -38,6 +43,8 @@ public class UserClientImpl implements UserClient {
     }
 
 
+    @CircuitBreaker(name = "user-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 1000, multiplier = 2))
     public Optional<UserResponse> getUserById(String id) {
         return webClient.get()
@@ -48,6 +55,8 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
+    @CircuitBreaker(name = "user-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     public Boolean validateUserIdList(List<String> userIds) {
         return webClient.get()
                 .uri(USER_API_URI + "validate/list",
@@ -58,6 +67,8 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
+    @CircuitBreaker(name = "user-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     public List<UserResponse> getUsersFromIdList(List<String> userIds) {
         return webClient.get()
                 .uri(USER_API_URI + "getUsersFromList")

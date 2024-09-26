@@ -4,6 +4,7 @@ import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
 import com.jellybrains.quietspace.common_service.webclient.client.ReactionClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,6 +19,8 @@ public class ReactionClientImpl implements ReactionClient {
     private final String REACTION_API_URI = "/api/v1/reactions/";
 
     @Override
+    @CircuitBreaker(name = "reaction-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     public Optional<String> sayHello() {
         return webClient.get()
                 .uri(REACTION_API_URI + "hello")
@@ -29,6 +32,8 @@ public class ReactionClientImpl implements ReactionClient {
     }
 
     @Override
+    @CircuitBreaker(name = "reaction-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     public Optional<ReactionResponse> getUserReactionByContentId(String contentId, ContentType type) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -45,6 +50,8 @@ public class ReactionClientImpl implements ReactionClient {
     }
 
     @Override
+    @CircuitBreaker(name = "reaction-service",
+            fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     public Optional<Integer> countByContentIdAndReactionType(String contentId, ReactionType reactionType) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder

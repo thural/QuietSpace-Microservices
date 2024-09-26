@@ -94,6 +94,41 @@ rabbitmq:
     profile: profile-topic
     user: user-topic
 
+management:
+  health:
+    circuitbreakers.enabled: true
+  endpoints.web.exposure.include: *
+  endpoint.health.show-details: always
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 100
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: TIME_BASED
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+      customConfig:
+        registerHealthIndicator: true
+        event-consumer-buffer-size: 10
+        slidingWindowType: COUNT_BASED
+        slidingWindowsSize: 5
+        failureRateThreshold: 50
+        waitDurationOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      user-service:
+        baseConfig: customConfig
+      feed-service:
+        baseConfig: customConfig
+      common-service:
+        baseConfig: customConfig
+      reaction-service:
+        baseConfig: customConfig
+
 eureka:
   instance:
     hostname: localhost
