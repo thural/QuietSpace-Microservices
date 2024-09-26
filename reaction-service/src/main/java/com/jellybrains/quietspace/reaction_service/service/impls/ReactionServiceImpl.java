@@ -9,6 +9,8 @@ import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.reaction_service.model.Reaction;
 import com.jellybrains.quietspace.reaction_service.repository.ReactionRepository;
 import com.jellybrains.quietspace.reaction_service.service.ReactionService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ public class ReactionServiceImpl implements ReactionService {
     private final UserService userService;
 
     @Override
+    @TimeLimiter(name = "reaction-service")
+    @CircuitBreaker(name = "reaction-service")
     public Mono<Void> handleReaction(Reaction request) {
         String userId = userService.getAuthorizedUserId();
 
@@ -58,29 +62,39 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
+    @TimeLimiter(name = "reaction-service")
+    @CircuitBreaker(name = "reaction-service")
     public Mono<Reaction> getUserReactionByContentId(String contentId) {
         String userId = userService.getAuthorizedUserId();
         return reactionRepository.findByContentIdAndUserId(contentId, userId);
     }
 
     @Override
+    @TimeLimiter(name = "reaction-service")
+    @CircuitBreaker(name = "reaction-service")
     public Flux<Reaction> getReactionsByContentIdAndType(String contentId, ReactionType reactionType, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return reactionRepository.findAllByContentIdAndReactionType(contentId, ReactionType.LIKE, pageRequest);
     }
 
     @Override
+    @TimeLimiter(name = "reaction-service")
+    @CircuitBreaker(name = "reaction-service")
     public Mono<Integer> countByContentIdAndType(String contentId, ReactionType reactionType) {
         return reactionRepository.countByContentIdAndReactionType(contentId, ReactionType.LIKE);
     }
 
     @Override
+    @TimeLimiter(name = "reaction-service")
+    @CircuitBreaker(name = "reaction-service")
     public Flux<Reaction> getAllByContentIdAndContentType(String contentId, ContentType type, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return reactionRepository.findAllByContentIdAndContentType(contentId, type, pageRequest);
     }
 
     @Override
+    @TimeLimiter(name = "reaction-service")
+    @CircuitBreaker(name = "reaction-service")
     public Flux<Reaction> getReactionsByUserIdAndContentType(String userId, ContentType contentType, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         return reactionRepository.findAllByUserIdAndContentType(userId, contentType, pageRequest);

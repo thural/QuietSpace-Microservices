@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
         "com.jellybrains.quietspace.common_service.rabbitmq",
         "com.jellybrains.quietspace.common_service.webclient",
         "com.jellybrains.quietspace.common_service.security",
-        "com.jellybrains.quietspace.common_service.exception",
         "com.jellybrains.quietspace.common_service.kafka.config",
         "com.jellybrains.quietspace.common_service.kafka.producer",
         "com.jellybrains.quietspace.user_service"

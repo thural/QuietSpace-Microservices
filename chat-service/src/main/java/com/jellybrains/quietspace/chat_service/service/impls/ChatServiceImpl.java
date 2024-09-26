@@ -9,6 +9,8 @@ import com.jellybrains.quietspace.common_service.exception.UnauthorizedException
 import com.jellybrains.quietspace.common_service.model.request.ChatRequest;
 import com.jellybrains.quietspace.common_service.model.response.ChatResponse;
 import com.jellybrains.quietspace.common_service.service.shared.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -24,6 +26,8 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Flux<ChatResponse> getChatsByUserId(String memberId) {
         if (!userService.getAuthorizedUserId().equals(memberId))
             throw new UnauthorizedException("user mismatch with the chat member");
@@ -33,6 +37,8 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Mono<Void> deleteChatById(String chatId) {
         return findChatEntityById(chatId)
                 .doOnSuccess(chat -> chatRepository.deleteById(chatId)).then();
@@ -40,6 +46,8 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Flux<String> addMemberWithId(String memberId, String chatId) {
         return findChatEntityById(chatId)
                 .doOnNext(chat -> userService.validateUserId(memberId))
@@ -51,6 +59,8 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Flux<String> removeMemberWithId(String memberId, String chatId) {
         userService.validateUserId(memberId);
         return findChatEntityById(chatId)
@@ -62,6 +72,8 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Mono<ChatResponse> createChat(ChatRequest chatRequest) {
         String userId = userService.getAuthorizedUserId();
         if (!chatRequest.getUserIds().contains(userId))
@@ -72,6 +84,8 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Mono<ChatResponse> getChatById(String chatId) {
         return findChatEntityById(chatId)
                 .switchIfEmpty(Mono.error(CustomNotFoundException::new))
@@ -79,6 +93,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     private Mono<Chat> findChatEntityById(String chatId) {
         String authorizedUserId = userService.getAuthorizedUserId();
         return chatRepository.findById(chatId)

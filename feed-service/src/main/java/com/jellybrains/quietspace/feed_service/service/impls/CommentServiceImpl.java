@@ -1,16 +1,18 @@
 package com.jellybrains.quietspace.feed_service.service.impls;
 
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
+import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.common_service.kafka.producer.NotificationProducer;
 import com.jellybrains.quietspace.common_service.message.kafka.notification.NotificationEvent;
 import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.feed_service.entity.Comment;
-import com.jellybrains.quietspace.feed_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.feed_service.mapper.custom.CommentMapper;
 import com.jellybrains.quietspace.feed_service.repository.CommentRepository;
 import com.jellybrains.quietspace.feed_service.service.CommentService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,12 +40,16 @@ public class CommentServiceImpl implements CommentService {
     private final NotificationProducer notificationProducer;
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Flux<CommentResponse> getCommentsByPostId(String postId, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, BY_CREATED_DATE_ASC);
         return commentRepository.findAllByPostId(postId, pageRequest).map(commentMapper::toResponse);
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Flux<CommentResponse> getCommentsByUser(Integer pageNumber, Integer pageSize) {
         String userId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
@@ -51,6 +57,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<CommentResponse> createComment(CommentRequest request) {
         Comment entity = commentMapper.toEntity(request);
         notificationProducer.sendNotification(NotificationEvent.builder()
@@ -60,12 +68,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<CommentResponse> getCommentById(String commentId) {
         return commentRepository.findById(commentId)
                 .switchIfEmpty(Mono.error(EntityNotFoundException::new)).map(commentMapper::toResponse);
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Flux<CommentResponse> getRepliesByParentId(String commentId, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return commentRepository.findAllByParentId(commentId, pageRequest).map(commentMapper::toResponse);
@@ -73,6 +85,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<Void> deleteComment(String commentId) {
         return commentRepository.findById(commentId)
                 .switchIfEmpty(Mono.error(EntityNotFoundException::new))
@@ -86,6 +100,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<CommentResponse> patchComment(CommentRequest request) {
         return commentRepository.findById(request.getCommentId())
                 .switchIfEmpty(Mono.error(EntityNotFoundException::new))

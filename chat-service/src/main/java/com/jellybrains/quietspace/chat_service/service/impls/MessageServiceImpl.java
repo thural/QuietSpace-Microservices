@@ -11,6 +11,8 @@ import com.jellybrains.quietspace.common_service.exception.CustomNotFoundExcepti
 import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
 import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
 import com.jellybrains.quietspace.common_service.service.shared.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,8 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Mono<MessageResponse> addMessage(MessageRequest messageRequest) {
         String authorizedUserId = userService.getAuthorizedUserId();
         return chatRepository.findById(messageRequest.getChatId())
@@ -44,6 +48,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Mono<MessageResponse> deleteMessage(String messageId) {
         return findMessageOrElseThrow(messageId)
                 .switchIfEmpty(Mono.error(CustomNotFoundException::new))
@@ -52,11 +58,15 @@ public class MessageServiceImpl implements MessageService {
                 .map(messageMapper::toResponse);
     }
 
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     private Mono<Message> findMessageOrElseThrow(String messageId) {
         return messageRepository.findById(messageId)
                 .switchIfEmpty(Mono.error(CustomNotFoundException::new));
     }
 
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     private void checkResourceAccess(String userId) {
         String loggedUserId = userService.getAuthorizedUserId();
         if (!userId.equals(loggedUserId))
@@ -64,18 +74,24 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Flux<MessageResponse> getMessagesByChatId(Integer pageNumber, Integer pageSize, String chatId) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return messageRepository.findAllByChatId(chatId, pageRequest).map(messageMapper::toResponse);
     }
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Mono<MessageResponse> getLastMessageByChat(Chat chat) {
         return messageRepository.findFirstByChatOrderByCreateDateDesc(chat)
                 .map(messageMapper::toResponse);
     }
 
     @Override
+    @TimeLimiter(name = "chat-service")
+    @CircuitBreaker(name = "chat-service")
     public Mono<MessageResponse> setMessageSeen(String messageId) {
         return findMessageOrElseThrow(messageId)
                 .doOnNext(message -> message.setIsSeen(true))

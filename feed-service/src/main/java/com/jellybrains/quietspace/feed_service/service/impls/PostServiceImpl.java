@@ -1,14 +1,16 @@
 package com.jellybrains.quietspace.feed_service.service.impls;
 
+import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.common_service.model.request.PostRequest;
 import com.jellybrains.quietspace.common_service.model.request.VoteRequest;
 import com.jellybrains.quietspace.common_service.model.response.PostResponse;
 import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.feed_service.entity.Post;
-import com.jellybrains.quietspace.feed_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.feed_service.mapper.custom.PostMapper;
 import com.jellybrains.quietspace.feed_service.repository.PostRepository;
 import com.jellybrains.quietspace.feed_service.service.PostService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +36,16 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Flux<PostResponse> getAllPosts(Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return postRepository.findAllPaged(pageRequest).map(postMapper::postEntityToResponse);
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<PostResponse> addPost(PostRequest post) {
         post.setUserId(userService.getAuthorizedUserId());
         return postRepository.save(postMapper.postRequestToEntity(post))
@@ -47,12 +53,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<PostResponse> getPostById(String postId) {
         Mono<Post> post = findPostEntityById(postId);
         return post.map(postMapper::postEntityToResponse);
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<PostResponse> patchPost(PostRequest post) {
         Mono<Post> existingPost = findPostEntityById(post.getPostId());
         validateResourceOwnership(existingPost);
@@ -61,6 +71,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<Void> votePoll(VoteRequest voteRequest) {
         return postRepository.findById(voteRequest.getPostId())
                 .switchIfEmpty(Mono.error(new EntityNotFoundException()))
@@ -82,6 +94,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Mono<Void> deletePost(String postId) {
         Mono<Post> existingPost = findPostEntityById(postId);
         validateResourceOwnership(existingPost);
@@ -89,17 +103,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Flux<PostResponse> getPostsByUserId(String userId, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return postRepository.findAllByUserId(userId, pageRequest).map(postMapper::postEntityToResponse);
     }
 
     @Override
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     public Flux<PostResponse> getAllByQuery(String query, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, null);
         return postRepository.searchByTitleOrText(query, pageRequest).map(postMapper::postEntityToResponse);
     }
 
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     private void validateResourceOwnership(Mono<Post> existingPost) {
         String loggedUserId = userService.getAuthorizedUserId();
         existingPost.doOnNext(post -> {
@@ -108,6 +128,8 @@ public class PostServiceImpl implements PostService {
         });
     }
 
+    @TimeLimiter(name = "feed-service")
+    @CircuitBreaker(name = "feed-service")
     private Mono<Post> findPostEntityById(String postId) {
         return postRepository.findById(postId)
                 .switchIfEmpty(Mono.error(EntityNotFoundException::new));

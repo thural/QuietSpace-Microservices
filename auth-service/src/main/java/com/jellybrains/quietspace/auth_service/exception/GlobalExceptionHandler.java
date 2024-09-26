@@ -1,6 +1,7 @@
 package com.jellybrains.quietspace.auth_service.exception;
 
 import com.jellybrains.quietspace.auth_service.model.ErrorResponse;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -171,6 +173,30 @@ public class GlobalExceptionHandler {
                         .message(e.getMessage())
                         .timestamp(new Date())
                         .build());
+    }
+
+    @ExceptionHandler(CallNotPermittedException.class)
+    public ResponseEntity<ErrorResponse> handleCallNotPermittedException(CallNotPermittedException e) {
+        HttpStatus status = HttpStatus.TOO_MANY_REQUESTS;
+        return ResponseEntity.status(status).body(
+                ErrorResponse.builder()
+                        .status(status.name())
+                        .message(e.getMessage())
+                        .timestamp(new Date())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(TimeoutException.class)
+    public ResponseEntity<ErrorResponse> handleTimeoutException(TimeoutException e) {
+        HttpStatus status = HttpStatus.REQUEST_TIMEOUT;
+        return ResponseEntity.status(status).body(
+                ErrorResponse.builder()
+                        .status(status.name())
+                        .message(e.getMessage())
+                        .timestamp(new Date())
+                        .build()
+        );
     }
 
 }

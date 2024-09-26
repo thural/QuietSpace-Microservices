@@ -10,6 +10,8 @@ import com.jellybrains.quietspace.common_service.service.NotificationService;
 import com.jellybrains.quietspace.common_service.service.shared.CommentService;
 import com.jellybrains.quietspace.common_service.service.shared.PostService;
 import com.jellybrains.quietspace.common_service.service.shared.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +40,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final CommentService commentService;
 
     @Override
+    @TimeLimiter(name = "common-service")
+    @CircuitBreaker(name = "common-service")
     public Mono<Void> handleSeen(String notificationId) {
         log.info("setting notification with id {} as seen ...", notificationId);
         String userId = userService.getAuthorizedUserId();
@@ -61,6 +65,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @TimeLimiter(name = "common-service")
+    @CircuitBreaker(name = "common-service")
     public Flux<Notification> getAllNotifications(Integer pageNumber, Integer pageSize) {
         String signedUserId = userService.getAuthorizedUserId();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
@@ -68,6 +74,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @TimeLimiter(name = "common-service")
+    @CircuitBreaker(name = "common-service")
     public Flux<Notification> getNotificationsByType(Integer pageNumber, Integer pageSize, String notificationType) {
         NotificationType type = NotificationType.valueOf(notificationType);
         String signedUserId = userService.getAuthorizedUserId();
@@ -76,11 +84,15 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @TimeLimiter(name = "common-service")
+    @CircuitBreaker(name = "common-service")
     public Mono<Integer> getCountOfPendingNotifications() {
         String signedUserId = userService.getAuthorizedUserId();
         return notificationRepository.countByUserIdAndSeen(signedUserId, false);
     }
 
+    @TimeLimiter(name = "common-service")
+    @CircuitBreaker(name = "common-service")
     public Mono<Void> processNotification(NotificationType type, String contentId) {
         String signedUserId = userService.getAuthorizedUserId();
         String recipientId = getRecipientId(type, contentId).join();
@@ -98,6 +110,8 @@ public class NotificationServiceImpl implements NotificationService {
         }).then();
     }
 
+    @TimeLimiter(name = "common-service")
+    @CircuitBreaker(name = "common-service")
     private CompletableFuture<String> getRecipientId(NotificationType type, String contentId) {
         return switch (type) {
             case COMMENT, REPOST, POST_REACTION -> postService.getUserIdByPostId(contentId);

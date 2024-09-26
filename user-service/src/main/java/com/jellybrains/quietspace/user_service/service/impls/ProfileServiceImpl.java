@@ -19,6 +19,8 @@ import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.mapper.custom.ProfileMapper;
 import com.jellybrains.quietspace.user_service.repository.impl.ProfileRepositoryImpl;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +52,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepositoryImpl profileDao;
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Page<UserResponse> listUsersByQuery(String query, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
         if (StringUtils.hasText(query)) return profileDao.findAllByQuery(query, pageRequest)
@@ -59,18 +63,24 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Optional<UserResponse> getSignedUserResponse() {
         UserResponse userResponse = profileMapper.toUserResponse(getUserProfile());
         return Optional.of(userResponse);
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Profile getUserProfile() {
         String userId = userService.getAuthorizedUserId();
         return profileDao.findByUserId(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public List<UserResponse> getUsersFromIdList(List<String> userIds) {
         return userIds.stream()
                 .map(userId -> profileDao.findByUserId(userId)
@@ -79,23 +89,31 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Optional<UserResponse> getUserResponseById(String id) {
         return profileDao.findByUserId(id)
                 .map(profileMapper::toUserResponse);
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Optional<Profile> getProfileById(String userId) {
         return profileDao.findById(userId);
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public void deleteProfileById(String userId) {
         Profile userProfile = getUserProfile();
         validateResourceAccess(userId, userProfile);
         profileDao.deleteById(userId);
     }
 
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public void requestProfileUpdate(UserRepresentation request) {
         Profile profile = getUserProfile();
         validateResourceAccess(request.getUserId(), profile);
@@ -105,12 +123,16 @@ public class ProfileServiceImpl implements ProfileService {
         );
     }
 
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     private static void validateResourceAccess(String userId, Profile profile) {
         boolean hasAdminRole = isHasAdminRole(profile);
         if (!hasAdminRole && !userId.equals(profile.getUserId()))
             throw new UnauthorizedException("signed user has no access to requested resource");
     }
 
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     private static boolean isHasAdminRole(Profile userProfile) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -118,6 +140,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Page<UserResponse> listFollowings(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
@@ -126,6 +150,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Page<UserResponse> listFollowers(Integer pageNumber, Integer pageSize) {
         Profile profile = getUserProfile();
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, DEFAULT_SORT_OPTION);
@@ -135,6 +161,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public void toggleFollow(String followedUserId) {
         Profile profile = getUserProfile();
         String profileUserId = profile.getUserId();
@@ -159,6 +187,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public void removeFollower(String followerUserId) {
         Profile profile = getUserProfile();
         String profileUserId = profile.getUserId();
@@ -174,6 +204,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public void removeFollowing(String followingUserId) {
         Profile profile = getUserProfile();
         String profileUserId = profile.getUserId();
@@ -188,6 +220,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public List<String> findConnectedFollowings() {
         Profile userProfile = getUserProfile();
         return userProfile.getFollowingUserIds().stream()
@@ -199,17 +233,23 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Boolean validateUserInRequest(String userId) {
         return profileDao.findByUserId(userId).isPresent();
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public Boolean validateUsersByIdList(List<String> userIds) {
         return userIds.stream()
                 .allMatch(userId -> profileDao.findByUserId(userId).isPresent());
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public UserResponse createProfile(CreateProfileRequest userRequest) {
         Profile profile = new Profile();
         BeanUtils.copyProperties(userRequest, profile);
@@ -218,6 +258,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @TimeLimiter(name = "user-service")
+    @CircuitBreaker(name = "user-service")
     public void setOnlineStatus(String userEmail, StatusType type) {
         profileDao.findByEmail(userEmail)
                 .ifPresent(storedUser -> {
