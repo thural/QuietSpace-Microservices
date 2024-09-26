@@ -5,12 +5,13 @@ import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.model.response.ReactionResponse;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface ReactionClient {
 
-    Optional<String> sayHello();
+    CompletableFuture<Optional<String>> sayHello();
 
-    Optional<ReactionResponse> getUserReactionByContentId(String contentId, ContentType type);
-
-    Optional<Integer> countByContentIdAndReactionType(String commentId, ReactionType reactionType);
+    CompletableFuture<Optional<ReactionResponse>> getUserReactionByContentId(String contentId, ContentType type);
+    
+    CompletableFuture<Optional<Integer>> countByContentIdAndReactionType(String commentId, ReactionType reactionType);
 }

@@ -13,7 +13,7 @@ import com.jellybrains.quietspace.common_service.message.kafka.profile.ProfileUp
 import com.jellybrains.quietspace.common_service.model.request.CreateProfileRequest;
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 import com.jellybrains.quietspace.common_service.rabbitmq.producer.ProfileProducer;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.common_service.websocket.model.UserRepresentation;
 import com.jellybrains.quietspace.user_service.entity.Profile;
 import com.jellybrains.quietspace.user_service.mapper.custom.ProfileMapper;
@@ -151,8 +151,7 @@ public class ProfileServiceImpl implements ProfileService {
                         found.getFollowerUserIds().add(profileUserId);
                         notificationProducer.sendNotification(NotificationEvent.builder()
                                 .contentId(profile.getUserId())
-                                .notificationType(NotificationType.FOLLOW_REQUEST)
-                                .build()
+                                .notificationType(NotificationType.FOLLOW_REQUEST).build()
                         );
                     }
                 });

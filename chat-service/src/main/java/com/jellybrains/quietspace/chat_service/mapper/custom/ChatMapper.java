@@ -42,6 +42,6 @@ public class ChatMapper {
 
 
     private List<UserResponse> getChatMembers(Chat chat) {
-        return userClient.getUsersFromIdList(chat.getMemberIds());
+        return userClient.getUsersFromIdList(chat.getMemberIds()).join();
     }
 }

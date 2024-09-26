@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.webclient.service;
+package com.jellybrains.quietspace.common_service.service.shared;
 
 import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.webclient.client.NotificationClient;

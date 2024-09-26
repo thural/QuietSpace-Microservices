@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
@@ -19,12 +20,13 @@ public class PostClientImpl implements PostClient {
     @Override
     @CircuitBreaker(name = "feed-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public Optional<PostResponse> getPostById(String postId) {
+    public CompletableFuture<Optional<PostResponse>> getPostById(String postId) {
         return webClient.get()
                 .uri(POST_API_URI + postId)
                 .retrieve()
                 .bodyToMono(PostResponse.class)
-                .blockOptional();
+                .map(Optional::ofNullable)
+                .toFuture();
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -23,59 +24,61 @@ public class UserClientImpl implements UserClient {
     @Override
     @CircuitBreaker(name = "user-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public Boolean validateUserId(String userId) {
+    public CompletableFuture<Boolean> validateUserId(String userId) {
         return webClient.get()
                 .uri(USER_API_URI + "validate/" + userId)
                 .retrieve()
                 .bodyToMono(Boolean.class)
-                .block();
+                .toFuture();
     }
 
     @Override
     @CircuitBreaker(name = "user-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public Optional<UserResponse> getLoggedUser() {
+    public CompletableFuture<Optional<UserResponse>> getLoggedUser() {
         return webClient.get()
                 .uri(USER_API_URI + "user")
                 .retrieve()
                 .bodyToMono(UserResponse.class)
-                .blockOptional();
+                .map(Optional::ofNullable)
+                .toFuture();
     }
 
 
     @CircuitBreaker(name = "user-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
     @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 1000, multiplier = 2))
-    public Optional<UserResponse> getUserById(String id) {
+    public CompletableFuture<Optional<UserResponse>> getUserById(String id) {
         return webClient.get()
                 .uri(USER_API_URI + id)
                 .retrieve()
                 .bodyToMono(UserResponse.class)
-                .blockOptional();
+                .map(Optional::ofNullable)
+                .toFuture();
     }
 
     @Override
     @CircuitBreaker(name = "user-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public Boolean validateUserIdList(List<String> userIds) {
+    public CompletableFuture<Boolean> validateUserIdList(List<String> userIds) {
         return webClient.get()
                 .uri(USER_API_URI + "validate/list",
                         uriBuilder -> uriBuilder.queryParam("userIds", userIds).build())
                 .retrieve()
                 .bodyToMono(Boolean.class)
-                .block();
+                .toFuture();
     }
 
     @Override
     @CircuitBreaker(name = "user-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public List<UserResponse> getUsersFromIdList(List<String> userIds) {
+    public CompletableFuture<List<UserResponse>> getUsersFromIdList(List<String> userIds) {
         return webClient.get()
                 .uri(USER_API_URI + "getUsersFromList")
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<UserResponse>>() {
                 })
-                .block();
+                .toFuture();
     }
 
 }

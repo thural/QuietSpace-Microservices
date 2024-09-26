@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.webclient.service;
+package com.jellybrains.quietspace.common_service.service.shared;
 
 import com.jellybrains.quietspace.common_service.enums.ContentType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
@@ -16,16 +16,16 @@ public class ReactionService {
 
     public Integer getLikeCount(String contentId) {
         return reactionClient.countByContentIdAndReactionType(contentId, ReactionType.LIKE)
-                .orElse(-1);
+                .thenApply(optional -> optional.orElse(-1)).join();
     }
 
     public Integer getDislikeCount(String contentId) {
         return reactionClient.countByContentIdAndReactionType(contentId, ReactionType.DISLIKE)
-                .orElse(-1);
+                .thenApply(optional -> optional.orElse(-1)).join();
     }
 
     public ReactionResponse getUserReactionByContentId(String contentId, ContentType type) {
         return reactionClient.getUserReactionByContentId(contentId, type)
-                .orElseGet(ReactionResponse::new);
+                .thenApply(optional -> optional.orElseGet(ReactionResponse::new)).join();
     }
 }

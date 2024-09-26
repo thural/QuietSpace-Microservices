@@ -10,7 +10,7 @@ import com.jellybrains.quietspace.common_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.common_service.exception.CustomNotFoundException;
 import com.jellybrains.quietspace.common_service.model.request.MessageRequest;
 import com.jellybrains.quietspace.common_service.model.response.MessageResponse;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

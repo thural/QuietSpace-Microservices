@@ -1,7 +1,7 @@
 package com.jellybrains.quietspace.user_service.controller;
 
 import com.jellybrains.quietspace.common_service.model.response.UserResponse;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.user_service.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

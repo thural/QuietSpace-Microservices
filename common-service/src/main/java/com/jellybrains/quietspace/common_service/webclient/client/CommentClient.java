@@ -3,7 +3,8 @@ package com.jellybrains.quietspace.common_service.webclient.client;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface CommentClient {
-    Optional<CommentResponse> getCommentById(String commentId);
+    CompletableFuture<Optional<CommentResponse>> getCommentById(String commentId);
 }

@@ -7,9 +7,9 @@ import com.jellybrains.quietspace.common_service.exception.CustomNotFoundExcepti
 import com.jellybrains.quietspace.common_service.message.websocket.NotificationEvent;
 import com.jellybrains.quietspace.common_service.repository.NotificationRepository;
 import com.jellybrains.quietspace.common_service.service.NotificationService;
-import com.jellybrains.quietspace.common_service.webclient.service.CommentService;
-import com.jellybrains.quietspace.common_service.webclient.service.PostService;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.CommentService;
+import com.jellybrains.quietspace.common_service.service.shared.PostService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +18,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.concurrent.CompletableFuture;
 
 import static com.jellybrains.quietspace.common_service.controller.NotificationController.NOTIFICATION_EVENT_PATH;
 import static com.jellybrains.quietspace.common_service.controller.NotificationController.NOTIFICATION_SUBJECT_PATH;
@@ -81,7 +83,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     public Mono<Void> processNotification(NotificationType type, String contentId) {
         String signedUserId = userService.getAuthorizedUserId();
-        String recipientId = getRecipientId(type, contentId);
+        String recipientId = getRecipientId(type, contentId).join();
         return notificationRepository.save(Notification.builder()
                 .notificationType(type)
                 .contentId(contentId)
@@ -96,11 +98,11 @@ public class NotificationServiceImpl implements NotificationService {
         }).then();
     }
 
-    private String getRecipientId(NotificationType type, String contentId) {
+    private CompletableFuture<String> getRecipientId(NotificationType type, String contentId) {
         return switch (type) {
             case COMMENT, REPOST, POST_REACTION -> postService.getUserIdByPostId(contentId);
             case COMMENT_REPLY, COMMENT_REACTION -> commentService.getUserIdByCommentId(contentId);
-            case FOLLOW_REQUEST -> contentId;
+            case FOLLOW_REQUEST -> CompletableFuture.supplyAsync(() -> contentId);
         };
     }
 

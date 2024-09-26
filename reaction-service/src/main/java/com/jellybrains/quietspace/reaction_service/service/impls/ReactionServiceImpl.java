@@ -5,7 +5,7 @@ import com.jellybrains.quietspace.common_service.enums.NotificationType;
 import com.jellybrains.quietspace.common_service.enums.ReactionType;
 import com.jellybrains.quietspace.common_service.kafka.producer.NotificationProducer;
 import com.jellybrains.quietspace.common_service.message.kafka.notification.NotificationEvent;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.reaction_service.model.Reaction;
 import com.jellybrains.quietspace.reaction_service.repository.ReactionRepository;
 import com.jellybrains.quietspace.reaction_service.service.ReactionService;

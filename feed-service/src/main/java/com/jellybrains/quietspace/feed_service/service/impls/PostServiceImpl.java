@@ -3,7 +3,7 @@ package com.jellybrains.quietspace.feed_service.service.impls;
 import com.jellybrains.quietspace.common_service.model.request.PostRequest;
 import com.jellybrains.quietspace.common_service.model.request.VoteRequest;
 import com.jellybrains.quietspace.common_service.model.response.PostResponse;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.feed_service.entity.Post;
 import com.jellybrains.quietspace.feed_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.feed_service.mapper.custom.PostMapper;

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.concurrent.CompletableFuture;
+
 
 @Component
 @RequiredArgsConstructor
@@ -19,8 +21,8 @@ public class NotificationClientImpl implements NotificationClient {
     @Override
     @CircuitBreaker(name = "common-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public void processNotification(NotificationType type, String contentId) {
-        webClient.post()
+    public CompletableFuture<Void> processNotification(NotificationType type, String contentId) {
+        return webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(NOTIFICATION_API_URI + "process/")
                         .queryParam("contentId", contentId)
@@ -29,14 +31,14 @@ public class NotificationClientImpl implements NotificationClient {
                 )
                 .retrieve()
                 .bodyToMono(Void.class)
-                .block();
+                .toFuture();
     }
 
     @Override
     @CircuitBreaker(name = "common-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public void processNotificationByReaction(ContentType type, String contentId) {
-        webClient.post()
+    public CompletableFuture<Void> processNotificationByReaction(ContentType type, String contentId) {
+        return webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(NOTIFICATION_API_URI + "process-reaction/")
                         .queryParam("contentId", contentId)
@@ -45,6 +47,6 @@ public class NotificationClientImpl implements NotificationClient {
                 )
                 .retrieve()
                 .bodyToMono(Void.class)
-                .block();
+                .toFuture();
     }
 }

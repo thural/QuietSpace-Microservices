@@ -3,7 +3,7 @@ package com.jellybrains.quietspace.common_service.websocket.event.listener;
 import com.jellybrains.quietspace.common_service.enums.EventType;
 import com.jellybrains.quietspace.common_service.enums.StatusType;
 import com.jellybrains.quietspace.common_service.message.websocket.BaseEvent;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

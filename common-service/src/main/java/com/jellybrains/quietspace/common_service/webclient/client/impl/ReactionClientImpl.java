@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -21,20 +22,20 @@ public class ReactionClientImpl implements ReactionClient {
     @Override
     @CircuitBreaker(name = "reaction-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public Optional<String> sayHello() {
+    public CompletableFuture<Optional<String>> sayHello() {
         return webClient.get()
                 .uri(REACTION_API_URI + "hello")
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(Optional::ofNullable)
                 .onErrorReturn(Optional.empty())
-                .block();
+                .toFuture();
     }
 
     @Override
     @CircuitBreaker(name = "reaction-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public Optional<ReactionResponse> getUserReactionByContentId(String contentId, ContentType type) {
+    public CompletableFuture<Optional<ReactionResponse>> getUserReactionByContentId(String contentId, ContentType type) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(REACTION_API_URI + "content")
@@ -46,13 +47,13 @@ public class ReactionClientImpl implements ReactionClient {
                 .bodyToMono(ReactionResponse.class)
                 .map(Optional::ofNullable)
                 .onErrorReturn(Optional.empty())
-                .block();
+                .toFuture();
     }
 
     @Override
     @CircuitBreaker(name = "reaction-service",
             fallbackMethod = "com.jellybrains.quietspace.common_service.service.shared.FallbackService#genericFallback")
-    public Optional<Integer> countByContentIdAndReactionType(String contentId, ReactionType reactionType) {
+    public CompletableFuture<Optional<Integer>> countByContentIdAndReactionType(String contentId, ReactionType reactionType) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(REACTION_API_URI + "count")
@@ -64,7 +65,7 @@ public class ReactionClientImpl implements ReactionClient {
                 .bodyToMono(Integer.class)
                 .map(Optional::ofNullable)
                 .onErrorReturn(Optional.empty())
-                .block();
+                .toFuture();
     }
 
 }

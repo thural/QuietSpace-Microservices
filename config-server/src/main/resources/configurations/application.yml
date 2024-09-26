@@ -128,6 +128,9 @@ resilience4j:
         baseConfig: customConfig
       reaction-service:
         baseConfig: customConfig
+  timelimiter.instance:
+    user-service:
+      timeout-duration: 3s
 
 eureka:
   instance:

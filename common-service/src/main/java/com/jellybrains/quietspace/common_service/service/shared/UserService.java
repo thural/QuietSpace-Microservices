@@ -1,4 +1,4 @@
-package com.jellybrains.quietspace.common_service.webclient.service;
+package com.jellybrains.quietspace.common_service.service.shared;
 
 import com.jellybrains.quietspace.common_service.enums.StatusType;
 import com.jellybrains.quietspace.common_service.exception.UserNotFoundException;
@@ -19,12 +19,12 @@ public class UserService {
     private final HttpServletRequest request;
 
     public void validateUserId(String userId) {
-        if (userClient.validateUserId(userId)) throw new UserNotFoundException();
+        if (userClient.validateUserId(userId).join()) throw new UserNotFoundException();
     }
 
     public String getUsernameById(String userId) {
-        return userClient.getUserById(userId).map(UserResponse::getUsername)
-                .orElseThrow(UserNotFoundException::new);
+        return userClient.getUserById(userId).thenApply(optional -> optional.map(UserResponse::getUsername)
+                .orElseThrow(UserNotFoundException::new)).join();
     }
 
     public String getAuthorizedUserId() {

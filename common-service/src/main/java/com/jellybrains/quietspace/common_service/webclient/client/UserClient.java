@@ -4,16 +4,17 @@ import com.jellybrains.quietspace.common_service.model.response.UserResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface UserClient {
 
-    Boolean validateUserId(String userId);
+    CompletableFuture<Boolean> validateUserId(String userId);
 
-    Optional<UserResponse> getLoggedUser();
+    CompletableFuture<Optional<UserResponse>> getLoggedUser();
 
-    Optional<UserResponse> getUserById(String userId);
+    CompletableFuture<Optional<UserResponse>> getUserById(String userId);
 
-    Boolean validateUserIdList(List<String> userIds);
+    CompletableFuture<Boolean> validateUserIdList(List<String> userIds);
 
-    List<UserResponse> getUsersFromIdList(List<String> userIds);
+    CompletableFuture<List<UserResponse>> getUsersFromIdList(List<String> userIds);
 }

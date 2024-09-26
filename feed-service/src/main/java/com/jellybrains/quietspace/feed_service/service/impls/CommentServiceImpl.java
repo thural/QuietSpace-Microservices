@@ -5,7 +5,7 @@ import com.jellybrains.quietspace.common_service.kafka.producer.NotificationProd
 import com.jellybrains.quietspace.common_service.message.kafka.notification.NotificationEvent;
 import com.jellybrains.quietspace.common_service.model.request.CommentRequest;
 import com.jellybrains.quietspace.common_service.model.response.CommentResponse;
-import com.jellybrains.quietspace.common_service.webclient.service.UserService;
+import com.jellybrains.quietspace.common_service.service.shared.UserService;
 import com.jellybrains.quietspace.feed_service.entity.Comment;
 import com.jellybrains.quietspace.feed_service.exception.CustomErrorException;
 import com.jellybrains.quietspace.feed_service.mapper.custom.CommentMapper;
