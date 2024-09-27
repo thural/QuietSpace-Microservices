@@ -6,7 +6,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
-        "com.jellybrains.quietspace.common_service.rabbitmq",
+        "com.jellybrains.quietspace.common_service.service.shared",
+        "com.jellybrains.quietspace.common_service.rabbitmq.config",
+        "com.jellybrains.quietspace.common_service.rabbitmq.producer",
         "com.jellybrains.quietspace.common_service.webclient",
         "com.jellybrains.quietspace.common_service.security",
         "com.jellybrains.quietspace.common_service.kafka.config",

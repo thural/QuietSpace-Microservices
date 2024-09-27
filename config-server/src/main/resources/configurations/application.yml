@@ -22,6 +22,9 @@ spring:
     default: default
     active:
       - ${CONFIG_ACTIVE_PROFILE}
+  zipkin:
+    base-url: http://localhost:${ZIPKIN_PORT}
+  sleuth.sampler.probability: 1
   cloud:
     config:
       override-system-properties: false
@@ -95,9 +98,11 @@ rabbitmq:
     user: user-topic
 
 management:
+  tracing:
+    sampling.probability: 1.0
   health:
     circuitbreakers.enabled: true
-  endpoints.web.exposure.include: *
+  endpoints.web.exposure.include: "*"
   endpoint.health.show-details: always
 
 resilience4j:
