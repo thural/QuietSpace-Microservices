@@ -44,7 +44,7 @@ public class UserController {
 
 
     @GetMapping("/{userId}")
-    ResponseEntity<UserResponse> getUserById(@PathVariable String userId) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable String userId) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return profileService.getUserResponseById(userId)
